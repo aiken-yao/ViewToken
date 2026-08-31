@@ -1,0 +1,11 @@
+model_id: facebook/VGGT-1B
+image_dir: null
+images: []
+output_dir: outputs/token_cache/example
+preprocess_mode: crop
+layer_index: 23
+device: auto
+compute_dtype: auto
+token_dtype: float16
+geometry_dtype: float32
+min_world_point_confidence: 0.0

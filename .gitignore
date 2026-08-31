@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Local model and package caches
+.cache/
+*.ckpt
+*.pth
+*.safetensors
+
+# Datasets and experiment artifacts
+data/
+outputs/
+checkpoints/
+runs/
+wandb/
+*.log
+nohup.out
+
+# Editors and operating systems
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
