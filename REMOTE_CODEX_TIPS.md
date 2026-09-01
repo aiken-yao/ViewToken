@@ -62,10 +62,114 @@ pruning，也不是计算预算分配。
    单条负 gain 不代表实现错误。保留负值，不要 clamp 为 0。只有当一组候选视角
    整体无法形成合理分布时，才优先怀疑 alignment 或 metric pipeline。
 
-## 当前唯一主任务：Oracle Gain Audit
+## 2026-09-02 更新：Oracle Gain Audit 已完成，但未通过可信度验收
 
-在同一个 observed 3-view state 下评估至少 20 个 held-out candidate views。完成
-审计前，不训练 ViewToken policy，也不增加复杂模型。
+真实审计输出位于：
+
+```text
+outputs/oracle_gain/scannet_scene0000_00_audit20/
+```
+
+审计使用 observed `00000, 00010, 00020`，评估了 20 个 held-out candidate，另有
+1 个 repeat-observed sanity case。主要结果为：
+
+```text
+held-out candidates = 20
+Chamfer gain mean = -0.1252, positive ratio = 0.05
+accuracy gain mean = +0.1300, positive ratio = 0.80
+completeness gain mean = -0.3803, positive ratio = 0.05
+coverage gain mean = -0.00190, positive ratio = 0.40
+F-score@0.02 gain mean = +0.00042, positive ratio = 0.65
+F-score@0.05 gain mean = +0.00088, positive ratio = 0.60
+F-score@0.10 gain mean = -0.00999, positive ratio = 0.35
+```
+
+当前结论不是“VGGT 加入视角必然变差”，而是现有 oracle label 测量协议尚未校准。
+在完成下述修复前，不扩展 oracle-gain dataset，不训练 policy，也不据此决定 ViewToken
+选题是否可行。
+
+### 已确认的高优先级问题
+
+1. 当前 repeat-observed case 实际输入为
+   `[00000, 00010, 00020, 00010]`，不是对同一 baseline 重复计算。重复图像会改变
+   VGGT 的多视图 attention 和几何预测，因此它只能叫
+   `duplicate_input_sensitivity`，不能用来要求 gain 等于 0，也不能作为合法 NBV
+   candidate。
+2. baseline 与每个 candidate 当前分别使用自由尺度 Sim(3) ICP 对齐到完整 ScanNet
+   GT。部分点云对完整场景进行无约束 scale/translation/rotation 拟合，可能收缩到
+   GT 的局部区域，从而造成 accuracy 变好、completeness/coverage 变差。当前 ICP
+   还缺少 correspondence trimming、outlier rejection、overlap 约束以及变换诊断。
+3. 点云在对齐前随机截取到 50k，计算指标时再次随机采样到 12k。相同 seed 对
+   3-view 和 4-view 点云不会产生等价空间子集，小幅 gain 可能只是采样噪声。
+4. reconstruction cache 没有配置 fingerprint。改变图像顺序、checkpoint、confidence
+   threshold、seed、最大点数或代码后，`reuse-reconstructions: true` 仍可能静默复用
+   旧结果。
+5. `min-world-point-confidence: 0.0` 基本没有过滤任何点。阈值实验必须在 cache、
+   alignment 和 sampling 修好以后进行，不能先在单场景上调参。
+6. 当前 high-overlap/new-area 标签主要由相机平移距离指定，没有验证视锥重叠、朝向
+   和可见新表面比例，因此不能作为强 sanity 结论。
+
+## 当前唯一主任务：校准 Oracle 测量协议
+
+按以下 A、B、C 三个阶段执行。每完成一个阶段先保存测试和报告，不要直接跳到下一阶段
+的大规模 GPU 推理。
+
+### 阶段 A：隔离 metric/alignment 噪声，不运行新的 VGGT 重建
+
+1. 使用完全相同的 baseline cached points 作为 baseline 和 candidate 输入，完整执行
+   两次对齐与 metric，所有 gain 必须严格为 0 或仅有浮点误差。新增端到端测试。
+2. 对同一 cached cloud 使用 seed `0..9` 重复评估，报告每项 metric 的 mean/std，
+   以及 alignment scale、rotation、translation、residual 和 inlier ratio。评估标准差
+   必须显著小于真实 candidate 的 gain 差异。
+3. 新增已知变换的 synthetic Sim(3) recovery test，分别覆盖完整重叠与部分重叠。
+4. 为 reconstruction cache 增加 fingerprint，至少包含 checkpoint 身份、ordered image
+   paths、preprocess、layer、confidence threshold、max points、seed 和 cache schema
+   version。实现前设置 `reuse-reconstructions: false`，或每次使用全新输出目录。
+5. 不把 observed view 放入真实 NBV action set。保留重复图像实验时，将记录类型明确
+   标为 `duplicate_input_sensitivity`。
+
+### 阶段 B：改为相机锚定的公平对齐
+
+1. 从每次 VGGT 重建保存的 `pose_enc` 解码 extrinsics/intrinsics。优先复用官方
+   `pose_encoding_to_extri_intri`，不要修改 `vggt/`。
+2. 明确外参约定并计算预测相机中心；若为 world-to-camera，则
+   `C = -R^T t`。增加 pose convention 单元测试。
+3. 将相同 view ID 的预测相机中心与 ScanNet GT camera-to-world pose 对应起来。
+4. baseline 与 `observed+candidate` 都只使用共享 observed views 估计 Sim(3)，candidate
+   自身绝不能成为 alignment anchor。
+5. 把同一个相机锚定 Sim(3) 应用于预测世界点。必要时只能追加固定 scale 的 robust
+   rigid ICP，并使用 trimming/outlier rejection。
+6. 每条 record 保存并汇报 scale、rotation、translation、camera residual、ICP
+   residual、inlier ratio 和 shared anchor IDs。若三个 observed camera centers 近共线，
+   改用 4 个初始 observed views，或纳入相机朝向约束。
+
+### 阶段 C：确定性几何评估
+
+1. 移除对齐前的随机 50k 截断；先做 finite/confidence filtering，再对齐，再做确定性
+   voxel downsample。
+2. 所有 candidate 共用一份缓存且固定的 GT point set。优先评估全部 voxel centroids；
+   若必须限点，使用确定性的空间/hash sampling 或报告多 seed 误差条。
+3. 基于 ScanNet GT pose、depth 或 mesh 计算 frustum overlap 与 novel visible surface
+   fraction，重新定义 high-overlap 和 new-area audit case。GT 可见性仅用于离线审计和
+   oracle label，不能进入 NBV policy 输入。
+4. alignment 与 sampling 稳定后，再比较 confidence threshold，例如绝对阈值或固定
+   分位数，并同时报告保留点数、coverage 和各项 metric。
+
+### 校准通过条件
+
+只有同时满足以下条件，才能重新运行完整 audit20 并考虑扩展到 5 个场景：
+
+- identical-cloud gain 接近 0；
+- 多 seed metric/alignment 标准差远小于 candidate gain 间隔；
+- synthetic full/partial-overlap Sim(3) 测试通过；
+- baseline 与 candidate 的 scale 不发生异常漂移或塌缩；
+- cache 配置变化能正确失效；
+- duplicate-input sensitivity 已与 NBV candidate 分离；
+- 至少部分具有足够连接性的 novel view 能稳定改善 coverage/completeness；
+- 所有新增单元测试、`compileall` 和原有测试通过。
+
+完成以上校准后先提交一份对比报告：旧 ICP 对齐 vs 相机锚定对齐、随机采样 vs
+确定性 voxel 评估，以及各自的 gain 分布和稳定性。等待用户确认后再扩展数据集。
 
 ### 必须固定的实验条件
 
@@ -123,13 +227,18 @@ random-candidate mean gain
 F-score 是否对候选排序产生严重冲突。不要在看到分布前拍脑袋组合多个指标成一个
 加权总分。
 
-### 三组 sanity checks
+### 四组 sanity checks
 
-必须显式加入：
+必须显式加入并区分：
 
-1. 重复一个已经 observed 的视角：gain 应接近 0；
-2. 与 observed 高重叠的相邻视角：gain 通常较小；
-3. 能观察明显新区域的视角：至少部分 coverage/completeness 指标应为正。
+1. identical-cloud：同一份 cached reconstruction 重复对齐、采样和评估，gain 应接近
+   0；这是 metric pipeline 的确定性检查。
+2. duplicate-input sensitivity：把已经 observed 的图像再次送入 VGGT，研究多视图
+   推理对重复输入的敏感性；该结果不要求为 0，也不能作为 NBV candidate。
+3. 与 observed 高重叠的相邻视角：gain 通常较小，但必须用 GT frustum/surface
+   overlap 验证“高重叠”，不能只看相机平移距离。
+4. 能观察明显新区域且与当前观测保持足够连接性的视角：至少部分
+   coverage/completeness 指标应稳定为正。
 
 候选视角真实 RGB 仍然只能用于离线重建和标签计算，不能进入任何候选评分模型。
 
