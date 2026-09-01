@@ -111,10 +111,63 @@ F-score@0.10 gain mean = -0.00999, positive ratio = 0.35
 
 ## 当前唯一主任务：校准 Oracle 测量协议
 
-按以下 A、B、C 三个阶段执行。每完成一个阶段先保存测试和报告，不要直接跳到下一阶段
-的大规模 GPU 推理。
+阶段 A 已于 2026-09-02 完成，结论为“部分通过，但整体校准未通过”。当前只执行
+阶段 B 的相机锚定公平对齐。不要运行新的 VGGT 重建；优先复用 audit20 和 Stage A
+已有 cached reconstructions。不要扩展 dataset，也不要训练 policy。
 
-### 阶段 A：隔离 metric/alignment 噪声，不运行新的 VGGT 重建
+### 阶段 A：已完成——隔离 metric/alignment 噪声
+
+报告位置：
+
+```text
+outputs/oracle_calibration/scannet_scene0000_00_stage_a/stage_a_metric_stability.json
+outputs/oracle_calibration/scannet_scene0000_00_stage_a/run_log.md
+docs/audits/scannet_scene0000_00_stage_a/
+```
+
+已完成：alignment diagnostics、identical-cloud 端到端检查、seed `0..9` 稳定性、
+synthetic Sim(3) full/partial correspondence 测试、cache fingerprint，以及把重复输入
+重命名为 `duplicate_input_sensitivity`。当前测试结果为 22 tests OK，`compileall` 和
+`git diff --check` 均通过，官方 `vggt/` 未修改。
+
+关键结果：
+
+```text
+identical-cloud max_abs_gain = 0.0
+
+multi-seed metric std:
+chamfer      = 0.00795
+accuracy     = 0.00285
+completeness = 0.01814
+coverage     = 0.00151
+F@0.02       = 0.00044
+F@0.05       = 0.00157
+F@0.10       = 0.00212
+
+std / old audit20 candidate-gain range:
+chamfer      = 0.0209
+completeness = 0.0176
+coverage     = 0.0950
+F@0.02       = 0.1185
+
+free Sim(3) ICP diagnostics:
+scale mean                  = 5.12
+rotation angle mean         = 11.90 deg
+translation norm mean       = 8.44
+residual RMSE mean          = 0.669 m
+inlier ratio @ 0.05 m mean  = 0.00869
+```
+
+解释：identical-cloud 和 synthetic Sim(3) 表明 gain 算术、确定性链路和基础 Sim(3)
+数学实现可以站住；但真实 VGGT partial reconstruction 对完整 ScanNet GT 的自由 ICP
+几乎没有形成有效几何对应。`scale=5.12` 单独看不一定是错误，因为 VGGT 有尺度不确定
+性；真正否决旧 alignment 的证据是 `0.669 m` residual 与仅 `0.87%` 的 5 cm inlier
+ratio。旧 audit20 标签因此仍不可用于训练。
+
+coverage 和 F@0.02 的 sampling std 分别达到旧 candidate range 的约 9.5% 和 11.9%，
+并非完全可忽略，因此阶段 C 仍然必须完成；但当前第一阻塞是阶段 B 的 alignment。
+
+以下保留为阶段 A 已执行要求和回归测试规范：
 
 1. 使用完全相同的 baseline cached points 作为 baseline 和 candidate 输入，完整执行
    两次对齐与 metric，所有 gain 必须严格为 0 或仅有浮点误差。新增端到端测试。
@@ -128,20 +181,30 @@ F-score@0.10 gain mean = -0.00999, positive ratio = 0.35
 5. 不把 observed view 放入真实 NBV action set。保留重复图像实验时，将记录类型明确
    标为 `duplicate_input_sensitivity`。
 
-### 阶段 B：改为相机锚定的公平对齐
+### 阶段 B：当前任务——改为相机锚定的公平对齐
 
 1. 从每次 VGGT 重建保存的 `pose_enc` 解码 extrinsics/intrinsics。优先复用官方
    `pose_encoding_to_extri_intri`，不要修改 `vggt/`。
 2. 明确外参约定并计算预测相机中心；若为 world-to-camera，则
    `C = -R^T t`。增加 pose convention 单元测试。
 3. 将相同 view ID 的预测相机中心与 ScanNet GT camera-to-world pose 对应起来。
-4. baseline 与 `observed+candidate` 都只使用共享 observed views 估计 Sim(3)，candidate
-   自身绝不能成为 alignment anchor。
-5. 把同一个相机锚定 Sim(3) 应用于预测世界点。必要时只能追加固定 scale 的 robust
-   rigid ICP，并使用 trimming/outlier rejection。
-6. 每条 record 保存并汇报 scale、rotation、translation、camera residual、ICP
-   residual、inlier ratio 和 shared anchor IDs。若三个 observed camera centers 近共线，
-   改用 4 个初始 observed views，或纳入相机朝向约束。
+4. baseline 与 `observed+candidate` 分别根据各自预测的相机中心估计 Sim(3)，但两边
+   必须使用完全相同的共享 observed IDs。candidate 自身绝不能成为 alignment anchor。
+5. 将各自的相机锚定 Sim(3) 应用于对应预测世界点。第一轮只报告纯 camera-Sim(3)
+   结果，不要立即混入点云 ICP；必要时后续只能追加固定 scale 的 robust rigid ICP，
+   并使用 trimming/outlier rejection。
+6. 每条 record 保存并汇报 scale、rotation、translation、每个 anchor 的误差、camera
+   RMSE/max error、shared anchor IDs，以及相机中心几何的 condition number。若三个
+   observed camera centers 近共线，不要用 candidate 补足约束；改用 4 个初始 observed
+   views，或纳入相机朝向约束。
+7. 使用新 alignment 重新计算旧 audit20 cached reconstructions 的 metrics，并比较
+   camera-Sim(3) 与旧 free-ICP 的 gain 分布、scale 漂移、residual 和 inlier ratio。
+   本阶段不生成新的 VGGT reconstruction。
+
+阶段 B 必须满足：相机 anchor residual 明显降低；baseline/candidate scale 不发生异常
+塌缩；candidate 加入后 observed-camera alignment 不剧烈漂移；新协议下
+identical-cloud gain 仍为 0；点云对 GT 的 residual/inlier 明显优于旧 free-ICP。完成后
+先汇报并等待确认，再进入阶段 C。
 
 ### 阶段 C：确定性几何评估
 
