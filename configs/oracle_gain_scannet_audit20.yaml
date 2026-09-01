@@ -41,10 +41,10 @@ coverage-radius: 0.05
 voxel-downsample-size: 0.02
 random-seed: 0
 min-held-out-candidates: 20
-reuse-reconstructions: true
+reuse-reconstructions: false
 split: train
 point-stride: 6
 sanity-checks:
-  repeat_observed: ["00010"]
+  duplicate_input_sensitivity: ["00010"]
   high_overlap_neighbor: ["00019", "00018", "00009", "00032"]
   new_area: ["00425", "00500"]

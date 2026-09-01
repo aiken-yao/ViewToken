@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import unittest
 
 import torch
@@ -7,14 +8,31 @@ import torch
 from viewtoken.oracle import (
     OracleGainRecord,
     PointCloudMetrics,
+    SimilarityTransform,
+    align_sim3_icp_with_diagnostics,
+    apply_similarity_transform,
     build_memory_id,
     compute_metric_gains,
     compute_pointcloud_metrics,
+    estimate_similarity_transform,
+    identical_cloud_gain_check,
     scene_split,
     spearman_rank_correlation,
     summarize_oracle_audit,
     voxel_downsample_points,
 )
+
+
+def rotation_z(angle_degrees: float) -> torch.Tensor:
+    angle = math.radians(angle_degrees)
+    return torch.tensor(
+        [
+            [math.cos(angle), -math.sin(angle), 0.0],
+            [math.sin(angle), math.cos(angle), 0.0],
+            [0.0, 0.0, 1.0],
+        ],
+        dtype=torch.float32,
+    )
 
 
 class OracleMetricsTest(unittest.TestCase):
@@ -74,6 +92,90 @@ class OracleMetricsTest(unittest.TestCase):
         self.assertTrue(torch.allclose(downsampled[0], torch.tensor([0.005, 0.0, 0.0])))
         self.assertTrue(torch.allclose(downsampled[1], torch.tensor([1.0, 1.0, 1.0])))
 
+    def test_identical_cloud_alignment_pipeline_has_zero_gain(self) -> None:
+        points = torch.tensor(
+            [
+                [0.0, 0.0, 0.0],
+                [0.3, 0.1, 0.0],
+                [0.0, 0.4, 0.2],
+                [0.2, 0.3, 0.5],
+                [0.7, 0.2, 0.1],
+            ],
+            dtype=torch.float32,
+        )
+
+        check = identical_cloud_gain_check(
+            points=points,
+            target=points,
+            alignment="sim3_icp",
+            seed=0,
+            thresholds=(0.05, 0.1),
+            coverage_radius=0.05,
+            max_points=None,
+            voxel_size=None,
+        )
+
+        self.assertLessEqual(check["max_abs_gain"], 1e-7)
+
+    def test_known_sim3_recovery_full_overlap(self) -> None:
+        generator = torch.Generator().manual_seed(7)
+        source = torch.rand((64, 3), generator=generator)
+        expected = SimilarityTransform(
+            scale=1.7,
+            rotation=rotation_z(23.0),
+            translation=torch.tensor([0.4, -0.2, 0.8], dtype=torch.float32),
+        )
+        target = expected.apply(source)
+
+        recovered = estimate_similarity_transform(source, target)
+
+        self.assertAlmostEqual(recovered.scale, expected.scale, places=5)
+        self.assertTrue(torch.allclose(recovered.rotation, expected.rotation, atol=1e-5))
+        self.assertTrue(torch.allclose(recovered.translation, expected.translation, atol=1e-5))
+        self.assertTrue(torch.allclose(recovered.apply(source), target, atol=1e-5))
+
+    def test_known_sim3_recovery_partial_overlap_correspondences(self) -> None:
+        generator = torch.Generator().manual_seed(9)
+        source = torch.rand((96, 3), generator=generator)
+        expected = SimilarityTransform(
+            scale=0.6,
+            rotation=rotation_z(-17.0),
+            translation=torch.tensor([-0.3, 0.5, 0.2], dtype=torch.float32),
+        )
+        target = expected.apply(source)
+        partial = torch.arange(0, source.shape[0], 3)
+
+        recovered = estimate_similarity_transform(source[partial], target[partial])
+
+        self.assertAlmostEqual(recovered.scale, expected.scale, places=5)
+        self.assertTrue(torch.allclose(recovered.rotation, expected.rotation, atol=1e-5))
+        self.assertTrue(torch.allclose(recovered.translation, expected.translation, atol=1e-5))
+
+    def test_alignment_diagnostics_report_transform_and_residuals(self) -> None:
+        points = torch.tensor(
+            [
+                [0.0, 0.0, 0.0],
+                [0.3, 0.1, 0.0],
+                [0.0, 0.4, 0.2],
+                [0.2, 0.3, 0.5],
+                [0.7, 0.2, 0.1],
+            ],
+            dtype=torch.float32,
+        )
+
+        result = align_sim3_icp_with_diagnostics(
+            points,
+            points,
+            seed=0,
+            sample_size=None,
+            inlier_threshold=1e-4,
+        )
+
+        diagnostics = result.diagnostics.to_dict()
+        self.assertIn("transform", diagnostics)
+        self.assertLessEqual(diagnostics["residual_rmse"], 1e-6)
+        self.assertEqual(diagnostics["inlier_ratio"], 1.0)
+
     def test_spearman_rank_correlation_handles_order_and_ties(self) -> None:
         self.assertAlmostEqual(
             spearman_rank_correlation([1.0, 2.0, 3.0], [3.0, 2.0, 1.0]),
@@ -100,7 +202,7 @@ class OracleMetricsTest(unittest.TestCase):
                 baseline_metrics=baseline,
                 candidate_metrics=baseline,
                 reconstruction_paths={},
-                metadata={"candidate_sanity_tags": ["repeat_observed"]},
+                metadata={"candidate_sanity_tags": ["duplicate_input_sensitivity"]},
             ),
             OracleGainRecord(
                 scene_id="scene",
@@ -131,7 +233,7 @@ class OracleMetricsTest(unittest.TestCase):
             summary["held_out_metrics"]["coverage"]["random_candidate_mean_gain"],
             0.15,
         )
-        self.assertEqual(summary["sanity_checks"]["repeat_observed"]["candidate_count"], 1)
+        self.assertEqual(summary["sanity_checks"]["duplicate_input_sensitivity"]["candidate_count"], 1)
         self.assertIn("chamfer|coverage", summary["spearman_rank_correlation"])
 
     def test_memory_id_and_split_are_scene_level_deterministic(self) -> None:

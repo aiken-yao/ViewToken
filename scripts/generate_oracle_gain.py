@@ -32,6 +32,7 @@ from viewtoken.oracle import (  # noqa: E402
     OracleGainRecord,
     align_sim3_icp,
     build_memory_id,
+    build_reconstruction_cache_identity,
     compute_pointcloud_metrics,
     load_point_cloud,
     load_pose_matrix,
@@ -136,7 +137,8 @@ def normalize_sanity_checks(value: object) -> dict[str, set[str]]:
             raw_members = [members]
         else:
             raw_members = list(members)
-        normalized[str(tag)] = {candidate_identifier(member) for member in raw_members}
+        normalized_tag = "duplicate_input_sensitivity" if str(tag) == "repeat_observed" else str(tag)
+        normalized[normalized_tag] = {candidate_identifier(member) for member in raw_members}
     return normalized
 
 
@@ -151,8 +153,8 @@ def candidate_sanity_tags(
         for tag, members in sanity_checks.items()
         if candidate_view_id in members or str(candidate_path) in members or candidate_path.name in members
     ]
-    if candidate_view_id in observed_view_ids and "repeat_observed" not in tags:
-        tags.append("repeat_observed")
+    if candidate_view_id in observed_view_ids and "duplicate_input_sensitivity" not in tags:
+        tags.append("duplicate_input_sensitivity")
     return tags
 
 
@@ -184,6 +186,7 @@ def sample_flat_points(
 def reconstruct_points(
     model: torch.nn.Module,
     image_paths: list[Path],
+    checkpoint_path: Path,
     output_dir: Path,
     preprocess_mode: str,
     device: torch.device,
@@ -197,9 +200,24 @@ def reconstruct_points(
     output_dir.mkdir(parents=True, exist_ok=True)
     points_path = output_dir / "points.pt"
     metadata_path = output_dir / "metadata.json"
+    cache_identity = build_reconstruction_cache_identity(
+        checkpoint_path=checkpoint_path,
+        image_paths=image_paths,
+        preprocess_mode=preprocess_mode,
+        layer_index=layer_index,
+        min_confidence=min_confidence,
+        max_points=max_points,
+        seed=seed,
+    )
     if reuse_existing and points_path.is_file() and metadata_path.is_file():
         points = torch.load(points_path, map_location="cpu", weights_only=True).float()
         metadata = json.loads(metadata_path.read_text())
+        actual_fingerprint = metadata.get("cache_fingerprint")
+        if actual_fingerprint != cache_identity["fingerprint"]:
+            raise RuntimeError(
+                "Refusing to reuse reconstruction cache with mismatched fingerprint: "
+                f"expected {cache_identity['fingerprint']}, got {actual_fingerprint}"
+            )
         metadata["reused_existing_reconstruction"] = True
         return points, metadata
     images = load_and_preprocess_images([str(path) for path in image_paths], mode=preprocess_mode).to(device)
@@ -227,8 +245,16 @@ def reconstruct_points(
 
     torch.save(points.contiguous(), points_path)
     torch.save(confidence.contiguous(), output_dir / "confidence.pt")
+    pose_enc_path = None
+    if features.pose_enc is not None:
+        pose_enc_path = output_dir / "pose_enc.pt"
+        torch.save(features.pose_enc.detach().float().cpu().contiguous(), pose_enc_path)
     metadata = {
+        "cache_schema_version": cache_identity["schema_version"],
+        "cache_fingerprint": cache_identity["fingerprint"],
+        "cache_fingerprint_payload": cache_identity["payload"],
         "image_paths": [str(path) for path in image_paths],
+        "pose_enc_path": None if pose_enc_path is None else str(pose_enc_path),
         "input_shape": list(images.shape),
         "patch_grid": list(features.patch_grid),
         "patch_start_idx": features.patch_start_idx,
@@ -340,6 +366,7 @@ def main() -> None:
     baseline_points, baseline_reconstruction_metadata = reconstruct_points(
         model=model,
         image_paths=observed_views,
+        checkpoint_path=checkpoint_path,
         output_dir=baseline_dir,
         preprocess_mode=preprocess_mode,
         device=device,
@@ -380,6 +407,7 @@ def main() -> None:
         candidate_points, candidate_reconstruction_metadata = reconstruct_points(
             model=model,
             image_paths=observed_views + [candidate_path],
+            checkpoint_path=checkpoint_path,
             output_dir=candidate_dir,
             preprocess_mode=preprocess_mode,
             device=device,

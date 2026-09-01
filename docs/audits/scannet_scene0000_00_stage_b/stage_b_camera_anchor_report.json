@@ -1,0 +1,48 @@
+{
+  "inputs": {
+    "audit_records": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/oracle_gain.jsonl",
+    "target_points": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin",
+    "gt_pose_dir": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00"
+  },
+  "config": {
+    "point_stride": 6,
+    "fscore_thresholds": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "coverage_radius": 0.05,
+    "voxel_downsample_size": 0.02,
+    "max_metric_points": 12000,
+    "seed": 0
+  },
+  "attempted_record_count": 21,
+  "did_run_vggt": false,
+  "runtime_seconds": 0.11385759711265564,
+  "status": "blocked_missing_pose_enc",
+  "missing_pose_enc_paths": [
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00010/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00019/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00018/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00009/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00032/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00025/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00050/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00075/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00100/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00125/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00150/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00175/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00200/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00225/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00250/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00275/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00300/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00325/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00350/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00425/pose_enc.pt",
+    "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/reconstructions/23a55d429693f934__plus__00500/pose_enc.pt"
+  ],
+  "required_next_action": "Regenerate oracle reconstruction caches with pose_enc.pt after user approval; do not use candidate cameras as alignment anchors."
+}

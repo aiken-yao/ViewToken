@@ -9,7 +9,8 @@ from typing import Any
 from .dataset import OracleGainRecord
 
 SANITY_EXPECTATIONS = {
-    "repeat_observed": "Gain should be close to zero because the view is already in memory.",
+    "identical_cloud": "The same cached cloud evaluated twice should have zero gain up to floating-point noise.",
+    "duplicate_input_sensitivity": "Repeating an observed RGB through VGGT measures model sensitivity and is not a legal NBV candidate.",
     "high_overlap_neighbor": "Gain is expected to be small for views with high overlap to observed inputs.",
     "new_area": "At least one coverage or completeness-oriented metric should improve if new surfaces are observed.",
 }
