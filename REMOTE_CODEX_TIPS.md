@@ -181,7 +181,55 @@ coverage 和 F@0.02 的 sampling std 分别达到旧 candidate range 的约 9.5%
 5. 不把 observed view 放入真实 NBV action set。保留重复图像实验时，将记录类型明确
    标为 `duplicate_input_sensitivity`。
 
-### 阶段 B：当前任务——改为相机锚定的公平对齐
+### 阶段 B：代码路径已完成，当前阻塞于旧 cache 缺少 pose encoding
+
+2026-09-02 已完成 camera-anchor alignment 基础实现、Stage B 审计脚本、v3 cache
+schema 和 pose convention/camera alignment 单测。实际审计没有运行新的 VGGT，报告位于：
+
+```text
+docs/audits/scannet_scene0000_00_stage_b/run_log.md
+docs/audits/scannet_scene0000_00_stage_b/stage_b_camera_anchor_report.json
+```
+
+结果为：
+
+```text
+status = blocked_missing_pose_enc
+attempted records = 21
+missing pose_enc.pt = 22
+did_run_vggt = false
+tests = 27 OK
+```
+
+22 份缺失文件对应 1 份共享 baseline cache 和 21 份 candidate cache，数量正确。旧
+audit20 cache 只有 `points.pt`、`confidence.pt` 和 `metadata.json`，无法从中恢复 VGGT
+预测相机。因此停止而不偷偷运行 VGGT 是正确行为。不要把后来单独推理得到的
+`pose_enc.pt` 补写进旧 cache；points 与 pose 必须来自同一次、同配置的重建并保存在
+新的 v3 输出目录。
+
+在请求用户批准新的 VGGT 推理前，先完成以下四项代码补强；这些工作不需要运行 VGGT：
+
+1. **强制 v3 artifact 完整性。** 新建 oracle reconstruction 时，若
+   `features.pose_enc is None` 必须立即失败，不能仍写成 v3 cache。复用时必须同时检查
+   `points.pt`、`confidence.pt`、`pose_enc.pt`、`metadata.json`、schema version 和
+   fingerprint。Stage B 载入 cache 时也要验证 schema/fingerprint，不能只检查
+   `pose_enc.pt` 是否存在。
+2. **补齐 camera alignment 后的几何诊断。** 对 baseline/candidate 分别报告点云到 GT
+   的 residual mean/median/RMSE/max，以及 inlier ratio@0.02/0.05/0.10m，并与旧
+   free-ICP 结果比较。只有 camera RMSE 不足以证明点云对齐有效。
+3. **对退化 anchor fail closed。** 同时记录 predicted 和 GT camera-center condition
+   number，检查 pose/center 全部有限。超过明确阈值或近共线时输出
+   `blocked_degenerate_camera_anchors`，不得继续生成可训练 label。不能使用 candidate
+   camera 补足约束；应改用 4 个 observed views 或加入 observed-camera orientation。
+4. **修正并测试 proper-rotation Sim(3)。** 当前 reflection correction 后的 scale
+   必须使用带符号奇异值和，而不是无条件对全部 singular values 求和。新增任意 3D
+   rotation/scale/translation、非共面 4-point 和 reflection-rejection 测试，避免从
+   3 个共面相机扩展到 4 个 anchor 时出现隐藏误差。
+
+上述四项完成后运行 `compileall`、完整单测和 `git diff --check`，先汇报修改与测试，
+不要自行开始 GPU 推理。
+
+以下保留为 Stage B 的设计和验收要求：
 
 1. 从每次 VGGT 重建保存的 `pose_enc` 解码 extrinsics/intrinsics。优先复用官方
    `pose_encoding_to_extri_intri`，不要修改 `vggt/`。
@@ -205,6 +253,20 @@ coverage 和 F@0.02 的 sampling std 分别达到旧 candidate range 的约 9.5%
 塌缩；candidate 加入后 observed-camera alignment 不剧烈漂移；新协议下
 identical-cloud gain 仍为 0；点云对 GT 的 residual/inlier 明显优于旧 free-ICP。完成后
 先汇报并等待确认，再进入阶段 C。
+
+在四项补强通过且用户明确批准重建后，不要立即重跑全部 22 份。先在新的 v3 output
+directory 中重建 baseline 和 3--4 个代表性 candidate：
+
+```text
+duplicate-input sensitivity
+high-overlap
+old oracle-best
+connected new-area
+```
+
+先验证 cache 完整性、camera anchor condition、scale 漂移、camera residual、point-cloud
+residual/inlier 和 gain 分布。这个小规模 Stage B smoke 通过后，再请求批准重建完整
+audit20。旧 cache 继续只读保留，不能覆盖。
 
 ### 阶段 C：确定性几何评估
 
