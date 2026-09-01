@@ -1,0 +1,70 @@
+{
+  "scene_id": "scene0000_00",
+  "split": "train",
+  "memory_id": "23a55d429693f934",
+  "observed_views": [
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00000.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00020.jpg"
+  ],
+  "candidate_views": [
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00019.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00018.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00009.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00032.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00025.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00050.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00075.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00100.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00125.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00150.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00175.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00200.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00225.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00250.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00275.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00300.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00325.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00350.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00425.jpg",
+    "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00500.jpg"
+  ],
+  "target_points": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin",
+  "checkpoint": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/model_weights/vggt/model.pt",
+  "labels_path": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/oracle_gain.jsonl",
+  "audit_summary_path": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_audit20/audit_summary.json",
+  "record_count": 21,
+  "held_out_candidate_count": 20,
+  "fixed_experiment_conditions": {
+    "observed_view_ids": [
+      "00000",
+      "00010",
+      "00020"
+    ],
+    "reference_input_image_order": [
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00000.jpg",
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg",
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00020.jpg"
+    ],
+    "candidate_append_after_observed": true,
+    "random_seed": 0,
+    "alignment": "sim3_icp",
+    "min_world_point_confidence": 0.0,
+    "voxel_downsample_size_meters_after_alignment": 0.02,
+    "max_metric_points": 12000,
+    "max_reconstruction_points": 50000,
+    "target_point_stride": 6,
+    "reuse_reconstructions": true,
+    "preprocess_mode": "crop",
+    "fscore_thresholds_meters_after_alignment": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "coverage_radius_meters_after_alignment": 0.05
+  },
+  "runtime_seconds": 58.58642825484276,
+  "peak_gpu_memory_bytes": 5031621120,
+  "output_size_bytes": 17790425
+}

@@ -47,6 +47,7 @@ class VGGTFeatureExtractorTest(unittest.TestCase):
         self.assertEqual(features.patch_tokens.shape, (1, 2, 4, 8))
         self.assertEqual(features.patch_grid, (2, 2))
         self.assertEqual(features.patch_start_idx, 5)
+        self.assertEqual(features.aggregator_forward_count, 1)
         self.assertEqual(features.depth.shape, (1, 2, 28, 28, 1))
         self.assertEqual(features.world_points.shape, (1, 2, 28, 28, 3))
         self.assertIsNotNone(features.pose_enc)

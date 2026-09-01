@@ -1,0 +1,348 @@
+{
+  "candidate_count": 21,
+  "held_out_candidate_count": 20,
+  "metrics": {
+    "chamfer": {
+      "candidate_count": 21,
+      "min": -0.340111643075943,
+      "median": -0.13041403889656067,
+      "mean": -0.11686535534404573,
+      "max": 0.049566447734832764,
+      "positive_gain_ratio": 0.09523809523809523,
+      "oracle_best_candidate": "00010",
+      "oracle_best_gain": 0.049566447734832764,
+      "random_candidate_mean_gain": -0.11686535534404573
+    },
+    "accuracy": {
+      "candidate_count": 21,
+      "min": -0.032403767108917236,
+      "median": 0.11125123500823975,
+      "mean": 0.12258885020301455,
+      "max": 0.30096668004989624,
+      "positive_gain_ratio": 0.7619047619047619,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.30096668004989624,
+      "random_candidate_mean_gain": 0.12258885020301455
+    },
+    "completeness": {
+      "candidate_count": 21,
+      "min": -0.9149107336997986,
+      "median": -0.3845805525779724,
+      "mean": -0.356319560891106,
+      "max": 0.1242414116859436,
+      "positive_gain_ratio": 0.09523809523809523,
+      "oracle_best_candidate": "00010",
+      "oracle_best_gain": 0.1242414116859436,
+      "random_candidate_mean_gain": -0.356319560891106
+    },
+    "coverage": {
+      "candidate_count": 21,
+      "min": -0.009833332616835833,
+      "median": -0.001499999314546585,
+      "mean": -0.0015357137391609804,
+      "max": 0.006083333864808083,
+      "positive_gain_ratio": 0.42857142857142855,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.006083333864808083,
+      "random_candidate_mean_gain": -0.0015357137391609804
+    },
+    "fscore@0.02": {
+      "candidate_count": 21,
+      "min": -0.0007269647647992588,
+      "median": 0.0001303584817732514,
+      "mean": 0.00039813795977433717,
+      "max": 0.0029904683158288882,
+      "positive_gain_ratio": 0.6190476190476191,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.0029904683158288882,
+      "random_candidate_mean_gain": 0.00039813795977433717
+    },
+    "fscore@0.05": {
+      "candidate_count": 21,
+      "min": -0.00874139050233644,
+      "median": 0.0014922612729674108,
+      "mean": 0.0010786034259100093,
+      "max": 0.016138893633018358,
+      "positive_gain_ratio": 0.6190476190476191,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.016138893633018358,
+      "random_candidate_mean_gain": 0.0010786034259100093
+    },
+    "fscore@0.1": {
+      "candidate_count": 21,
+      "min": -0.04212536219989258,
+      "median": -0.011391074237477941,
+      "mean": -0.008869313227054082,
+      "max": 0.01937756600668608,
+      "positive_gain_ratio": 0.38095238095238093,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.01937756600668608,
+      "random_candidate_mean_gain": -0.008869313227054082
+    }
+  },
+  "held_out_metrics": {
+    "chamfer": {
+      "candidate_count": 20,
+      "min": -0.340111643075943,
+      "median": -0.13243597000837326,
+      "mean": -0.12518694549798964,
+      "max": 0.040855348110198975,
+      "positive_gain_ratio": 0.05,
+      "oracle_best_candidate": "00009",
+      "oracle_best_gain": 0.040855348110198975,
+      "random_candidate_mean_gain": -0.12518694549798964
+    },
+    "accuracy": {
+      "candidate_count": 20,
+      "min": -0.032403767108917236,
+      "median": 0.12247996032238007,
+      "mean": 0.12997371852397918,
+      "max": 0.30096668004989624,
+      "positive_gain_ratio": 0.8,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.30096668004989624,
+      "random_candidate_mean_gain": 0.12997371852397918
+    },
+    "completeness": {
+      "candidate_count": 20,
+      "min": -0.9149107336997986,
+      "median": -0.3846474289894104,
+      "mean": -0.3803476095199585,
+      "max": 0.11411446332931519,
+      "positive_gain_ratio": 0.05,
+      "oracle_best_candidate": "00009",
+      "oracle_best_gain": 0.11411446332931519,
+      "random_candidate_mean_gain": -0.3803476095199585
+    },
+    "coverage": {
+      "candidate_count": 20,
+      "min": -0.009833332616835833,
+      "median": -0.0020416658371686935,
+      "mean": -0.0018999994499608874,
+      "max": 0.006083333864808083,
+      "positive_gain_ratio": 0.4,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.006083333864808083,
+      "random_candidate_mean_gain": -0.0018999994499608874
+    },
+    "fscore@0.02": {
+      "candidate_count": 20,
+      "min": -0.0007269647647992588,
+      "median": 0.00017391906352502392,
+      "mean": 0.00041967087172735775,
+      "max": 0.0029904683158288882,
+      "positive_gain_ratio": 0.65,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.0029904683158288882,
+      "random_candidate_mean_gain": 0.00041967087172735775
+    },
+    "fscore@0.05": {
+      "candidate_count": 20,
+      "min": -0.00874139050233644,
+      "median": 0.001225489261926456,
+      "mean": 0.0008829062819826875,
+      "max": 0.016138893633018358,
+      "positive_gain_ratio": 0.6,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.016138893633018358,
+      "random_candidate_mean_gain": 0.0008829062819826875
+    },
+    "fscore@0.1": {
+      "candidate_count": 20,
+      "min": -0.04212536219989258,
+      "median": -0.012260039002600826,
+      "mean": -0.009991363318440423,
+      "max": 0.01937756600668608,
+      "positive_gain_ratio": 0.35,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.01937756600668608,
+      "random_candidate_mean_gain": -0.009991363318440423
+    }
+  },
+  "spearman_rank_correlation": {
+    "chamfer|accuracy": -0.5194805194805194,
+    "chamfer|completeness": 0.9285714285714286,
+    "chamfer|coverage": 0.7541409946298313,
+    "chamfer|fscore@0.02": 0.07792207792207792,
+    "chamfer|fscore@0.05": 0.5792207792207792,
+    "chamfer|fscore@0.1": 0.8090909090909091,
+    "accuracy|completeness": -0.7454545454545455,
+    "accuracy|coverage": -0.3715492238830866,
+    "accuracy|fscore@0.02": 0.45584415584415583,
+    "accuracy|fscore@0.05": -0.07662337662337662,
+    "accuracy|fscore@0.1": -0.34025974025974026,
+    "completeness|coverage": 0.7508931867287554,
+    "completeness|fscore@0.02": -0.09740259740259741,
+    "completeness|fscore@0.05": 0.5233766233766234,
+    "completeness|fscore@0.1": 0.7636363636363637,
+    "coverage|fscore@0.02": 0.3702501007226562,
+    "coverage|fscore@0.05": 0.9067879659804001,
+    "coverage|fscore@0.1": 0.9581033308173997,
+    "fscore@0.02|fscore@0.05": 0.6051948051948052,
+    "fscore@0.02|fscore@0.1": 0.38181818181818183,
+    "fscore@0.05|fscore@0.1": 0.8623376623376623
+  },
+  "held_out_spearman_rank_correlation": {
+    "chamfer|accuracy": -0.44511278195488724,
+    "chamfer|completeness": 0.9172932330827067,
+    "chamfer|coverage": 0.7258368320747688,
+    "chamfer|fscore@0.02": 0.11578947368421053,
+    "chamfer|fscore@0.05": 0.5473684210526316,
+    "chamfer|fscore@0.1": 0.7894736842105263,
+    "accuracy|completeness": -0.706766917293233,
+    "accuracy|coverage": -0.30613014575588693,
+    "accuracy|fscore@0.02": 0.45864661654135336,
+    "accuracy|fscore@0.05": -0.015037593984962405,
+    "accuracy|fscore@0.1": -0.26766917293233083,
+    "completeness|coverage": 0.7265889945950534,
+    "completeness|fscore@0.02": -0.07518796992481203,
+    "completeness|fscore@0.05": 0.4917293233082707,
+    "completeness|fscore@0.1": 0.7413533834586467,
+    "coverage|fscore@0.02": 0.42045884883916657,
+    "coverage|fscore@0.05": 0.9033471868619661,
+    "coverage|fscore@0.1": 0.9514855881601891,
+    "fscore@0.02|fscore@0.05": 0.6481203007518797,
+    "fscore@0.02|fscore@0.1": 0.4330827067669173,
+    "fscore@0.05|fscore@0.1": 0.849624060150376
+  },
+  "sanity_checks": {
+    "repeat_observed": {
+      "candidate_count": 1,
+      "expected_behavior": "Gain should be close to zero because the view is already in memory.",
+      "entries": [
+        {
+          "candidate_view_id": "00010",
+          "pose_min_distance_to_observed_meters": 0.0,
+          "gains": {
+            "chamfer": 0.049566447734832764,
+            "accuracy": -0.025108516216278076,
+            "completeness": 0.1242414116859436,
+            "coverage": 0.005750000476837158,
+            "fscore@0.02": -3.252027928607503e-05,
+            "fscore@0.05": 0.004992546304456447,
+            "fscore@0.1": 0.013571688600672732
+          }
+        }
+      ]
+    },
+    "high_overlap_neighbor": {
+      "candidate_count": 4,
+      "expected_behavior": "Gain is expected to be small for views with high overlap to observed inputs.",
+      "entries": [
+        {
+          "candidate_view_id": "00019",
+          "pose_min_distance_to_observed_meters": 0.00819318275898695,
+          "gains": {
+            "chamfer": -0.015324562788009644,
+            "accuracy": -0.0023961663246154785,
+            "completeness": -0.02825295925140381,
+            "coverage": 0.0032500009983778,
+            "fscore@0.02": 0.00021747964527679643,
+            "fscore@0.05": 0.003324347481099825,
+            "fscore@0.1": 0.004826742404198531
+          }
+        },
+        {
+          "candidate_view_id": "00018",
+          "pose_min_distance_to_observed_meters": 0.008384084329009056,
+          "gains": {
+            "chamfer": -0.009300857782363892,
+            "accuracy": -0.0026837587356567383,
+            "completeness": -0.015917956829071045,
+            "coverage": 0.0023333337157964706,
+            "fscore@0.02": 0.0006222414975932023,
+            "fscore@0.05": 0.003062190108668643,
+            "fscore@0.1": 0.007242419627685362
+          }
+        },
+        {
+          "candidate_view_id": "00009",
+          "pose_min_distance_to_observed_meters": 0.035085469484329224,
+          "gains": {
+            "chamfer": 0.040855348110198975,
+            "accuracy": -0.032403767108917236,
+            "completeness": 0.11411446332931519,
+            "coverage": 0.002666667103767395,
+            "fscore@0.02": -0.0004491870142497305,
+            "fscore@0.05": 0.0017510529174019004,
+            "fscore@0.1": 0.00873079392908524
+          }
+        },
+        {
+          "candidate_view_id": "00032",
+          "pose_min_distance_to_observed_meters": 0.05190908908843994,
+          "gains": {
+            "chamfer": -0.10901020467281342,
+            "accuracy": 0.07796773314476013,
+            "completeness": -0.29598814249038696,
+            "coverage": -0.005083332769572735,
+            "fscore@0.02": -0.000699186938812602,
+            "fscore@0.05": -0.0042139627074267785,
+            "fscore@0.1": -0.016892813581355186
+          }
+        }
+      ]
+    },
+    "new_area": {
+      "candidate_count": 2,
+      "expected_behavior": "At least one coverage or completeness-oriented metric should improve if new surfaces are observed.",
+      "entries": [
+        {
+          "candidate_view_id": "00425",
+          "pose_min_distance_to_observed_meters": 3.9148142337799072,
+          "gains": {
+            "chamfer": -0.13445790112018585,
+            "accuracy": 0.10716405510902405,
+            "completeness": -0.37607985734939575,
+            "coverage": -0.002583332359790802,
+            "fscore@0.02": -0.00013339749138343302,
+            "fscore@0.05": 0.0014922612729674108,
+            "fscore@0.1": -0.01934808309525192
+          }
+        },
+        {
+          "candidate_view_id": "00500",
+          "pose_min_distance_to_observed_meters": 5.02619743347168,
+          "gains": {
+            "chamfer": -0.2751188576221466,
+            "accuracy": 0.23375797271728516,
+            "completeness": -0.7839956879615784,
+            "coverage": -0.003416665829718113,
+            "fscore@0.02": 0.0008722415314439255,
+            "fscore@0.05": 0.0019284850557976484,
+            "fscore@0.1": -0.01681118616370767
+          }
+        }
+      ]
+    }
+  },
+  "fixed_experiment_conditions": {
+    "observed_view_ids": [
+      "00000",
+      "00010",
+      "00020"
+    ],
+    "reference_input_image_order": [
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00000.jpg",
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg",
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00020.jpg"
+    ],
+    "candidate_append_after_observed": true,
+    "random_seed": 0,
+    "alignment": "sim3_icp",
+    "min_world_point_confidence": 0.0,
+    "voxel_downsample_size_meters_after_alignment": 0.02,
+    "max_metric_points": 12000,
+    "max_reconstruction_points": 50000,
+    "target_point_stride": 6,
+    "reuse_reconstructions": true,
+    "preprocess_mode": "crop",
+    "fscore_thresholds_meters_after_alignment": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "coverage_radius_meters_after_alignment": 0.05
+  },
+  "metric_units": "meters after Sim(3) alignment to GT"
+}

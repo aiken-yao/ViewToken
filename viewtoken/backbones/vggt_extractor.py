@@ -22,6 +22,7 @@ class VGGTFeatureBatch:
     patch_start_idx: int
     patch_grid: tuple[int, int]
     layer_index: int
+    aggregator_forward_count: int
 
     def tensor_dict(self) -> dict[str, Tensor]:
         tensors = {
@@ -108,6 +109,9 @@ class VGGTFeatureExtractor:
         def capture_aggregator_output(
             _module: nn.Module, _args: tuple[Any, ...], output: Any
         ) -> None:
+            captured["aggregator_forward_count"] = (
+                captured.get("aggregator_forward_count", 0) + 1
+            )
             captured["aggregator_output"] = output
 
         handle = self.model.aggregator.register_forward_hook(capture_aggregator_output)
@@ -118,6 +122,12 @@ class VGGTFeatureExtractor:
 
         if "aggregator_output" not in captured:
             raise RuntimeError("VGGT aggregator hook did not capture an output")
+        aggregator_forward_count = int(captured.get("aggregator_forward_count", 0))
+        if aggregator_forward_count != 1:
+            raise RuntimeError(
+                "Expected exactly one VGGT aggregator forward, "
+                f"observed {aggregator_forward_count}"
+            )
 
         aggregated_tokens, patch_start_idx = captured["aggregator_output"]
         layer_tokens, resolved_layer = self._resolve_layer(
@@ -153,5 +163,6 @@ class VGGTFeatureExtractor:
             patch_start_idx=int(patch_start_idx),
             patch_grid=patch_grid,
             layer_index=resolved_layer,
+            aggregator_forward_count=aggregator_forward_count,
         )
 

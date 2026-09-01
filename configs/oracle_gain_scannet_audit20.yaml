@@ -1,0 +1,50 @@
+scene-id: scene0000_00
+observed-views:
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00000.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00020.jpg
+candidate-views:
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00019.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00018.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00009.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00032.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00025.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00050.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00075.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00100.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00125.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00150.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00175.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00200.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00225.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00250.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00275.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00300.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00325.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00350.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00425.jpg
+  - /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00500.jpg
+target-points: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin
+checkpoint: /mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/model_weights/vggt/model.pt
+output-dir: outputs/oracle_gain/scannet_scene0000_00_audit20
+preprocess-mode: crop
+device: auto
+compute_dtype: auto
+layer-index: 23
+min-world-point-confidence: 0.0
+max-reconstruction-points: 50000
+max-metric-points: 12000
+alignment: sim3_icp
+fscore-thresholds: [0.02, 0.05, 0.10]
+coverage-radius: 0.05
+voxel-downsample-size: 0.02
+random-seed: 0
+min-held-out-candidates: 20
+reuse-reconstructions: true
+split: train
+point-stride: 6
+sanity-checks:
+  repeat_observed: ["00010"]
+  high_overlap_neighbor: ["00019", "00018", "00009", "00032"]
+  new_area: ["00425", "00500"]

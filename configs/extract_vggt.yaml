@@ -1,4 +1,5 @@
 model_id: facebook/VGGT-1B
+checkpoint_path: null
 image_dir: null
 images: []
 output_dir: outputs/token_cache/example
