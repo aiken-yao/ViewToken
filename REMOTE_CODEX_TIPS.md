@@ -112,10 +112,10 @@ F-score@0.10 gain mean = -0.00999, positive ratio = 0.35
 ## 当前唯一主任务：校准 Oracle 测量协议
 
 阶段 A、Stage B camera-anchor smoke 和 Stage C deterministic smoke 已于 2026-09-02
-完成，但整体校准仍未通过。Stage C2 visibility audit 也已完成。当前唯一任务是
-Stage C3：在“相机位姿已知”的机器人 NBV 设定下，分离 VGGT 相机注册误差与局部
-深度/几何误差，并验证 known-pose fusion。优先复用已有完整 v3 caches；未经用户再次
-批准不运行 VGGT，不扩展 audit20，不训练 policy。
+完成，但整体校准仍未通过。Stage C2 visibility audit 与 Stage C3 cached known-pose
+diagnostic 也已完成。当前唯一任务是 Stage C4：离线挖掘真正 connected-novel 的候选，
+诊断 `00425` 的局部几何失败，并实现但不运行真正的 v4 depth-backprojection branch。
+未经用户再次批准不运行 VGGT，不扩展 audit20，不训练 policy。
 
 ### 阶段 A：已完成——隔离 metric/alignment 噪声
 
@@ -431,7 +431,7 @@ same-pixel z-buffer，采样相对像素网格很稀疏。重复相机通过只�
 更密集表面、point splatting 或 mesh rasterization，将“visibility 用的密集几何”与
 “metric 用的 12k sample”分开。
 
-### 阶段 C3：当前唯一任务——Known-Pose Fusion 失败来源分解
+### 阶段 C3：已完成——Cached Known-Pose Fusion 失败来源分解
 
 #### 固定应用假设
 
@@ -439,6 +439,47 @@ ViewToken 当前面向具有相机标定与位姿来源的机器人/仿真 NBV�
 pose/rays；相机移动后实际 pose 也可由机器人定位系统获得。因此配准不作为论文必须学习
 的核心目标，而作为 VGGT reconstruction backend 的诊断项。主问题保持为：scene tokens
 能否预测一个候选视角带来的新表面收益与已有表面损伤。
+
+Stage C3 已复用现有 v3 caches 完成，没有运行 VGGT；完整测试为 53 tests OK，
+`compileall` 与 `git diff --check` 均通过。报告位置：
+
+```text
+docs/audits/scannet_scene0000_00_stage_c3/run_log.md
+docs/audits/scannet_scene0000_00_stage_c3/stage_c3_known_pose_summary.json
+```
+
+现有 v3 cache 满足无截断、无过滤、`point_count == S*H*W`，因此可以 fail-closed 地
+恢复 per-view point-head local geometry。注意：这不是 VGGT depth head；它仍由
+`world_points + predicted extrinsics` 恢复局部坐标，再使用 GT pose 融合。
+
+关键结果：
+
+```text
+00325:
+  semantic tag                     = disconnected_novel_view
+  held-out camera-center error     = 2.5218 m
+  predicted-world novel median     = 1.9579 m
+  known-pose novel median          = 0.2036 m
+  known-pose covered @0.05         = 331 / 2838  (11.7%)
+  known-pose covered @0.10         = 787 / 2838  (27.7%)
+  known-pose covered @0.20         = 1395 / 2838 (49.2%)
+  known-pose covered @0.50         = 2239 / 2838 (78.9%)
+  known-pose observed retention@.05= -0.0681
+
+00425:
+  semantic tag                     = disconnected_novel_view
+  held-out camera-center error     = 4.7935 m
+  known-pose novel min/median      = 2.1418 / 2.9110 m
+  known-pose covered @0.05--0.50   = 0
+```
+
+结论：`00325` 的 predicted-world 失败主要受 VGGT camera registration 影响，known pose
+能恢复一部分新表面，但仍增加 outlier 并损伤 observed surface。`00425` 在消除全局
+pose 后仍失败，更可能存在 point-head 局部几何、深度尺度、confidence 或 visibility
+问题。由于当前候选集中没有任何 `novel>0 && overlap>0` 的候选，`stage_c3_passed=false`
+表示“缺少有效验收样本”，不能解释为 known-pose ViewToken 已失败。
+
+以下 C3.1/C3.2 保留为已执行协议和回归要求。
 
 #### C3.1 先修正 C2 诊断，不运行 VGGT
 
@@ -475,34 +516,76 @@ ScanNet RGB 为 `1296x968`，VGGT 输入为 `518x392`；不能直接复用原始
 统一比例。应复现 resize/round/crop/pad 对 `fx, fy, cx, cy` 的变换并增加投影回归测试。
 优先复用官方 `vggt.utils.geometry` 中的 depth backprojection 工具，不修改官方代码。
 
-现有 v3 cache 没有保存 `depth.pt/depth_conf.pt`。在不运行 VGGT 的前提下，可先检查
-无截断 cache 是否仍保留严格的 `[view, H, W]` flatten 顺序且所有点均有效；若条件可被
-metadata 和断言证明，可将每视角 world points 通过该视角 VGGT predicted extrinsic
-转换回局部 camera coordinates，再使用 GT camera-to-world pose 融合，作为 cached
-known-pose diagnostic。任何点被 filtering 删除、顺序无法证明或 shape 不匹配时必须
-fail closed，不能猜测 view ownership。
+该检查已经完成：当前 smoke v3 caches 的无截断、无过滤、shape/count 条件全部满足，
+B 分支可安全恢复 per-view point-head local geometry；不满足这些条件的其他 cache 仍须
+fail closed。v3 没有 `depth.pt/depth_conf.pt`，因此不能用 B 分支冒充真正的 VGGT
+depth-backprojection。v4 artifacts 与测试转入下面的 C4.3 实现。
 
-若现有 cache 无法可靠完成 B 分支，先只修改代码与 cache schema，新增 v4 artifacts：
+### 阶段 C4：当前唯一任务——Connected Candidate Mining 与真 Depth Branch 准备
 
-```text
-depth.pt
-depth_conf.pt
-per-view shape/offsets
-preprocessing transform
-transformed intrinsics
-```
-
-完成单元测试后先汇报，获得用户明确批准才可重新运行同一小规模 smoke；不得直接运行
-完整 audit20。
-
-#### C3.3 离线选择真正 connected-novel 的候选
+#### C4.1 离线选择真正 connected-novel 的候选
 
 利用改进后的 dense GT visibility，在 scene0000_00 的候选 pose 集中离线计算 overlap
 与 novelty，不运行候选 RGB/VGGT。按分布选择少量代表候选：高 overlap/低 novelty、
 中等 overlap/中等 novelty、非零 overlap/高 novelty。先报告候选表与选择阈值，得到
 用户批准后才对新候选运行 VGGT。
 
-#### C3 决策规则
+不要只在现有四个 smoke IDs 中选择。允许读取 `scene0000_00` 的 pose/intrinsics/GT
+geometry，禁止读取候选 RGB feature 作为选择依据。对所有可用候选先输出
+overlap/novelty 分布与分位数，再固定选择规则；connected 必须显式满足
+`overlap_count > 0`，不能再用 novel component 代替 observed-candidate connectivity。
+优先使用 dense depth/mesh visibility；若仍只能使用稀疏 point z-buffer，要在候选表中
+标注该限制并做更密集点/splatting 稳定性检查。
+
+#### C4.2 使用现有 v3 cache 诊断 00425，不运行 VGGT
+
+利用可证明的 per-view ownership，分别报告 candidate-view：
+
+```text
+world_points_conf min / quantiles / max
+不同 confidence quantile 下的 novel coverage 与 outlier ratio
+局部 camera-space X/Y/Z 和 radial-depth 分布
+GT novel points 在 candidate camera frame 中的 depth 分布
+point-head local rays 与对应像素/predicted intrinsics 的一致性
+```
+
+目的是区分 `00425` 的零覆盖来自深度尺度、低置信点、ray/intrinsics 不一致还是局部
+形状完全错误。confidence filtering 只能作为诊断 sweep，不能根据单个 candidate 选择
+一个最优阈值并直接写入最终协议。
+
+#### C4.3 实现 v4 true-depth artifacts 与 backprojection，暂不推理
+
+新增 v4 cache schema 和完整性测试，至少保存：
+
+```text
+depth.pt
+depth_conf.pt
+predicted_intrinsics.pt
+per-view shape/offsets
+preprocessing transform
+transformed GT intrinsics
+```
+
+为 `crop`/`pad` preprocessing 明确保存 resize、round、crop/pad 参数，并验证原始
+ScanNet `1296x968` intrinsics 到 VGGT `518x392` 输入的 `fx/fy/cx/cy` 变换。不得简单
+假设统一缩放。复用官方 depth backprojection 数学，在 `viewtoken/` 中封装，不修改
+官方 `vggt/`。
+
+实现并单测以下四条分支，但在用户批准前不生成新 cache：
+
+```text
+A. world_points + predicted pose
+B. point-head local geometry + known GT pose       # 当前 cached C3
+C. VGGT depth + predicted intrinsics + known pose
+D. VGGT depth + transformed calibrated intrinsics + known pose
+```
+
+C/D 分支需要 synthetic planar depth、内参 resize/crop、已知 pose backprojection、
+artifact shape/fingerprint 和 per-view ownership 测试。代码与测试完成后先提交一份
+`docs/audits/scannet_scene0000_00_stage_c4/` 报告，包含候选表、00425 诊断、完整测试
+数量以及拟运行的精确命令、预计 cache 数量；等待用户明确批准，不得自动启动 GPU。
+
+#### C4 后续决策规则
 
 - 若 A 分支失败，但 B 分支在 connected-novel views 上获得稳定正 novel coverage：
   深度/局部几何可用，失败主要来自 VGGT camera registration；后续采用 known-pose
@@ -514,9 +597,9 @@ transformed intrinsics
 - 若 known-pose branch 对合理 connected candidates 仍无正 gain：VGGT 不适合作为当前
   reconstruction backend；考虑保留 VGGT tokens 作为策略表征，但更换深度/融合模块。
 
-C3 汇报必须同时包含完整测试数量、`compileall`、`git diff --check`、是否运行 VGGT、
-GPU 时间/显存（若获准运行），以及 A/B 两分支的逐候选距离分布、coverage、retention、
-outlier 和 held-out pose error。完成前不训练任何 ViewToken probe/policy。
+C4 汇报必须同时包含完整测试数量、`compileall`、`git diff --check`、是否运行 VGGT、
+候选 mining 分布、逐候选 overlap/novelty、00425 局部几何诊断，以及 v4 A/B/C/D
+分支的测试状态。完成前不训练任何 ViewToken probe/policy。
 
 ### 校准通过条件
 
