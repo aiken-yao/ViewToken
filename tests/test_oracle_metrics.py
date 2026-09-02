@@ -14,8 +14,10 @@ from viewtoken.oracle import (
     build_memory_id,
     compute_metric_gains,
     compute_pointcloud_metrics,
+    compute_pointcloud_residual_diagnostics,
     estimate_similarity_transform,
     identical_cloud_gain_check,
+    sample_point_indices,
     scene_split,
     spearman_rank_correlation,
     summarize_oracle_audit,
@@ -33,6 +35,37 @@ def rotation_z(angle_degrees: float) -> torch.Tensor:
         ],
         dtype=torch.float32,
     )
+
+
+def rotation_xyz(x_degrees: float, y_degrees: float, z_degrees: float) -> torch.Tensor:
+    x = math.radians(x_degrees)
+    y = math.radians(y_degrees)
+    z = math.radians(z_degrees)
+    rx = torch.tensor(
+        [
+            [1.0, 0.0, 0.0],
+            [0.0, math.cos(x), -math.sin(x)],
+            [0.0, math.sin(x), math.cos(x)],
+        ],
+        dtype=torch.float32,
+    )
+    ry = torch.tensor(
+        [
+            [math.cos(y), 0.0, math.sin(y)],
+            [0.0, 1.0, 0.0],
+            [-math.sin(y), 0.0, math.cos(y)],
+        ],
+        dtype=torch.float32,
+    )
+    rz = torch.tensor(
+        [
+            [math.cos(z), -math.sin(z), 0.0],
+            [math.sin(z), math.cos(z), 0.0],
+            [0.0, 0.0, 1.0],
+        ],
+        dtype=torch.float32,
+    )
+    return rz @ ry @ rx
 
 
 class OracleMetricsTest(unittest.TestCase):
@@ -79,6 +112,27 @@ class OracleMetricsTest(unittest.TestCase):
         self.assertAlmostEqual(gains["completeness"], 0.25)
         self.assertAlmostEqual(gains["fscore"]["0.1"], 0.25)
         self.assertAlmostEqual(gains["coverage"], 0.1)
+
+
+    def test_hash_point_sampling_is_stable_and_configurable(self) -> None:
+        points = torch.tensor(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+                [1.0, 1.0, 1.0],
+            ],
+            dtype=torch.float32,
+        )
+
+        first = sample_point_indices(points, max_points=3, seed=7, method="hash")
+        second = sample_point_indices(points, max_points=3, seed=7, method="hash")
+        all_indices = sample_point_indices(points, max_points=0, seed=7, method="hash")
+
+        self.assertTrue(torch.equal(first, second))
+        self.assertEqual(first.numel(), 3)
+        self.assertTrue(torch.equal(all_indices, torch.arange(points.shape[0])))
 
     def test_voxel_downsample_averages_points_inside_voxel(self) -> None:
         points = torch.tensor(
@@ -150,6 +204,86 @@ class OracleMetricsTest(unittest.TestCase):
         self.assertAlmostEqual(recovered.scale, expected.scale, places=5)
         self.assertTrue(torch.allclose(recovered.rotation, expected.rotation, atol=1e-5))
         self.assertTrue(torch.allclose(recovered.translation, expected.translation, atol=1e-5))
+
+    def test_known_sim3_recovery_arbitrary_3d_rotation(self) -> None:
+        generator = torch.Generator().manual_seed(11)
+        source = torch.rand((80, 3), generator=generator)
+        expected = SimilarityTransform(
+            scale=2.25,
+            rotation=rotation_xyz(31.0, -14.0, 67.0),
+            translation=torch.tensor([0.8, -0.4, 1.2], dtype=torch.float32),
+        )
+        target = expected.apply(source)
+
+        recovered = estimate_similarity_transform(source, target)
+
+        self.assertAlmostEqual(recovered.scale, expected.scale, places=5)
+        self.assertTrue(torch.allclose(recovered.rotation, expected.rotation, atol=1e-5))
+        self.assertTrue(torch.allclose(recovered.translation, expected.translation, atol=1e-5))
+
+    def test_known_sim3_recovery_non_coplanar_four_points(self) -> None:
+        source = torch.tensor(
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+            ],
+            dtype=torch.float32,
+        )
+        expected = SimilarityTransform(
+            scale=0.75,
+            rotation=rotation_xyz(-20.0, 35.0, 12.0),
+            translation=torch.tensor([-0.5, 0.7, 0.25], dtype=torch.float32),
+        )
+        target = expected.apply(source)
+
+        recovered = estimate_similarity_transform(source, target)
+
+        self.assertAlmostEqual(recovered.scale, expected.scale, places=5)
+        self.assertTrue(torch.allclose(recovered.rotation, expected.rotation, atol=1e-5))
+        self.assertTrue(torch.allclose(recovered.apply(source), target, atol=1e-5))
+
+    def test_sim3_reflection_rejection_uses_signed_singular_values_for_scale(self) -> None:
+        source = torch.tensor(
+            [
+                [1.0, 1.0, 1.0],
+                [-1.0, -1.0, 1.0],
+                [-1.0, 1.0, -1.0],
+                [1.0, -1.0, -1.0],
+            ],
+            dtype=torch.float32,
+        )
+        target = source.clone()
+        target[:, 0] *= -1.0
+
+        recovered = estimate_similarity_transform(source, target)
+
+        self.assertGreater(torch.linalg.det(recovered.rotation).item(), 0.999)
+        self.assertLess(recovered.scale, 0.5)
+        self.assertGreater(
+            torch.linalg.norm(recovered.apply(source) - target, dim=1).mean().item(),
+            1.0,
+        )
+
+    def test_pointcloud_residual_diagnostics_reports_all_thresholds(self) -> None:
+        source = torch.tensor(
+            [[0.0, 0.0, 0.0], [0.03, 0.0, 0.0], [0.2, 0.0, 0.0]],
+            dtype=torch.float32,
+        )
+        target = torch.tensor([[0.0, 0.0, 0.0]], dtype=torch.float32)
+
+        diagnostics = compute_pointcloud_residual_diagnostics(
+            source,
+            target,
+            inlier_thresholds=(0.02, 0.05, 0.1),
+            max_points=None,
+        ).to_dict()
+
+        self.assertEqual(diagnostics["source_sample_count"], 3)
+        self.assertAlmostEqual(diagnostics["inlier_ratios"]["0.02"], 1.0 / 3.0)
+        self.assertAlmostEqual(diagnostics["inlier_ratios"]["0.05"], 2.0 / 3.0)
+        self.assertAlmostEqual(diagnostics["inlier_ratios"]["0.1"], 2.0 / 3.0)
 
     def test_alignment_diagnostics_report_transform_and_residuals(self) -> None:
         points = torch.tensor(

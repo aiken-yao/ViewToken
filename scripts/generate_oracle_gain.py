@@ -34,6 +34,8 @@ from viewtoken.oracle import (  # noqa: E402
     build_memory_id,
     build_reconstruction_cache_identity,
     compute_pointcloud_metrics,
+    sample_point_indices,
+    validate_reconstruction_cache,
     load_point_cloud,
     load_pose_matrix,
     scene_split,
@@ -57,7 +59,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--compute-dtype", type=str, default=None)
     parser.add_argument("--min-world-point-confidence", type=float, default=None)
     parser.add_argument("--max-reconstruction-points", type=int, default=None)
+    parser.add_argument("--reconstruction-sample-method", choices=("random", "hash", "none"), default=None)
     parser.add_argument("--max-metric-points", type=int, default=None)
+    parser.add_argument("--metric-sample-method", choices=("random", "hash", "none"), default=None)
     parser.add_argument("--alignment", choices=("identity", "sim3_icp"), default=None)
     parser.add_argument("--fscore-thresholds", type=float, nargs="+", default=None)
     parser.add_argument("--coverage-radius", type=float, default=None)
@@ -117,6 +121,15 @@ def optional_float(value: object) -> float | None:
     return float(value)
 
 
+def optional_int(value: object) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, str) and value.lower() in {"", "none", "null", "all", "unlimited"}:
+        return None
+    parsed = int(value)
+    return None if parsed <= 0 else parsed
+
+
 def candidate_identifier(value: object) -> str:
     if isinstance(value, int):
         return f"{value:05d}"
@@ -171,15 +184,17 @@ def min_pose_distance_to_observed(
 
 
 def sample_flat_points(
-    points: torch.Tensor, confidence: torch.Tensor, max_points: int, seed: int
+    points: torch.Tensor,
+    confidence: torch.Tensor,
+    max_points: int | None,
+    seed: int,
+    sample_method: str,
 ) -> tuple[torch.Tensor, torch.Tensor]:
-    generator = torch.Generator(device="cpu")
-    generator.manual_seed(seed)
     points = points.cpu()
     confidence = confidence.cpu()
-    if points.shape[0] <= max_points:
-        return points, confidence
-    indices = torch.randperm(points.shape[0], generator=generator)[:max_points]
+    indices = sample_point_indices(
+        points, max_points=max_points, seed=seed, method=sample_method
+    )
     return points[indices], confidence[indices]
 
 
@@ -193,8 +208,9 @@ def reconstruct_points(
     compute_dtype: torch.dtype,
     layer_index: int,
     min_confidence: float,
-    max_points: int,
+    max_points: int | None,
     seed: int,
+    sample_method: str = "random",
     reuse_existing: bool = False,
 ) -> tuple[torch.Tensor, dict[str, object]]:
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -208,16 +224,13 @@ def reconstruct_points(
         min_confidence=min_confidence,
         max_points=max_points,
         seed=seed,
+        sample_method=sample_method,
     )
     if reuse_existing and points_path.is_file() and metadata_path.is_file():
+        metadata = validate_reconstruction_cache(
+            output_dir, expected_fingerprint=str(cache_identity["fingerprint"])
+        )
         points = torch.load(points_path, map_location="cpu", weights_only=True).float()
-        metadata = json.loads(metadata_path.read_text())
-        actual_fingerprint = metadata.get("cache_fingerprint")
-        if actual_fingerprint != cache_identity["fingerprint"]:
-            raise RuntimeError(
-                "Refusing to reuse reconstruction cache with mismatched fingerprint: "
-                f"expected {cache_identity['fingerprint']}, got {actual_fingerprint}"
-            )
         metadata["reused_existing_reconstruction"] = True
         return points, metadata
     images = load_and_preprocess_images([str(path) for path in image_paths], mode=preprocess_mode).to(device)
@@ -230,6 +243,12 @@ def reconstruct_points(
     with autocast_context:
         features = extractor.extract(images)
 
+    if features.pose_enc is None:
+        raise RuntimeError(
+            "VGGT extraction did not return pose_enc; refusing to write an incomplete "
+            "oracle-reconstruction-v3 cache"
+        )
+
     raw_points = features.world_points.detach().reshape(-1, 3).float().cpu()
     raw_confidence = features.world_points_conf.detach().reshape(-1).float().cpu()
     valid = (
@@ -239,38 +258,49 @@ def reconstruct_points(
     )
     points = raw_points[valid]
     confidence = raw_confidence[valid]
+    filtered_point_count = int(points.shape[0])
     points, confidence = sample_flat_points(
-        points, confidence, max_points=max_points, seed=seed
+        points,
+        confidence,
+        max_points=max_points,
+        seed=seed,
+        sample_method=sample_method,
     )
 
     torch.save(points.contiguous(), points_path)
     torch.save(confidence.contiguous(), output_dir / "confidence.pt")
-    pose_enc_path = None
-    if features.pose_enc is not None:
-        pose_enc_path = output_dir / "pose_enc.pt"
-        torch.save(features.pose_enc.detach().float().cpu().contiguous(), pose_enc_path)
+    pose_enc_path = output_dir / "pose_enc.pt"
+    torch.save(features.pose_enc.detach().float().cpu().contiguous(), pose_enc_path)
     metadata = {
         "cache_schema_version": cache_identity["schema_version"],
         "cache_fingerprint": cache_identity["fingerprint"],
         "cache_fingerprint_payload": cache_identity["payload"],
         "image_paths": [str(path) for path in image_paths],
-        "pose_enc_path": None if pose_enc_path is None else str(pose_enc_path),
+        "pose_enc_path": str(pose_enc_path),
         "input_shape": list(images.shape),
         "patch_grid": list(features.patch_grid),
         "patch_start_idx": features.patch_start_idx,
         "aggregator_forward_count": features.aggregator_forward_count,
         "layer_index": features.layer_index,
         "min_world_point_confidence": min_confidence,
+        "max_reconstruction_points": max_points,
+        "reconstruction_sample_method": sample_method,
+        "raw_world_point_count_before_filter": int(raw_points.shape[0]),
+        "filtered_world_point_count": filtered_point_count,
         "finite_world_point_ratio_before_filter": torch.isfinite(raw_points).all(dim=-1).float().mean().item(),
         "valid_world_point_ratio": valid.float().mean().item(),
         "point_count": int(points.shape[0]),
         "confidence_min": confidence.min().item() if confidence.numel() else 0.0,
         "confidence_median": confidence.median().item() if confidence.numel() else 0.0,
         "confidence_max": confidence.max().item() if confidence.numel() else 0.0,
+        "reused_existing_reconstruction": False,
     }
     with (output_dir / "metadata.json").open("w", encoding="utf-8") as handle:
         json.dump(metadata, handle, indent=2)
         handle.write("\n")
+    metadata = validate_reconstruction_cache(
+        output_dir, expected_fingerprint=str(cache_identity["fingerprint"])
+    )
     return points, metadata
 
 
@@ -296,8 +326,10 @@ def main() -> None:
     preprocess_mode = str(config_value(args, config, "preprocess-mode", "crop"))
     layer_index = int(config_value(args, config, "layer-index", 23))
     min_confidence = float(config_value(args, config, "min-world-point-confidence", 0.0))
-    max_reconstruction_points = int(config_value(args, config, "max-reconstruction-points", 50000))
-    max_metric_points = int(config_value(args, config, "max-metric-points", 12000))
+    max_reconstruction_points = optional_int(config_value(args, config, "max-reconstruction-points", 50000))
+    reconstruction_sample_method = str(config_value(args, config, "reconstruction-sample-method", "random"))
+    max_metric_points = optional_int(config_value(args, config, "max-metric-points", 12000))
+    metric_sample_method = str(config_value(args, config, "metric-sample-method", "random"))
     alignment = str(config_value(args, config, "alignment", "sim3_icp"))
     thresholds = tuple(
         float(value)
@@ -352,7 +384,9 @@ def main() -> None:
         "min_world_point_confidence": min_confidence,
         "voxel_downsample_size_meters_after_alignment": voxel_size,
         "max_metric_points": max_metric_points,
+        "metric_sample_method": metric_sample_method,
         "max_reconstruction_points": max_reconstruction_points,
+        "reconstruction_sample_method": reconstruction_sample_method,
         "target_point_stride": point_stride,
         "reuse_reconstructions": reuse_reconstructions,
         "preprocess_mode": preprocess_mode,
@@ -375,6 +409,7 @@ def main() -> None:
         min_confidence=min_confidence,
         max_points=max_reconstruction_points,
         seed=random_seed,
+        sample_method=reconstruction_sample_method,
         reuse_existing=reuse_reconstructions,
     )
     baseline_eval_points = maybe_align(
@@ -388,6 +423,7 @@ def main() -> None:
         max_points=max_metric_points,
         voxel_size=voxel_size,
         seed=random_seed,
+        sample_method=metric_sample_method,
     )
 
     records = []
@@ -416,6 +452,7 @@ def main() -> None:
             min_confidence=min_confidence,
             max_points=max_reconstruction_points,
             seed=random_seed,
+            sample_method=reconstruction_sample_method,
             reuse_existing=reuse_reconstructions,
         )
         candidate_eval_points = maybe_align(
@@ -429,6 +466,7 @@ def main() -> None:
             max_points=max_metric_points,
             voxel_size=voxel_size,
             seed=random_seed,
+            sample_method=metric_sample_method,
         )
         records.append(
             OracleGainRecord(

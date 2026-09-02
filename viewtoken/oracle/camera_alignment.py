@@ -18,8 +18,16 @@ if str(VGGT_ROOT) not in sys.path:
 
 from vggt.utils.pose_enc import pose_encoding_to_extri_intri  # noqa: E402
 
+from .cache import validate_reconstruction_cache
 from .io import load_pose_matrix, view_id_from_path
 from .metrics import SimilarityTransform, estimate_similarity_transform
+
+
+DEFAULT_MAX_CAMERA_ANCHOR_CONDITION_NUMBER = 100.0
+
+
+class DegenerateCameraAnchorsError(RuntimeError):
+    """Raised when camera anchors cannot define a reliable Sim(3)."""
 
 
 @dataclass(frozen=True)
@@ -34,7 +42,8 @@ class CameraAnchorAlignment:
     anchor_errors: dict[str, float]
     camera_rmse: float
     camera_max_error: float
-    condition_number: float
+    predicted_condition_number: float
+    gt_condition_number: float
     pose_convention: str
 
     def to_dict(self) -> dict[str, Any]:
@@ -47,7 +56,9 @@ class CameraAnchorAlignment:
             "anchor_errors": self.anchor_errors,
             "camera_rmse": self.camera_rmse,
             "camera_max_error": self.camera_max_error,
-            "condition_number": self.condition_number,
+            "condition_number": self.predicted_condition_number,
+            "predicted_condition_number": self.predicted_condition_number,
+            "gt_condition_number": self.gt_condition_number,
             "pose_convention": self.pose_convention,
         }
 
@@ -127,14 +138,7 @@ def load_reconstruction_camera_centers(reconstruction_dir: Path) -> dict[str, Te
 
     metadata_path = reconstruction_dir / "metadata.json"
     pose_enc_path = reconstruction_dir / "pose_enc.pt"
-    if not metadata_path.is_file():
-        raise FileNotFoundError(f"Missing reconstruction metadata: {metadata_path}")
-    if not pose_enc_path.is_file():
-        raise FileNotFoundError(f"Missing reconstruction pose_enc: {pose_enc_path}")
-
-    import json
-
-    metadata = json.loads(metadata_path.read_text())
+    metadata = validate_reconstruction_cache(reconstruction_dir)
     image_paths = metadata.get("image_paths")
     if not isinstance(image_paths, list):
         raise ValueError(f"metadata image_paths must be a list in {metadata_path}")
@@ -181,11 +185,31 @@ def camera_anchor_condition_number(centers: Tensor) -> float:
     return (singular_values[0] / singular_values[1]).item()
 
 
+def _check_anchor_centers(
+    centers: Tensor,
+    label: str,
+    max_condition_number: float,
+) -> float:
+    if not torch.isfinite(centers).all():
+        raise DegenerateCameraAnchorsError(f"{label} camera centers contain NaN or Inf")
+    condition_number = camera_anchor_condition_number(centers)
+    if (
+        not math.isfinite(condition_number)
+        or condition_number > float(max_condition_number)
+    ):
+        raise DegenerateCameraAnchorsError(
+            f"{label} camera anchors are degenerate: condition_number={condition_number}, "
+            f"threshold={max_condition_number}"
+        )
+    return condition_number
+
+
 def estimate_camera_anchor_alignment(
     predicted_centers_by_view: dict[str, Tensor],
     gt_centers_by_view: dict[str, Tensor],
     shared_anchor_ids: list[str],
     pose_convention: str = "vggt_world_to_camera__scannet_camera_to_world",
+    max_condition_number: float = DEFAULT_MAX_CAMERA_ANCHOR_CONDITION_NUMBER,
 ) -> CameraAnchorAlignment:
     missing_pred = [view_id for view_id in shared_anchor_ids if view_id not in predicted_centers_by_view]
     missing_gt = [view_id for view_id in shared_anchor_ids if view_id not in gt_centers_by_view]
@@ -196,6 +220,12 @@ def estimate_camera_anchor_alignment(
 
     predicted = torch.stack([predicted_centers_by_view[view_id] for view_id in shared_anchor_ids]).float().cpu()
     gt = torch.stack([gt_centers_by_view[view_id] for view_id in shared_anchor_ids]).float().cpu()
+    predicted_condition_number = _check_anchor_centers(
+        predicted, "predicted", max_condition_number=max_condition_number
+    )
+    gt_condition_number = _check_anchor_centers(
+        gt, "GT", max_condition_number=max_condition_number
+    )
     transform = estimate_similarity_transform(predicted, gt)
     aligned = transform.apply(predicted)
     errors = torch.linalg.norm(aligned - gt, dim=1)
@@ -216,6 +246,7 @@ def estimate_camera_anchor_alignment(
         },
         camera_rmse=errors.square().mean().sqrt().item(),
         camera_max_error=errors.max().item(),
-        condition_number=camera_anchor_condition_number(predicted),
+        predicted_condition_number=predicted_condition_number,
+        gt_condition_number=gt_condition_number,
         pose_convention=pose_convention,
     )

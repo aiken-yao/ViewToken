@@ -1,0 +1,258 @@
+{
+  "status": "complete",
+  "did_run_vggt": true,
+  "generator_runtime_seconds": 57.94076569750905,
+  "generator_peak_gpu_memory_bytes": 6158511104,
+  "output_size_bytes": 61806190,
+  "cache_policy": {
+    "observed_view_ids": [
+      "00000",
+      "00010",
+      "00020"
+    ],
+    "reference_input_image_order": [
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00000.jpg",
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg",
+      "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00020.jpg"
+    ],
+    "candidate_append_after_observed": true,
+    "random_seed": 0,
+    "alignment": "sim3_icp",
+    "min_world_point_confidence": 0.0,
+    "voxel_downsample_size_meters_after_alignment": 0.02,
+    "max_metric_points": 12000,
+    "metric_sample_method": "hash",
+    "max_reconstruction_points": null,
+    "reconstruction_sample_method": "none",
+    "target_point_stride": 6,
+    "reuse_reconstructions": false,
+    "preprocess_mode": "crop",
+    "fscore_thresholds_meters_after_alignment": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "coverage_radius_meters_after_alignment": 0.05
+  },
+  "stage_c_report_config": {
+    "point_stride": 6,
+    "fscore_thresholds": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "coverage_radius": 0.05,
+    "voxel_downsample_size": 0.02,
+    "max_metric_points": 12000,
+    "metric_sample_method": "hash",
+    "seed": 0,
+    "max_camera_anchor_condition_number": 100.0
+  },
+  "held_out_metrics": {
+    "chamfer": {
+      "candidate_count": 3,
+      "min": 0.02060108631849289,
+      "median": 0.4887703210115433,
+      "mean": 0.4170453225572904,
+      "max": 0.741764560341835,
+      "positive_gain_ratio": 1.0,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 0.741764560341835,
+      "random_candidate_mean_gain": 0.4170453225572904
+    },
+    "accuracy": {
+      "candidate_count": 3,
+      "min": -0.29799315333366394,
+      "median": -0.06163272261619568,
+      "mean": -0.12213880320390065,
+      "max": -0.006790533661842346,
+      "positive_gain_ratio": 0.0,
+      "oracle_best_candidate": "00019",
+      "oracle_best_gain": -0.006790533661842346,
+      "random_candidate_mean_gain": -0.12213880320390065
+    },
+    "completeness": {
+      "candidate_count": 3,
+      "min": 0.047992706298828125,
+      "median": 1.0391733646392822,
+      "mean": 0.9562294483184814,
+      "max": 1.781522274017334,
+      "positive_gain_ratio": 1.0,
+      "oracle_best_candidate": "00325",
+      "oracle_best_gain": 1.781522274017334,
+      "random_candidate_mean_gain": 0.9562294483184814
+    },
+    "coverage": {
+      "candidate_count": 3,
+      "min": -0.003416667692363262,
+      "median": -0.0009166672825813293,
+      "mean": -0.0012777786081035931,
+      "max": 0.000499999150633812,
+      "positive_gain_ratio": 0.3333333333333333,
+      "oracle_best_candidate": "00425",
+      "oracle_best_gain": 0.000499999150633812,
+      "random_candidate_mean_gain": -0.0012777786081035931
+    },
+    "fscore@0.02": {
+      "candidate_count": 3,
+      "min": -0.0038298067048200945,
+      "median": -0.001799118611306395,
+      "mean": -0.0023480960349181834,
+      "max": -0.0014153627886280612,
+      "positive_gain_ratio": 0.0,
+      "oracle_best_candidate": "00425",
+      "oracle_best_gain": -0.0014153627886280612,
+      "random_candidate_mean_gain": -0.0023480960349181834
+    },
+    "fscore@0.05": {
+      "candidate_count": 3,
+      "min": -0.008464917705827316,
+      "median": -0.0017694868682155696,
+      "mean": -0.003437366233946705,
+      "max": -7.769412779723081e-05,
+      "positive_gain_ratio": 0.0,
+      "oracle_best_candidate": "00425",
+      "oracle_best_gain": -7.769412779723081e-05,
+      "random_candidate_mean_gain": -0.003437366233946705
+    },
+    "fscore@0.1": {
+      "candidate_count": 3,
+      "min": -0.013364976301340419,
+      "median": -0.00352367450627368,
+      "mean": -0.006090950701626535,
+      "max": -0.0013842012972655054,
+      "positive_gain_ratio": 0.0,
+      "oracle_best_candidate": "00425",
+      "oracle_best_gain": -0.0013842012972655054,
+      "random_candidate_mean_gain": -0.006090950701626535
+    }
+  },
+  "point_cloud_diagnostic_summary": {
+    "baseline_camera_anchor_point_residuals": {
+      "record_count": 4,
+      "residual_mean": 0.15614941716194153,
+      "residual_median": 0.12647521495819092,
+      "residual_rmse": 0.20061683654785156,
+      "residual_max": 0.7838056087493896,
+      "inlier_ratios": {
+        "0.02": 0.007333333138376474,
+        "0.05": 0.08766666799783707,
+        "0.1": 0.3564166724681854
+      }
+    },
+    "candidate_camera_anchor_point_residuals": {
+      "record_count": 4,
+      "residual_mean": 0.24763233959674835,
+      "residual_median": 0.18688176199793816,
+      "residual_rmse": 0.3220403231680393,
+      "residual_max": 1.053404062986374,
+      "inlier_ratios": {
+        "0.02": 0.005854166694916785,
+        "0.05": 0.07202083431184292,
+        "0.1": 0.2893125005066395
+      }
+    },
+    "baseline_old_free_icp_point_residuals": {
+      "record_count": 4,
+      "residual_mean": 0.5269978642463684,
+      "residual_median": 0.45164087414741516,
+      "residual_rmse": 0.642021656036377,
+      "residual_max": 1.825128197669983,
+      "inlier_ratios": {
+        "0.02": 0.003000000026077032,
+        "0.05": 0.025750000029802322,
+        "0.1": 0.09941666573286057
+      }
+    },
+    "candidate_old_free_icp_point_residuals": {
+      "record_count": 4,
+      "residual_mean": 0.4438166171312332,
+      "residual_median": 0.3725688084959984,
+      "residual_rmse": 0.5480587035417557,
+      "residual_max": 1.5430705547332764,
+      "inlier_ratios": {
+        "0.02": 0.00306250000721775,
+        "0.05": 0.037041667848825455,
+        "0.1": 0.14391666278243065
+      }
+    }
+  },
+  "records": [
+    {
+      "candidate_view_id": "00010",
+      "candidate_sanity_tags": [
+        "duplicate_input_sensitivity"
+      ],
+      "baseline_scale": 1.9494023323059082,
+      "candidate_scale": 1.9487385749816895,
+      "baseline_camera_rmse": 0.012532387860119343,
+      "candidate_camera_rmse": 0.012536517344415188,
+      "gains": {
+        "chamfer": 0.015020020306110382,
+        "accuracy": 0.0004847198724746704,
+        "completeness": 0.029555320739746094,
+        "coverage": 0.000499999150633812,
+        "fscore@0.02": 0.0005725314840448158,
+        "fscore@0.05": 0.0010032538002824297,
+        "fscore@0.10": 0.0025894221766695064
+      }
+    },
+    {
+      "candidate_view_id": "00019",
+      "candidate_sanity_tags": [
+        "high_overlap_neighbor"
+      ],
+      "baseline_scale": 1.9494023323059082,
+      "candidate_scale": 1.9388113021850586,
+      "baseline_camera_rmse": 0.012532387860119343,
+      "candidate_camera_rmse": 0.013129329308867455,
+      "gains": {
+        "chamfer": 0.02060108631849289,
+        "accuracy": -0.006790533661842346,
+        "completeness": 0.047992706298828125,
+        "coverage": -0.0009166672825813293,
+        "fscore@0.02": -0.001799118611306395,
+        "fscore@0.05": -0.0017694868682155696,
+        "fscore@0.10": -0.00352367450627368
+      }
+    },
+    {
+      "candidate_view_id": "00325",
+      "candidate_sanity_tags": [
+        "old_oracle_best"
+      ],
+      "baseline_scale": 1.9494023323059082,
+      "candidate_scale": 2.163518190383911,
+      "baseline_camera_rmse": 0.012532387860119343,
+      "candidate_camera_rmse": 0.01589757390320301,
+      "gains": {
+        "chamfer": 0.741764560341835,
+        "accuracy": -0.29799315333366394,
+        "completeness": 1.781522274017334,
+        "coverage": -0.003416667692363262,
+        "fscore@0.02": -0.0038298067048200945,
+        "fscore@0.05": -0.008464917705827316,
+        "fscore@0.10": -0.013364976301340419
+      }
+    },
+    {
+      "candidate_view_id": "00425",
+      "candidate_sanity_tags": [
+        "new_area"
+      ],
+      "baseline_scale": 1.9494023323059082,
+      "candidate_scale": 2.161189079284668,
+      "baseline_camera_rmse": 0.012532387860119343,
+      "candidate_camera_rmse": 0.016535622999072075,
+      "gains": {
+        "chamfer": 0.4887703210115433,
+        "accuracy": -0.06163272261619568,
+        "completeness": 1.0391733646392822,
+        "coverage": 0.000499999150633812,
+        "fscore@0.02": -0.0014153627886280612,
+        "fscore@0.05": -7.769412779723081e-05,
+        "fscore@0.10": -0.0013842012972655054
+      }
+    }
+  ]
+}

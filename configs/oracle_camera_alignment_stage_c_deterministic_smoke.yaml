@@ -1,0 +1,12 @@
+audit-records: outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/oracle_gain.jsonl
+target-points: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin
+gt-pose-dir: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00
+output-dir: outputs/oracle_calibration/scannet_scene0000_00_stage_c_deterministic_smoke_v3
+point-stride: 6
+fscore-thresholds: [0.02, 0.05, 0.10]
+coverage-radius: 0.05
+voxel-downsample-size: 0.02
+max-metric-points: 12000
+metric-sample-method: hash
+seed: 0
+max-camera-anchor-condition-number: 100.0

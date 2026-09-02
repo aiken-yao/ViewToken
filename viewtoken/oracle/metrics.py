@@ -22,6 +22,10 @@ class PointCloudMetrics:
     completeness: float
     fscore: dict[float, float]
     coverage: float
+    reconstruction_count: int | None = None
+    target_count: int | None = None
+    voxel_size: float | None = None
+    sample_method: str = "random"
 
     def to_dict(self) -> dict[str, object]:
         return {
@@ -30,6 +34,10 @@ class PointCloudMetrics:
             "completeness": self.completeness,
             "fscore": {str(threshold): value for threshold, value in self.fscore.items()},
             "coverage": self.coverage,
+            "reconstruction_count": self.reconstruction_count,
+            "target_count": self.target_count,
+            "voxel_size": self.voxel_size,
+            "sample_method": self.sample_method,
         }
 
 
@@ -100,6 +108,37 @@ class AlignmentDiagnostics:
 
 
 @dataclass(frozen=True)
+class PointCloudResidualDiagnostics:
+    source_sample_count: int
+    target_sample_count: int
+    voxel_size: float | None
+    max_points: int | None
+    residual_mean: float
+    residual_median: float
+    residual_rmse: float
+    residual_max: float
+    inlier_ratios: dict[float, float]
+    sample_method: str = "random"
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            "source_sample_count": self.source_sample_count,
+            "target_sample_count": self.target_sample_count,
+            "voxel_size": self.voxel_size,
+            "max_points": self.max_points,
+            "sample_method": self.sample_method,
+            "residual_mean": self.residual_mean,
+            "residual_median": self.residual_median,
+            "residual_rmse": self.residual_rmse,
+            "residual_max": self.residual_max,
+            "inlier_ratios": {
+                str(threshold): ratio
+                for threshold, ratio in sorted(self.inlier_ratios.items())
+            },
+        }
+
+
+@dataclass(frozen=True)
 class AlignmentResult:
     points: Tensor
     diagnostics: AlignmentDiagnostics
@@ -134,14 +173,48 @@ def voxel_downsample_points(points: Tensor, voxel_size: float | None) -> Tensor:
     return sums / counts.clamp_min(1).unsqueeze(-1)
 
 
-def sample_points(points: Tensor, max_points: int | None, seed: int = 0) -> Tensor:
-    points = filter_finite_points(points)
-    if max_points is None or points.shape[0] <= max_points:
-        return points.cpu()
-    generator = torch.Generator(device="cpu")
-    generator.manual_seed(seed)
-    indices = torch.randperm(points.shape[0], generator=generator)[:max_points]
-    return points.cpu()[indices]
+def sample_point_indices(
+    points: Tensor,
+    max_points: int | None,
+    seed: int = 0,
+    method: str = "random",
+) -> Tensor:
+    """Return row indices for either random or deterministic point sampling."""
+
+    if points.ndim != 2 or points.shape[-1] != 3:
+        raise ValueError(f"points must have shape [N, 3], got {tuple(points.shape)}")
+    method = method.lower()
+    if method in {"none", "all"} or max_points is None or max_points <= 0:
+        return torch.arange(points.shape[0], dtype=torch.long)
+    if points.shape[0] <= max_points:
+        return torch.arange(points.shape[0], dtype=torch.long)
+    if method == "random":
+        generator = torch.Generator(device="cpu")
+        generator.manual_seed(seed)
+        return torch.randperm(points.shape[0], generator=generator)[:max_points]
+    if method == "hash":
+        sanitized = torch.nan_to_num(points.float().cpu(), nan=0.0, posinf=0.0, neginf=0.0)
+        quantized = torch.round(sanitized * 10000.0).to(torch.int64)
+        hash_values = torch.remainder(
+            quantized[:, 0] * 73856093
+            + quantized[:, 1] * 19349663
+            + quantized[:, 2] * 83492791
+            + int(seed) * 2654435761,
+            2147483647,
+        )
+        return torch.argsort(hash_values, stable=True)[:max_points].cpu()
+    raise ValueError(f"Unsupported point sampling method: {method}")
+
+
+def sample_points(
+    points: Tensor,
+    max_points: int | None,
+    seed: int = 0,
+    method: str = "random",
+) -> Tensor:
+    points = filter_finite_points(points).float().cpu()
+    indices = sample_point_indices(points, max_points=max_points, seed=seed, method=method)
+    return points[indices]
 
 
 def nearest_neighbor_squared_distances(
@@ -206,12 +279,16 @@ def estimate_similarity_transform(source: Tensor, target: Tensor) -> SimilarityT
     covariance = source_centered.T @ target_centered / source.shape[0]
     u, singular_values, vh = torch.linalg.svd(covariance, full_matrices=False)
     rotation = vh.T @ u.T
+    det_correction = 1.0
     if torch.linalg.det(rotation) < 0:
         vh = vh.clone()
         vh[-1] *= -1
         rotation = vh.T @ u.T
+        det_correction = -1.0
+    signed_singular_values = singular_values.clone()
+    signed_singular_values[-1] *= det_correction
     variance = source_centered.square().sum() / source.shape[0]
-    scale = (singular_values.sum() / variance.clamp_min(1e-12)).item()
+    scale = (signed_singular_values.sum() / variance.clamp_min(1e-12)).item()
     translation = target_mean - scale * (source_mean @ rotation.T)
     return SimilarityTransform(
         scale=scale,
@@ -301,6 +378,42 @@ def _make_alignment_diagnostics(
     )
 
 
+def compute_pointcloud_residual_diagnostics(
+    source: Tensor,
+    target: Tensor,
+    inlier_thresholds: tuple[float, ...] = (0.02, 0.05, 0.1),
+    max_points: int | None = 12000,
+    voxel_size: float | None = None,
+    chunk_size: int = 2048,
+    seed: int = 0,
+    sample_method: str = "random",
+) -> PointCloudResidualDiagnostics:
+    """Measure source-to-target nearest-neighbor residuals after alignment."""
+
+    source = voxel_downsample_points(source, voxel_size)
+    target = voxel_downsample_points(target, voxel_size)
+    source = sample_points(source, max_points, seed=seed, method=sample_method).float().cpu()
+    target = sample_points(target, max_points, seed=seed + 17, method=sample_method).float().cpu()
+    residuals = nearest_neighbor_squared_distances(
+        source, target, chunk_size=chunk_size
+    ).sqrt()
+    return PointCloudResidualDiagnostics(
+        source_sample_count=int(source.shape[0]),
+        target_sample_count=int(target.shape[0]),
+        voxel_size=voxel_size,
+        max_points=max_points,
+        sample_method=sample_method,
+        residual_mean=residuals.mean().item(),
+        residual_median=residuals.median().item(),
+        residual_rmse=residuals.square().mean().sqrt().item(),
+        residual_max=residuals.max().item(),
+        inlier_ratios={
+            float(threshold): (residuals <= float(threshold)).float().mean().item()
+            for threshold in inlier_thresholds
+        },
+    )
+
+
 def align_sim3_icp_with_diagnostics(
     source: Tensor,
     target: Tensor,
@@ -378,11 +491,16 @@ def compute_pointcloud_metrics(
     voxel_size: float | None = None,
     chunk_size: int = 2048,
     seed: int = 0,
+    sample_method: str = "random",
 ) -> PointCloudMetrics:
     reconstruction = voxel_downsample_points(reconstruction, voxel_size)
     target = voxel_downsample_points(target, voxel_size)
-    reconstruction = sample_points(reconstruction, max_points, seed=seed).float().cpu()
-    target = sample_points(target, max_points, seed=seed + 17).float().cpu()
+    reconstruction = sample_points(
+        reconstruction, max_points, seed=seed, method=sample_method
+    ).float().cpu()
+    target = sample_points(
+        target, max_points, seed=seed + 17, method=sample_method
+    ).float().cpu()
     source_to_target = nearest_neighbor_squared_distances(
         reconstruction, target, chunk_size=chunk_size
     ).sqrt()
@@ -407,6 +525,10 @@ def compute_pointcloud_metrics(
         completeness=completeness,
         fscore=fscore,
         coverage=coverage,
+        reconstruction_count=int(reconstruction.shape[0]),
+        target_count=int(target.shape[0]),
+        voxel_size=voxel_size,
+        sample_method=sample_method,
     )
 
 

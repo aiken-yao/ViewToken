@@ -6,8 +6,11 @@ import unittest
 import torch
 
 from viewtoken.oracle import (
+    DegenerateCameraAnchorsError,
     camera_anchor_condition_number,
     camera_centers_from_camera_to_world,
+    compute_metric_gains,
+    compute_pointcloud_metrics,
     camera_centers_from_world_to_camera,
     estimate_camera_anchor_alignment,
     predicted_camera_centers_from_pose_enc,
@@ -103,6 +106,109 @@ class CameraAlignmentTest(unittest.TestCase):
 
         self.assertTrue(math.isinf(camera_anchor_condition_number(collinear)))
         self.assertTrue(math.isfinite(camera_anchor_condition_number(non_collinear)))
+
+    def test_camera_anchor_alignment_reports_predicted_and_gt_condition_numbers(self) -> None:
+        predicted = {
+            "00000": torch.tensor([0.0, 0.0, 0.0]),
+            "00010": torch.tensor([1.0, 0.0, 0.0]),
+            "00020": torch.tensor([0.0, 1.0, 0.0]),
+        }
+        gt = {
+            "00000": torch.tensor([1.0, 2.0, 3.0]),
+            "00010": torch.tensor([3.0, 2.0, 3.0]),
+            "00020": torch.tensor([1.0, 4.0, 3.0]),
+        }
+
+        alignment = estimate_camera_anchor_alignment(
+            predicted,
+            gt,
+            shared_anchor_ids=["00000", "00010", "00020"],
+        )
+
+        payload = alignment.to_dict()
+        self.assertTrue(math.isfinite(payload["predicted_condition_number"]))
+        self.assertTrue(math.isfinite(payload["gt_condition_number"]))
+        self.assertEqual(payload["condition_number"], payload["predicted_condition_number"])
+
+    def test_camera_anchor_alignment_rejects_collinear_predicted_anchors(self) -> None:
+        predicted = {
+            "00000": torch.tensor([0.0, 0.0, 0.0]),
+            "00010": torch.tensor([1.0, 0.0, 0.0]),
+            "00020": torch.tensor([2.0, 0.0, 0.0]),
+        }
+        gt = {
+            "00000": torch.tensor([0.0, 0.0, 0.0]),
+            "00010": torch.tensor([1.0, 0.0, 0.0]),
+            "00020": torch.tensor([0.0, 1.0, 0.0]),
+        }
+
+        with self.assertRaises(DegenerateCameraAnchorsError):
+            estimate_camera_anchor_alignment(
+                predicted,
+                gt,
+                shared_anchor_ids=["00000", "00010", "00020"],
+            )
+
+    def test_camera_anchor_alignment_rejects_non_finite_centers(self) -> None:
+        predicted = {
+            "00000": torch.tensor([0.0, 0.0, 0.0]),
+            "00010": torch.tensor([1.0, 0.0, 0.0]),
+            "00020": torch.tensor([float("nan"), 1.0, 0.0]),
+        }
+        gt = {
+            "00000": torch.tensor([0.0, 0.0, 0.0]),
+            "00010": torch.tensor([1.0, 0.0, 0.0]),
+            "00020": torch.tensor([0.0, 1.0, 0.0]),
+        }
+
+        with self.assertRaises(DegenerateCameraAnchorsError):
+            estimate_camera_anchor_alignment(
+                predicted,
+                gt,
+                shared_anchor_ids=["00000", "00010", "00020"],
+            )
+
+    def test_camera_anchor_identical_cloud_gain_is_zero(self) -> None:
+        predicted = {
+            "00000": torch.tensor([0.0, 0.0, 0.0]),
+            "00010": torch.tensor([1.0, 0.0, 0.0]),
+            "00020": torch.tensor([0.0, 1.0, 0.0]),
+        }
+        gt = {
+            "00000": torch.tensor([1.0, 2.0, 3.0]),
+            "00010": torch.tensor([3.0, 2.0, 3.0]),
+            "00020": torch.tensor([1.0, 4.0, 3.0]),
+        }
+        alignment = estimate_camera_anchor_alignment(
+            predicted,
+            gt,
+            shared_anchor_ids=["00000", "00010", "00020"],
+        )
+        points = torch.tensor(
+            [
+                [0.0, 0.0, 0.0],
+                [0.3, 0.1, 0.0],
+                [0.0, 0.4, 0.2],
+                [0.2, 0.3, 0.5],
+            ],
+            dtype=torch.float32,
+        )
+        aligned = alignment.transform.apply(points)
+        baseline = compute_pointcloud_metrics(
+            aligned, aligned, thresholds=(0.05, 0.1), max_points=None
+        )
+        candidate = compute_pointcloud_metrics(
+            aligned, aligned, thresholds=(0.05, 0.1), max_points=None
+        )
+
+        gains = compute_metric_gains(baseline, candidate)
+
+        self.assertAlmostEqual(gains["chamfer"], 0.0)
+        self.assertAlmostEqual(gains["accuracy"], 0.0)
+        self.assertAlmostEqual(gains["completeness"], 0.0)
+        self.assertAlmostEqual(gains["coverage"], 0.0)
+        self.assertAlmostEqual(gains["fscore"]["0.05"], 0.0)
+        self.assertAlmostEqual(gains["fscore"]["0.1"], 0.0)
 
 
 if __name__ == "__main__":
