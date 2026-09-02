@@ -1,0 +1,27 @@
+audit-records: outputs/oracle_calibration/scannet_scene0000_00_stage_c_deterministic_smoke_v3/camera_anchor_oracle_gain.jsonl
+target-points: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin
+posed-image-dir: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00
+intrinsics: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt
+output-dir: outputs/oracle_calibration/scannet_scene0000_00_stage_c2
+docs-output-dir: docs/audits/scannet_scene0000_00_stage_c2
+candidate-view-ids: ["00010", "00019", "00325", "00425"]
+image-extension: jpg
+point-stride: 6
+gt-voxel-sizes: [0.01, 0.02, 0.05]
+visibility-depth-tolerances: [0.02, 0.05, 0.10]
+surface-sample-seed-offsets: [0, 1, 17]
+nominal-gt-voxel-size: 0.02
+nominal-visibility-depth-tolerance: 0.05
+nominal-surface-sample-seed-offset: 0
+max-surface-points: 12000
+max-prediction-points: 12000
+surface-sample-method: hash
+prediction-sample-method: hash
+coverage-thresholds: [0.05, 0.10]
+global-outlier-threshold: 0.10
+nn-chunk-size: 512
+novel-connectivity-radius: 0.08
+novel-connectivity-min-largest-component-count: 10
+duplicate-novel-scene-fraction-max: 0.005
+observed-retention-gain-min: -0.02
+synthetic-visibility-test-count: 7

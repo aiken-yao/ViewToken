@@ -60,6 +60,23 @@ from .metrics import (
     voxel_downsample_points,
 )
 
+from .visibility import (
+    CameraPoseDelta,
+    PinholeIntrinsics,
+    ProjectionResult,
+    VisibilityMasks,
+    VisibilityMaskStats,
+    build_visibility_masks,
+    camera_center_from_pose,
+    camera_forward_from_pose,
+    camera_pose_delta_to_observed,
+    project_world_points,
+    summarize_visibility_masks,
+    transform_world_to_camera,
+    union_visible_surface_mask,
+    visible_surface_mask,
+)
+
 __all__ = [
     "AlignmentDiagnostics",
     "AlignmentMetricResult",
@@ -116,4 +133,18 @@ __all__ = [
     "view_id_from_path",
     "voxel_downsample_points",
     "write_jsonl",
+    "CameraPoseDelta",
+    "PinholeIntrinsics",
+    "ProjectionResult",
+    "VisibilityMasks",
+    "VisibilityMaskStats",
+    "build_visibility_masks",
+    "camera_center_from_pose",
+    "camera_forward_from_pose",
+    "camera_pose_delta_to_observed",
+    "project_world_points",
+    "summarize_visibility_masks",
+    "transform_world_to_camera",
+    "union_visible_surface_mask",
+    "visible_surface_mask",
 ]

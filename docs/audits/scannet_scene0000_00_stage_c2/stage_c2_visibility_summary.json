@@ -1,0 +1,1937 @@
+{
+  "assessment": {
+    "connected_new_area_candidates_with_novel_surface": [
+      "00325",
+      "00425"
+    ],
+    "damaged_observed_retention": [
+      {
+        "candidate_view_id": "00325",
+        "gain": -0.03366488218307495,
+        "threshold": "0.05"
+      },
+      {
+        "candidate_view_id": "00325",
+        "gain": -0.0428462028503418,
+        "threshold": "0.1"
+      }
+    ],
+    "duplicate_novel_near_zero": true,
+    "duplicate_novel_scene_fraction_max": 0.005,
+    "high_overlap_novel_less_than_connected_new_area": true,
+    "novel_connectivity_min_largest_component_count": 10,
+    "observed_retention_gain_min": -0.02,
+    "observed_retention_not_badly_damaged": false,
+    "stable_positive_connected_new_area_candidates": [],
+    "stage_c2_passed": false
+  },
+  "asset_report": {
+    "depth_like_files_found": [],
+    "depth_maps_found": false,
+    "image_extension": "jpg",
+    "image_sizes_wh": {
+      "00000": [
+        1296,
+        968
+      ],
+      "00010": [
+        1296,
+        968
+      ],
+      "00019": [
+        1296,
+        968
+      ],
+      "00020": [
+        1296,
+        968
+      ],
+      "00325": [
+        1296,
+        968
+      ],
+      "00425": [
+        1296,
+        968
+      ]
+    },
+    "intrinsics": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt",
+    "posed_image_dir": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00",
+    "target_points": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin",
+    "target_points_size_bytes": 1200000,
+    "view_ids_checked": [
+      "00000",
+      "00010",
+      "00019",
+      "00020",
+      "00325",
+      "00425"
+    ]
+  },
+  "candidate_count": 4,
+  "config": {
+    "coverage_thresholds": [
+      0.05,
+      0.1
+    ],
+    "global_outlier_threshold": 0.1,
+    "gt_voxel_sizes": [
+      0.01,
+      0.02,
+      0.05
+    ],
+    "max_prediction_points": 12000,
+    "max_surface_points": 12000,
+    "novel_connectivity_min_largest_component_count": 10,
+    "novel_connectivity_radius": 0.08,
+    "prediction_sample_method": "hash",
+    "surface_sample_method": "hash",
+    "surface_sample_seed_offsets": [
+      0,
+      1,
+      17
+    ],
+    "visibility_depth_tolerances": [
+      0.02,
+      0.05,
+      0.1
+    ]
+  },
+  "conventions": {
+    "depth_tolerance_unit": "meters in ScanNet GT coordinates",
+    "image_size_scaling": "intrinsic.txt matches RGB size; no scaling applied.",
+    "image_size_wh": [
+      1296,
+      968
+    ],
+    "intrinsics": {
+      "cx": 646.295044,
+      "cy": 489.927032,
+      "fx": 1169.621094,
+      "fy": 1167.105103,
+      "height": 968,
+      "width": 1296
+    },
+    "intrinsics_source": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt",
+    "occlusion_source": "GT point-cloud z-buffer over the fixed deterministic surface sample; no RGB-D depth maps were found in posed_images/scene0000_00.",
+    "pose_convention": "ScanNet 4x4 camera-to-world; translation is camera center in world coordinates.",
+    "projection_convention": "OpenCV pinhole camera coordinates; +Z is in front; u=fx*x/z+cx, v=fy*y/z+cy; pixel bounds are half-open [0,width)x[0,height)."
+  },
+  "did_run_vggt": false,
+  "inputs": {
+    "audit_records": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c_deterministic_smoke_v3/camera_anchor_oracle_gain.jsonl",
+    "intrinsics": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt",
+    "posed_image_dir": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00",
+    "target_points": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin"
+  },
+  "nominal_candidate_rows": [
+    {
+      "camera_delta_to_observed": {
+        "min_distance_to_observed_meters": 0.0,
+        "min_view_direction_change_degrees": 0.0,
+        "nearest_observed_view_id": "00010",
+        "nearest_view_direction_view_id": "00010"
+      },
+      "candidate_sanity_tags": [
+        "duplicate_input_sensitivity"
+      ],
+      "candidate_view_id": "00010",
+      "novel_connectivity": {
+        "component_count": 0,
+        "component_radius_meters": 0.08,
+        "largest_component_count": 0,
+        "largest_component_fraction_of_novel": null,
+        "point_count": 0
+      },
+      "observed_view_ids": [
+        "00000",
+        "00010",
+        "00020"
+      ],
+      "old_global_diagnostics": {
+        "baseline_metrics": {
+          "accuracy": 0.15614941716194153,
+          "chamfer": 1.7382729202508926,
+          "completeness": 3.3203964233398438,
+          "coverage": 0.017750000581145287,
+          "fscore": {
+            "0.02": 0.006230936720042693,
+            "0.05": 0.029522530523582224,
+            "0.1": 0.06949335279849447
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "candidate_metrics": {
+          "accuracy": 0.15566469728946686,
+          "chamfer": 1.7232528999447823,
+          "completeness": 3.2908411026000977,
+          "coverage": 0.0182499997317791,
+          "fscore": {
+            "0.02": 0.006803468204087509,
+            "0.05": 0.030525784323864654,
+            "0.1": 0.07208277497516398
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "gains": {
+          "accuracy": 0.0004847198724746704,
+          "chamfer": 0.015020020306110382,
+          "completeness": 0.029555320739746094,
+          "coverage": 0.000499999150633812,
+          "fscore": {
+            "0.02": 0.0005725314840448158,
+            "0.05": 0.0010032538002824297,
+            "0.1": 0.0025894221766695064
+          }
+        }
+      },
+      "scene_id": "scene0000_00",
+      "surface_sample": {
+        "count": 12000,
+        "fingerprint": "df8e06846bcc8f0a2189fb51f332079bc803714a",
+        "max_points": 12000,
+        "method": "hash"
+      },
+      "variant_key": {
+        "gt_voxel_size": 0.02,
+        "surface_sample_seed_offset": 0,
+        "visibility_depth_tolerance": 0.05
+      },
+      "visibility_metrics": {
+        "global_accuracy": {
+          "baseline": 0.1551455557346344,
+          "candidate": 0.1547563225030899,
+          "gain": 0.00038923323154449463
+        },
+        "global_outlier_ratio": {
+          "baseline": 0.6367499828338623,
+          "candidate": 0.6411666870117188,
+          "gain": -0.004416704177856445,
+          "threshold_meters": 0.1
+        },
+        "novel_coverage_gain": {
+          "0.05": {
+            "baseline": null,
+            "candidate": null,
+            "gain": null
+          },
+          "0.1": {
+            "baseline": null,
+            "candidate": null,
+            "gain": null
+          }
+        },
+        "novel_surface_gain_scene_normalized": {
+          "0.05": 0.0,
+          "0.1": 0.0
+        },
+        "observed_retention_gain": {
+          "0.05": {
+            "baseline": 0.1560826301574707,
+            "candidate": 0.15914307534694672,
+            "gain": 0.003060445189476013
+          },
+          "0.1": {
+            "baseline": 0.32364192605018616,
+            "candidate": 0.33894413709640503,
+            "gain": 0.015302211046218872
+          }
+        },
+        "visible_union_completeness_gain": 0.0012290030717849731
+      },
+      "visibility_stats": {
+        "candidate_count": 747,
+        "candidate_fraction": 0.06225,
+        "candidate_novel_fraction": 0.0,
+        "candidate_overlap_fraction": 1.0,
+        "novel_count": 0,
+        "novel_scene_fraction": 0.0,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 747,
+        "overlap_fraction": 0.06225,
+        "total_surface_count": 12000,
+        "union_count": 1307,
+        "union_fraction": 0.10891666666666666
+      }
+    },
+    {
+      "camera_delta_to_observed": {
+        "min_distance_to_observed_meters": 0.00819318275898695,
+        "min_view_direction_change_degrees": 0.23903110827999308,
+        "nearest_observed_view_id": "00020",
+        "nearest_view_direction_view_id": "00020"
+      },
+      "candidate_sanity_tags": [
+        "high_overlap_neighbor"
+      ],
+      "candidate_view_id": "00019",
+      "novel_connectivity": {
+        "component_count": 1,
+        "component_radius_meters": 0.08,
+        "largest_component_count": 1,
+        "largest_component_fraction_of_novel": 1.0,
+        "point_count": 1
+      },
+      "observed_view_ids": [
+        "00000",
+        "00010",
+        "00020"
+      ],
+      "old_global_diagnostics": {
+        "baseline_metrics": {
+          "accuracy": 0.15614941716194153,
+          "chamfer": 1.7382729202508926,
+          "completeness": 3.3203964233398438,
+          "coverage": 0.017750000581145287,
+          "fscore": {
+            "0.02": 0.006230936720042693,
+            "0.05": 0.029522530523582224,
+            "0.1": 0.06949335279849447
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "candidate_metrics": {
+          "accuracy": 0.16293995082378387,
+          "chamfer": 1.7176718339323997,
+          "completeness": 3.2724037170410156,
+          "coverage": 0.016833333298563957,
+          "fscore": {
+            "0.02": 0.004431818108736298,
+            "0.05": 0.027753043655366655,
+            "0.1": 0.06596967829222079
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "gains": {
+          "accuracy": -0.006790533661842346,
+          "chamfer": 0.02060108631849289,
+          "completeness": 0.047992706298828125,
+          "coverage": -0.0009166672825813293,
+          "fscore": {
+            "0.02": -0.001799118611306395,
+            "0.05": -0.0017694868682155696,
+            "0.1": -0.00352367450627368
+          }
+        }
+      },
+      "scene_id": "scene0000_00",
+      "surface_sample": {
+        "count": 12000,
+        "fingerprint": "df8e06846bcc8f0a2189fb51f332079bc803714a",
+        "max_points": 12000,
+        "method": "hash"
+      },
+      "variant_key": {
+        "gt_voxel_size": 0.02,
+        "surface_sample_seed_offset": 0,
+        "visibility_depth_tolerance": 0.05
+      },
+      "visibility_metrics": {
+        "global_accuracy": {
+          "baseline": 0.1551455557346344,
+          "candidate": 0.1632884293794632,
+          "gain": -0.008142873644828796
+        },
+        "global_outlier_ratio": {
+          "baseline": 0.6367499828338623,
+          "candidate": 0.659416675567627,
+          "gain": -0.02266669273376465,
+          "threshold_meters": 0.1
+        },
+        "novel_coverage_gain": {
+          "0.05": {
+            "baseline": 0.0,
+            "candidate": 0.0,
+            "gain": 0.0
+          },
+          "0.1": {
+            "baseline": 0.0,
+            "candidate": 0.0,
+            "gain": 0.0
+          }
+        },
+        "novel_surface_gain_scene_normalized": {
+          "0.05": 0.0,
+          "0.1": 0.0
+        },
+        "observed_retention_gain": {
+          "0.05": {
+            "baseline": 0.1560826301574707,
+            "candidate": 0.14613619446754456,
+            "gain": -0.009946435689926147
+          },
+          "0.1": {
+            "baseline": 0.32364192605018616,
+            "candidate": 0.3068094849586487,
+            "gain": -0.016832441091537476
+          }
+        },
+        "visible_union_completeness_gain": -0.013268783688545227
+      },
+      "visibility_stats": {
+        "candidate_count": 909,
+        "candidate_fraction": 0.07575,
+        "candidate_novel_fraction": 0.0011001100110011,
+        "candidate_overlap_fraction": 0.9988998899889989,
+        "novel_count": 1,
+        "novel_scene_fraction": 8.333333333333333e-05,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 908,
+        "overlap_fraction": 0.07566666666666666,
+        "total_surface_count": 12000,
+        "union_count": 1308,
+        "union_fraction": 0.109
+      }
+    },
+    {
+      "camera_delta_to_observed": {
+        "min_distance_to_observed_meters": 2.358865261077881,
+        "min_view_direction_change_degrees": 99.04986707589862,
+        "nearest_observed_view_id": "00010",
+        "nearest_view_direction_view_id": "00020"
+      },
+      "candidate_sanity_tags": [
+        "old_oracle_best"
+      ],
+      "candidate_view_id": "00325",
+      "novel_connectivity": {
+        "component_count": 1038,
+        "component_radius_meters": 0.08,
+        "largest_component_count": 40,
+        "largest_component_fraction_of_novel": 0.014094432699083862,
+        "point_count": 2838
+      },
+      "observed_view_ids": [
+        "00000",
+        "00010",
+        "00020"
+      ],
+      "old_global_diagnostics": {
+        "baseline_metrics": {
+          "accuracy": 0.15614941716194153,
+          "chamfer": 1.7382729202508926,
+          "completeness": 3.3203964233398438,
+          "coverage": 0.017750000581145287,
+          "fscore": {
+            "0.02": 0.006230936720042693,
+            "0.05": 0.029522530523582224,
+            "0.1": 0.06949335279849447
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "candidate_metrics": {
+          "accuracy": 0.45414257049560547,
+          "chamfer": 0.9965083599090576,
+          "completeness": 1.5388741493225098,
+          "coverage": 0.014333332888782024,
+          "fscore": {
+            "0.02": 0.002401130015222599,
+            "0.05": 0.02105761281775491,
+            "0.1": 0.056128376497154055
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "gains": {
+          "accuracy": -0.29799315333366394,
+          "chamfer": 0.741764560341835,
+          "completeness": 1.781522274017334,
+          "coverage": -0.003416667692363262,
+          "fscore": {
+            "0.02": -0.0038298067048200945,
+            "0.05": -0.008464917705827316,
+            "0.1": -0.013364976301340419
+          }
+        }
+      },
+      "scene_id": "scene0000_00",
+      "surface_sample": {
+        "count": 12000,
+        "fingerprint": "df8e06846bcc8f0a2189fb51f332079bc803714a",
+        "max_points": 12000,
+        "method": "hash"
+      },
+      "variant_key": {
+        "gt_voxel_size": 0.02,
+        "surface_sample_seed_offset": 0,
+        "visibility_depth_tolerance": 0.05
+      },
+      "visibility_metrics": {
+        "global_accuracy": {
+          "baseline": 0.1551455557346344,
+          "candidate": 0.45380643010139465,
+          "gain": -0.29866087436676025
+        },
+        "global_outlier_ratio": {
+          "baseline": 0.6367499828338623,
+          "candidate": 0.8365833163261414,
+          "gain": -0.19983333349227905,
+          "threshold_meters": 0.1
+        },
+        "novel_coverage_gain": {
+          "0.05": {
+            "baseline": 0.0,
+            "candidate": 0.0,
+            "gain": 0.0
+          },
+          "0.1": {
+            "baseline": 0.0,
+            "candidate": 0.0,
+            "gain": 0.0
+          }
+        },
+        "novel_surface_gain_scene_normalized": {
+          "0.05": 0.0,
+          "0.1": 0.0
+        },
+        "observed_retention_gain": {
+          "0.05": {
+            "baseline": 0.1560826301574707,
+            "candidate": 0.12241774797439575,
+            "gain": -0.03366488218307495
+          },
+          "0.1": {
+            "baseline": 0.32364192605018616,
+            "candidate": 0.28079572319984436,
+            "gain": -0.0428462028503418
+          }
+        },
+        "visible_union_completeness_gain": 2.1643699407577515
+      },
+      "visibility_stats": {
+        "candidate_count": 2838,
+        "candidate_fraction": 0.2365,
+        "candidate_novel_fraction": 1.0,
+        "candidate_overlap_fraction": 0.0,
+        "novel_count": 2838,
+        "novel_scene_fraction": 0.2365,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 0,
+        "overlap_fraction": 0.0,
+        "total_surface_count": 12000,
+        "union_count": 4145,
+        "union_fraction": 0.34541666666666665
+      }
+    },
+    {
+      "camera_delta_to_observed": {
+        "min_distance_to_observed_meters": 3.9148142337799072,
+        "min_view_direction_change_degrees": 25.20886075138498,
+        "nearest_observed_view_id": "00010",
+        "nearest_view_direction_view_id": "00020"
+      },
+      "candidate_sanity_tags": [
+        "new_area"
+      ],
+      "candidate_view_id": "00425",
+      "novel_connectivity": {
+        "component_count": 151,
+        "component_radius_meters": 0.08,
+        "largest_component_count": 10,
+        "largest_component_fraction_of_novel": 0.03076923076923077,
+        "point_count": 325
+      },
+      "observed_view_ids": [
+        "00000",
+        "00010",
+        "00020"
+      ],
+      "old_global_diagnostics": {
+        "baseline_metrics": {
+          "accuracy": 0.15614941716194153,
+          "chamfer": 1.7382729202508926,
+          "completeness": 3.3203964233398438,
+          "coverage": 0.017750000581145287,
+          "fscore": {
+            "0.02": 0.006230936720042693,
+            "0.05": 0.029522530523582224,
+            "0.1": 0.06949335279849447
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "candidate_metrics": {
+          "accuracy": 0.2177821397781372,
+          "chamfer": 1.2495025992393494,
+          "completeness": 2.2812230587005615,
+          "coverage": 0.0182499997317791,
+          "fscore": {
+            "0.02": 0.004815573931414632,
+            "0.05": 0.029444836395784994,
+            "0.1": 0.06810915150122897
+          },
+          "reconstruction_count": 12000,
+          "sample_method": "hash",
+          "target_count": 12000,
+          "voxel_size": 0.02
+        },
+        "gains": {
+          "accuracy": -0.06163272261619568,
+          "chamfer": 0.4887703210115433,
+          "completeness": 1.0391733646392822,
+          "coverage": 0.000499999150633812,
+          "fscore": {
+            "0.02": -0.0014153627886280612,
+            "0.05": -7.769412779723081e-05,
+            "0.1": -0.0013842012972655054
+          }
+        }
+      },
+      "scene_id": "scene0000_00",
+      "surface_sample": {
+        "count": 12000,
+        "fingerprint": "df8e06846bcc8f0a2189fb51f332079bc803714a",
+        "max_points": 12000,
+        "method": "hash"
+      },
+      "variant_key": {
+        "gt_voxel_size": 0.02,
+        "surface_sample_seed_offset": 0,
+        "visibility_depth_tolerance": 0.05
+      },
+      "visibility_metrics": {
+        "global_accuracy": {
+          "baseline": 0.1551455557346344,
+          "candidate": 0.21714892983436584,
+          "gain": -0.062003374099731445
+        },
+        "global_outlier_ratio": {
+          "baseline": 0.6367499828338623,
+          "candidate": 0.6886666417121887,
+          "gain": -0.051916658878326416,
+          "threshold_meters": 0.1
+        },
+        "novel_coverage_gain": {
+          "0.05": {
+            "baseline": 0.0,
+            "candidate": 0.0,
+            "gain": 0.0
+          },
+          "0.1": {
+            "baseline": 0.0,
+            "candidate": 0.0,
+            "gain": 0.0
+          }
+        },
+        "novel_surface_gain_scene_normalized": {
+          "0.05": 0.0,
+          "0.1": 0.0
+        },
+        "observed_retention_gain": {
+          "0.05": {
+            "baseline": 0.1560826301574707,
+            "candidate": 0.14843152463436127,
+            "gain": -0.007651105523109436
+          },
+          "0.1": {
+            "baseline": 0.32364192605018616,
+            "candidate": 0.32670238614082336,
+            "gain": 0.003060460090637207
+          }
+        },
+        "visible_union_completeness_gain": 0.002318263053894043
+      },
+      "visibility_stats": {
+        "candidate_count": 325,
+        "candidate_fraction": 0.027083333333333334,
+        "candidate_novel_fraction": 1.0,
+        "candidate_overlap_fraction": 0.0,
+        "novel_count": 325,
+        "novel_scene_fraction": 0.027083333333333334,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 0,
+        "overlap_fraction": 0.0,
+        "total_surface_count": 12000,
+        "union_count": 1632,
+        "union_fraction": 0.136
+      }
+    }
+  ],
+  "nominal_key": {
+    "gt_voxel_size": 0.02,
+    "surface_sample_seed_offset": 0,
+    "visibility_depth_tolerance": 0.05
+  },
+  "outputs": {
+    "docs_markdown": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c2/run_log.md",
+    "docs_summary_json": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c2/stage_c2_visibility_summary.json",
+    "output_summary_json": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c2/stage_c2_visibility_summary.json",
+    "variant_records_jsonl": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c2/stage_c2_visibility_records.jsonl"
+  },
+  "policy_inputs_exclude_candidate_rgb_depth_features_visibility": true,
+  "ranking_stability": {
+    "best_candidate_tie_counts_by_gain_0.05": {
+      "00010|00019|00325|00425": 27
+    },
+    "strict_best_candidate_counts_by_gain_0.05": {},
+    "variant_count": 27,
+    "variants": [
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.01,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.02,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.02
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.05
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 0,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 1,
+          "visibility_depth_tolerance": 0.1
+        }
+      },
+      {
+        "best_candidate_ties_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "ranking_by_novel_surface_gain_scene_normalized_0.05": [
+          "00010",
+          "00019",
+          "00325",
+          "00425"
+        ],
+        "scores_by_novel_surface_gain_scene_normalized_0.05": [
+          {
+            "candidate_view_id": "00010",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00019",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00325",
+            "score": 0.0
+          },
+          {
+            "candidate_view_id": "00425",
+            "score": 0.0
+          }
+        ],
+        "variant_key": {
+          "gt_voxel_size": 0.05,
+          "surface_sample_seed_offset": 17,
+          "visibility_depth_tolerance": 0.1
+        }
+      }
+    ]
+  },
+  "runtime_seconds": 90.59227854758501,
+  "stability_by_candidate": {
+    "00010": {
+      "candidate_novel_fraction": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_fraction": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_normalized_gain_0.05": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_normalized_gain_0.1": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "observed_retention_gain_0.05": {
+        "count": 27,
+        "max": 0.0061255693435668945,
+        "mean": 0.00011290609836578369,
+        "min": -0.0048115551471710205,
+        "range": 0.010937124490737915,
+        "std": 0.0034081070666869715
+      },
+      "observed_retention_gain_0.1": {
+        "count": 27,
+        "max": 0.017557233572006226,
+        "mean": 0.008225944307115342,
+        "min": 0.0,
+        "range": 0.017557233572006226,
+        "std": 0.005726292017639399
+      },
+      "variant_count": 27,
+      "visible_union_completeness_gain": {
+        "count": 27,
+        "max": 0.0012290030717849731,
+        "mean": 0.0004989041222466363,
+        "min": 0.00013840198516845703,
+        "range": 0.0010906010866165161,
+        "std": 0.00034803885469496715
+      }
+    },
+    "00019": {
+      "candidate_novel_fraction": {
+        "count": 27,
+        "max": 0.0034883720930232558,
+        "mean": 0.0019166623496943756,
+        "min": 0.001092896174863388,
+        "range": 0.002395475918159868,
+        "std": 0.0009747444274739532
+      },
+      "novel_scene_fraction": {
+        "count": 27,
+        "max": 0.00025,
+        "mean": 0.0001388888888888889,
+        "min": 8.333333333333333e-05,
+        "range": 0.0001666666666666667,
+        "std": 6.804138174397718e-05
+      },
+      "novel_scene_normalized_gain_0.05": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_normalized_gain_0.1": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "observed_retention_gain_0.05": {
+        "count": 27,
+        "max": 0.0007776021957397461,
+        "mean": -0.006981586416562398,
+        "min": -0.014434650540351868,
+        "range": 0.015212252736091614,
+        "std": 0.004498047251212813
+      },
+      "observed_retention_gain_0.1": {
+        "count": 27,
+        "max": -0.013740450143814087,
+        "mean": -0.022071033716201782,
+        "min": -0.029549002647399902,
+        "range": 0.015808552503585815,
+        "std": 0.005908817610665075
+      },
+      "variant_count": 27,
+      "visible_union_completeness_gain": {
+        "count": 27,
+        "max": -0.013268783688545227,
+        "mean": -0.013549993435541788,
+        "min": -0.013888448476791382,
+        "range": 0.0006196647882461548,
+        "std": 0.0002291345317669322
+      }
+    },
+    "00325": {
+      "candidate_novel_fraction": {
+        "count": 27,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_fraction": {
+        "count": 27,
+        "max": 0.24391666666666667,
+        "mean": 0.2370246913580247,
+        "min": 0.23225,
+        "range": 0.011666666666666659,
+        "std": 0.003939800005291496
+      },
+      "novel_scene_normalized_gain_0.05": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_normalized_gain_0.1": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "observed_retention_gain_0.05": {
+        "count": 27,
+        "max": -0.014423079788684845,
+        "mean": -0.020832049349943798,
+        "min": -0.03366488218307495,
+        "range": 0.019241802394390106,
+        "std": 0.005799766323058944
+      },
+      "observed_retention_gain_0.1": {
+        "count": 27,
+        "max": -0.038931310176849365,
+        "mean": -0.04334410693910387,
+        "min": -0.04898911714553833,
+        "range": 0.010057806968688965,
+        "std": 0.003262104391238157
+      },
+      "variant_count": 27,
+      "visible_union_completeness_gain": {
+        "count": 27,
+        "max": 2.231799602508545,
+        "mean": 2.187195075882806,
+        "min": 2.1510074138641357,
+        "range": 0.08079218864440918,
+        "std": 0.03172141880511445
+      }
+    },
+    "00425": {
+      "candidate_novel_fraction": {
+        "count": 27,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_fraction": {
+        "count": 27,
+        "max": 0.031083333333333334,
+        "mean": 0.028981481481481476,
+        "min": 0.026833333333333334,
+        "range": 0.00425,
+        "std": 0.0015946369307823923
+      },
+      "novel_scene_normalized_gain_0.05": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_normalized_gain_0.1": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "observed_retention_gain_0.05": {
+        "count": 27,
+        "max": 0.001558840274810791,
+        "mean": -0.003825296958287557,
+        "min": -0.011400654911994934,
+        "range": 0.012959495186805725,
+        "std": 0.004627935632164166
+      },
+      "observed_retention_gain_0.1": {
+        "count": 27,
+        "max": 0.0030627846717834473,
+        "mean": -0.006001694334877862,
+        "min": -0.015552103519439697,
+        "range": 0.018614888191223145,
+        "std": 0.006369494755390259
+      },
+      "variant_count": 27,
+      "visible_union_completeness_gain": {
+        "count": 27,
+        "max": 0.008096456527709961,
+        "mean": 0.004191729757520888,
+        "min": 0.0007586479187011719,
+        "range": 0.007337808609008789,
+        "std": 0.0028828581172312896
+      }
+    }
+  },
+  "status": "complete",
+  "test_count": {
+    "synthetic_visibility_tests": 7
+  },
+  "variant_count": 108
+}
