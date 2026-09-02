@@ -111,9 +111,10 @@ F-score@0.10 gain mean = -0.00999, positive ratio = 0.35
 
 ## 当前唯一主任务：校准 Oracle 测量协议
 
-阶段 A 已于 2026-09-02 完成，结论为“部分通过，但整体校准未通过”。当前只执行
-阶段 B 的相机锚定公平对齐。不要运行新的 VGGT 重建；优先复用 audit20 和 Stage A
-已有 cached reconstructions。不要扩展 dataset，也不要训练 policy。
+阶段 A、Stage B camera-anchor smoke 和 Stage C deterministic smoke 已于 2026-09-02
+完成，但整体校准仍未通过。当前唯一任务是 Stage C2：使用 ScanNet GT 几何验证
+frustum overlap 和 novel visible surface，并据此校准 visibility-aware oracle。只复用
+已有完整 v3 caches，不再运行 VGGT，不扩展 audit20，不训练 policy。
 
 ### 阶段 A：已完成——隔离 metric/alignment 噪声
 
@@ -181,7 +182,7 @@ coverage 和 F@0.02 的 sampling std 分别达到旧 candidate range 的约 9.5%
 5. 不把 observed view 放入真实 NBV action set。保留重复图像实验时，将记录类型明确
    标为 `duplicate_input_sensitivity`。
 
-### 阶段 B：代码路径已完成，当前阻塞于旧 cache 缺少 pose encoding
+### 阶段 B：已完成小规模 smoke，旧 cache 阻塞保留为历史记录
 
 2026-09-02 已完成 camera-anchor alignment 基础实现、Stage B 审计脚本、v3 cache
 schema 和 pose convention/camera alignment 单测。实际审计没有运行新的 VGGT，报告位于：
@@ -207,7 +208,7 @@ audit20 cache 只有 `points.pt`、`confidence.pt` 和 `metadata.json`，无法�
 `pose_enc.pt` 补写进旧 cache；points 与 pose 必须来自同一次、同配置的重建并保存在
 新的 v3 输出目录。
 
-在请求用户批准新的 VGGT 推理前，先完成以下四项代码补强；这些工作不需要运行 VGGT：
+以下四项代码补强已完成，必须保持为后续回归约束：
 
 1. **强制 v3 artifact 完整性。** 新建 oracle reconstruction 时，若
    `features.pose_enc is None` 必须立即失败，不能仍写成 v3 cache。复用时必须同时检查
@@ -226,8 +227,8 @@ audit20 cache 只有 `points.pt`、`confidence.pt` 和 `metadata.json`，无法�
    rotation/scale/translation、非共面 4-point 和 reflection-rejection 测试，避免从
    3 个共面相机扩展到 4 个 anchor 时出现隐藏误差。
 
-上述四项完成后运行 `compileall`、完整单测和 `git diff --check`，先汇报修改与测试，
-不要自行开始 GPU 推理。
+四项补强包括相应单元测试。后续修改不得削弱 cache fail-closed、candidate 不参与
+alignment anchor、退化 anchor fail-closed 或 proper-rotation Sim(3) 约束。
 
 以下保留为 Stage B 的设计和验收要求：
 
@@ -249,13 +250,29 @@ audit20 cache 只有 `points.pt`、`confidence.pt` 和 `metadata.json`，无法�
    camera-Sim(3) 与旧 free-ICP 的 gain 分布、scale 漂移、residual 和 inlier ratio。
    本阶段不生成新的 VGGT reconstruction。
 
-阶段 B 必须满足：相机 anchor residual 明显降低；baseline/candidate scale 不发生异常
-塌缩；candidate 加入后 observed-camera alignment 不剧烈漂移；新协议下
-identical-cloud gain 仍为 0；点云对 GT 的 residual/inlier 明显优于旧 free-ICP。完成后
-先汇报并等待确认，再进入阶段 C。
+Stage B/C 已在新的 v3 output directory 重建 baseline 和四个 smoke candidate。该次
+运行确实执行了新的 VGGT，但没有扩展到完整 audit20：
 
-在四项补强通过且用户明确批准重建后，不要立即重跑全部 22 份。先在新的 v3 output
-directory 中重建 baseline 和 3--4 个代表性 candidate：
+```text
+VGGT runtime = 57.941 s
+peak GPU memory = 6,158,511,104 bytes
+output size = 61,806,190 bytes
+candidates = 00010, 00019, 00325, 00425
+```
+
+camera-anchor point residual 明显优于旧 free-ICP：
+
+```text
+baseline camera-anchor RMSE = 0.201 m, inlier@0.05 = 0.0877
+candidate camera-anchor RMSE = 0.322 m, inlier@0.05 = 0.0720
+baseline old free-ICP RMSE   = 0.642 m, inlier@0.05 = 0.0258
+candidate old free-ICP RMSE  = 0.548 m, inlier@0.05 = 0.0370
+```
+
+因此 camera-anchor 方向成立，但点云误差和离群点仍明显，不能把 Stage B 视为 oracle
+label 已通过。
+
+已完成的 smoke 类型为：
 
 ```text
 duplicate-input sensitivity
@@ -264,21 +281,127 @@ old oracle-best
 connected new-area
 ```
 
-先验证 cache 完整性、camera anchor condition、scale 漂移、camera residual、point-cloud
-residual/inlier 和 gain 分布。这个小规模 Stage B smoke 通过后，再请求批准重建完整
-audit20。旧 cache 继续只读保留，不能覆盖。
+旧 cache 继续只读保留，不能覆盖或补写新的 pose encoding。
 
-### 阶段 C：确定性几何评估
+### 阶段 C1：已完成——确定性几何评估
 
-1. 移除对齐前的随机 50k 截断；先做 finite/confidence filtering，再对齐，再做确定性
-   voxel downsample。
-2. 所有 candidate 共用一份缓存且固定的 GT point set。优先评估全部 voxel centroids；
-   若必须限点，使用确定性的空间/hash sampling 或报告多 seed 误差条。
-3. 基于 ScanNet GT pose、depth 或 mesh 计算 frustum overlap 与 novel visible surface
-   fraction，重新定义 high-overlap 和 new-area audit case。GT 可见性仅用于离线审计和
-   oracle label，不能进入 NBV policy 输入。
-4. alignment 与 sampling 稳定后，再比较 confidence threshold，例如绝对阈值或固定
-   分位数，并同时报告保留点数、coverage 和各项 metric。
+已移除对齐前的随机 50k 截断，完整保存过滤后的 reconstruction points；metric 在
+对齐和 voxel downsample 后使用 deterministic hash sampling，固定为 12k points。
+
+```text
+max_reconstruction_points = null
+reconstruction_sample_method = none
+metric_sample_method = hash
+voxel_downsample_size = 0.02 m
+max_metric_points = 12000
+```
+
+确定性 smoke 的 held-out 结果仍未通过：
+
+```text
+Chamfer gain mean      = +0.4170, positive ratio = 1.000
+accuracy gain mean     = -0.1221, positive ratio = 0.000
+completeness gain mean = +0.9562, positive ratio = 1.000
+coverage gain mean     = -0.00128, positive ratio = 0.333
+F@0.05 gain mean       = -0.00344, positive ratio = 0.000
+```
+
+`00325` 的 Chamfer gain `+0.7418` 几乎完全由 completeness gain `+1.7815` 驱动，
+同时 accuracy `-0.2980`、coverage `-0.00342`、F@0.05 `-0.00846`。因此完整场景上的
+平均 completeness/Chamfer 会奖励“粗略接近更多远处区域”，但不能证明新表面被准确
+重建。暂时不要把 Chamfer 单独作为 oracle label。
+
+`00425` 的 coverage gain 只有 `+0.0005`，约等于 12k GT samples 中多覆盖 6 个点，
+并小于 Stage A coverage std `0.00151`，不能据此认定它是有效 new-area view。当前
+camera-anchor RMSE 约为 1.25--1.65 cm，接近 F@0.02 的 2 cm 阈值，因此 F@0.02
+暂时只作为附加指标，优先观察 5 cm 与 10 cm。
+
+报告位置：
+
+```text
+docs/audits/scannet_scene0000_00_current_summary.md
+docs/audits/scannet_scene0000_00_stage_c/run_log.md
+docs/audits/scannet_scene0000_00_stage_c/stage_c_deterministic_smoke_summary.json
+```
+
+### 阶段 C2：当前唯一任务——GT visibility 与 novel-surface 审计
+
+本阶段不得运行 VGGT。只复用
+`outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/` 中的完整 v3
+caches。首先只检查 `scene0000_00` 对应的数据目录和元数据，确认可用的 GT mesh/points、
+RGB/depth intrinsics、camera poses 和 depth maps；不要递归扫描整个共享存储。若缺少完成
+遮挡判断所必需的资产，输出 `blocked_missing_visibility_assets` 并列出精确缺失项，不要
+退化为只按相机距离判断。
+
+#### C2.1 构建可见表面掩码
+
+对一份固定、确定性、尽量按表面积均匀的 GT surface sample，使用 GT camera pose、
+对应分辨率的 intrinsics 和 z-buffer/GT depth 遮挡测试，构建：
+
+```text
+M_obs     = 任一 observed camera 可见的 GT surface
+M_cand    = 当前 candidate camera 可见的 GT surface
+M_overlap = M_obs ∩ M_cand
+M_novel   = M_cand - M_obs
+M_union   = M_obs ∪ M_cand
+```
+
+必须增加 synthetic visibility tests，至少覆盖：投影边界、相机前后方、深度遮挡、重复
+相机、完全重叠、部分重叠和无重叠。明确 ScanNet pose/intrinsics 坐标约定、图像尺寸缩放
+和 depth tolerance，并把这些配置写入报告。
+
+#### C2.2 验证 smoke candidate 的真实语义
+
+对 `00010`、`00019`、`00325`、`00425` 分别报告：
+
+```text
+visible surface count / fraction
+overlap count / fraction
+novel count / fraction
+scene-normalized novel fraction
+camera distance and viewing-direction change
+```
+
+sanity 预期：`00010` 的 novelty 接近 0；`00019` 应为高 overlap、低 novelty；
+`00325/00425` 必须同时具有可解释的新表面和足够连接性，才能称为 connected new-area。
+如果标签不符合真实 GT visibility，修正 audit tag，不要修改 metric 去迎合原标签。
+
+#### C2.3 分离计算 visibility-aware oracle 指标
+
+对每个 candidate，baseline 与 candidate reconstruction 必须在同一组 candidate-specific
+GT masks 上评估。不要立即组合成加权总分，分别保存：
+
+1. `novel_coverage_gain@0.05/0.10`：`M_novel` 上新增的覆盖率；
+2. `novel_surface_gain_scene_normalized`：新增覆盖点数除以完整场景 GT surface 数，保证
+   不同 candidate 的绝对收益可比较；
+3. `observed_retention_gain@0.05/0.10`：加入 candidate 后在 `M_obs` 上是否破坏已有重建；
+4. `visible_union_completeness_gain`：在固定 `M_union` 上的 completeness 改善；
+5. `global_accuracy` 与 outlier ratio：所有预测点相对完整 GT 的误差，避免只扩张粗糙
+   点云就获得高分；
+6. 原有全局 Chamfer、coverage、F-score 继续记录，但只作为诊断对照。
+
+candidate 的 GT depth/visibility 只能用于离线 oracle label 和审计，不能成为未来 NBV
+policy 输入。candidate-specific target 对 baseline/candidate 必须完全相同，禁止 baseline
+只在 `M_obs`、candidate 却在 `M_union` 上评估。
+
+#### C2.4 稳定性与验收
+
+至少检查 GT voxel size `0.01/0.02/0.05 m`、visibility depth tolerance 和 deterministic
+sampling seed/hash offset 对数量与排序的影响。报告 mean/std/range，不要只给一次结果。
+
+C2 只有满足以下条件才通过：
+
+- duplicate-input 的 novelty 和 novel gain 接近 0；
+- high-overlap candidate 的 novelty 显著小于 connected new-area；
+- 至少一个真实 connected new-area candidate 的 novel coverage 在 5/10 cm 下稳定为正；
+- observed retention 没有被严重破坏，或其退化被单独、明确报告；
+- candidate 排序对 voxel/tolerance/sampling 设置基本稳定；
+- visibility 实现的 synthetic tests、完整单测、`compileall` 和 `git diff --check` 通过。
+
+完成后把轻量 JSON/Markdown 报告提交到 `docs/audits/scannet_scene0000_00_stage_c2/`，报告
+完整测试数量。先汇报结果并等待用户决定：若原 smoke candidate 语义有效且 novel gain
+可信，再考虑完整 audit20；若 `00325/00425` 并非 connected new-area，则先用 GT
+visibility 离线选择少量合格候选，得到批准后才运行新的 VGGT smoke。
 
 ### 校准通过条件
 
