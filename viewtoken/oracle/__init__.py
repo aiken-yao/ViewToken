@@ -42,6 +42,15 @@ from .calibration import (
 )
 from .dataset import OracleGainRecord, append_jsonl, build_memory_id, scene_split, write_jsonl
 from .io import load_point_cloud, load_pose_matrix, view_id_from_path
+from .known_pose import (
+    KnownPoseCacheEligibilityError,
+    PerViewFlattenMetadata,
+    fuse_cached_points_with_known_poses,
+    inspect_per_view_flatten_metadata,
+    local_camera_points_to_known_world,
+    predicted_world_to_local_camera_points,
+    reshape_flattened_points_by_view,
+)
 from .metrics import (
     AlignmentDiagnostics,
     AlignmentResult,
@@ -147,4 +156,11 @@ __all__ = [
     "transform_world_to_camera",
     "union_visible_surface_mask",
     "visible_surface_mask",
+    "KnownPoseCacheEligibilityError",
+    "PerViewFlattenMetadata",
+    "fuse_cached_points_with_known_poses",
+    "inspect_per_view_flatten_metadata",
+    "local_camera_points_to_known_world",
+    "predicted_world_to_local_camera_points",
+    "reshape_flattened_points_by_view",
 ]

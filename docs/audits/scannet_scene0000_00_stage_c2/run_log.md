@@ -13,7 +13,7 @@ This audit reused the complete Stage C deterministic v3 reconstruction caches an
 - Image size: `1296x968`
 - Intrinsics source: `/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt`
 - Occlusion source: `GT point-cloud z-buffer over the fixed deterministic surface sample; no RGB-D depth maps were found in posed_images/scene0000_00.`
-- Nominal voxel/depth/seed: `{'gt_voxel_size': 0.02, 'surface_sample_seed_offset': 0, 'visibility_depth_tolerance': 0.05}`
+- Nominal voxel/depth/seed: `{'gt_voxel_size': 0.02, 'visibility_depth_tolerance': 0.05, 'surface_sample_seed_offset': 0}`
 - Synthetic visibility test count: `7`
 
 ## Nominal Results
@@ -37,8 +37,10 @@ This audit reused the complete Stage C deterministic v3 reconstruction caches an
 ## Assessment
 
 - Duplicate novelty near zero: `True`
-- High-overlap novelty less than connected new area: `True`
-- Connected new-area candidates with novel surface: `['00325', '00425']`
+- High-overlap novelty less than connected new area: `False`
+- Connected-new-area candidates with novel surface and nonzero overlap: `[]`
+- Disconnected novel candidates: `['00325', '00425']`
+- Connected-novel requires overlap: `True`
 - Novel connectivity min largest component count: `10`
 - Stable positive connected new-area candidates: `[]`
 - Observed retention not badly damaged: `False`

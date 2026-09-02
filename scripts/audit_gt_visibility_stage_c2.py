@@ -472,7 +472,14 @@ def build_assessment(
         row
         for row in connected_candidates
         if row["visibility_stats"]["novel_count"] > 0
+        and row["visibility_stats"]["overlap_count"] > 0
         and row["novel_connectivity"]["largest_component_count"] >= connectivity_min_count
+    ]
+    disconnected_novel_candidates = [
+        row["candidate_view_id"]
+        for row in connected_candidates
+        if row["visibility_stats"]["novel_count"] > 0
+        and row["visibility_stats"]["overlap_count"] == 0
     ]
     high_overlap_novel_less_than_connected = False
     if high_overlap is not None and connected_with_novel:
@@ -517,6 +524,8 @@ def build_assessment(
         "connected_new_area_candidates_with_novel_surface": [
             row["candidate_view_id"] for row in connected_with_novel
         ],
+        "disconnected_novel_candidates": disconnected_novel_candidates,
+        "connected_novel_requires_overlap": True,
         "novel_connectivity_min_largest_component_count": connectivity_min_count,
         "stable_positive_connected_new_area_candidates": stable_positive,
         "observed_retention_not_badly_damaged": not damaged_retention,
@@ -628,7 +637,9 @@ This audit reused the complete Stage C deterministic v3 reconstruction caches an
 
 - Duplicate novelty near zero: `{assessment['duplicate_novel_near_zero']}`
 - High-overlap novelty less than connected new area: `{assessment['high_overlap_novel_less_than_connected_new_area']}`
-- Connected new-area candidates with novel surface: `{assessment['connected_new_area_candidates_with_novel_surface']}`
+- Connected-new-area candidates with novel surface and nonzero overlap: `{assessment['connected_new_area_candidates_with_novel_surface']}`
+- Disconnected novel candidates: `{assessment['disconnected_novel_candidates']}`
+- Connected-novel requires overlap: `{assessment['connected_novel_requires_overlap']}`
 - Novel connectivity min largest component count: `{assessment['novel_connectivity_min_largest_component_count']}`
 - Stable positive connected new-area candidates: `{assessment['stable_positive_connected_new_area_candidates']}`
 - Observed retention not badly damaged: `{assessment['observed_retention_not_badly_damaged']}`

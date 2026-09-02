@@ -1,0 +1,2062 @@
+{
+  "assessment": {
+    "disconnected_novel_candidates": [
+      "00325",
+      "00425"
+    ],
+    "known_pose_connected_positive_candidates": [],
+    "needs_connected_novel_candidate_selection_before_more_vggt": true,
+    "predicted_world_connected_positive_candidates": [],
+    "stage_c3_passed": false
+  },
+  "branch_summary": {
+    "known_pose": {
+      "global_accuracy_gain": {
+        "count": 4,
+        "max": 0.001607164740562439,
+        "mean": -0.007836472243070602,
+        "min": -0.013101577758789062,
+        "range": 0.014708742499351501,
+        "std": 0.005734004680567513
+      },
+      "novel_scene_normalized_gain_0.05": {
+        "count": 4,
+        "max": 0.027583333333333335,
+        "mean": 0.006895833333333334,
+        "min": 0.0,
+        "range": 0.027583333333333335,
+        "std": 0.011943933693860383
+      },
+      "novel_scene_normalized_gain_0.10": {
+        "count": 4,
+        "max": 0.06558333333333333,
+        "mean": 0.01639583333333333,
+        "min": 0.0,
+        "range": 0.06558333333333333,
+        "std": 0.028398416365764716
+      },
+      "observed_retention_gain_0.05": {
+        "count": 4,
+        "max": -0.0022953450679779053,
+        "mean": -0.02907422184944153,
+        "min": -0.0680948793888092,
+        "range": 0.0657995343208313,
+        "std": 0.027597073310260452
+      }
+    },
+    "predicted_world": {
+      "global_accuracy_gain": {
+        "count": 4,
+        "max": 0.00038923323154449463,
+        "mean": -0.092104472219944,
+        "min": -0.29866087436676025,
+        "range": 0.29905010759830475,
+        "std": 0.12163085439077069
+      },
+      "novel_scene_normalized_gain_0.05": {
+        "count": 4,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "novel_scene_normalized_gain_0.10": {
+        "count": 4,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "observed_retention_gain_0.05": {
+        "count": 4,
+        "max": 0.003060445189476013,
+        "mean": -0.01205049455165863,
+        "min": -0.03366488218307495,
+        "range": 0.036725327372550964,
+        "std": 0.013409921141262158
+      }
+    }
+  },
+  "c2_corrected_semantic_counts": {
+    "disconnected_novel_view": 2,
+    "duplicate_or_no_novel": 1,
+    "high_overlap_low_novel": 1
+  },
+  "candidate_count": 4,
+  "candidate_rows": [
+    {
+      "branches": {
+        "known_pose": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 0,
+              "max": null,
+              "mean": null,
+              "median": null,
+              "min": null,
+              "p10": null,
+              "p25": null,
+              "p75": null,
+              "p90": null,
+              "p95": null
+            },
+            "target_to_candidate": {
+              "count": 0,
+              "max": null,
+              "mean": null,
+              "median": null,
+              "min": null,
+              "p10": null,
+              "p25": null,
+              "p75": null,
+              "p90": null,
+              "p95": null
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                }
+              },
+              "total_count": 0
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                }
+              },
+              "total_count": 0
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              },
+              "0.1": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              },
+              "0.2": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              },
+              "0.5": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.13545070588588715,
+              "candidate": 0.1338435411453247,
+              "gain": 0.001607164740562439
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.5665833353996277,
+              "candidate": 0.5665000081062317,
+              "gain": 8.33272933959961e-05,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              },
+              "0.1": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              },
+              "0.2": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              },
+              "0.5": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.2": 0.0,
+              "0.5": 0.0
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.17138485610485077,
+                "candidate": 0.16908951103687286,
+                "gain": -0.0022953450679779053
+              },
+              "0.1": {
+                "baseline": 0.45524102449417114,
+                "candidate": 0.45371079444885254,
+                "gain": -0.0015302300453186035
+              },
+              "0.2": {
+                "baseline": 0.811782717704773,
+                "candidate": 0.816373348236084,
+                "gain": 0.004590630531311035
+              },
+              "0.5": {
+                "baseline": 0.9892884492874146,
+                "candidate": 0.9892884492874146,
+                "gain": 0.0
+              }
+            },
+            "visible_union_completeness_gain": 0.0006439834833145142
+          }
+        },
+        "predicted_world": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 0,
+              "max": null,
+              "mean": null,
+              "median": null,
+              "min": null,
+              "p10": null,
+              "p25": null,
+              "p75": null,
+              "p90": null,
+              "p95": null
+            },
+            "target_to_candidate": {
+              "count": 0,
+              "max": null,
+              "mean": null,
+              "median": null,
+              "min": null,
+              "p10": null,
+              "p25": null,
+              "p75": null,
+              "p90": null,
+              "p95": null
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                }
+              },
+              "total_count": 0
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": null
+                }
+              },
+              "total_count": 0
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              },
+              "0.1": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              },
+              "0.2": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              },
+              "0.5": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": null,
+                "scene_normalized_gain": 0.0
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.1551455557346344,
+              "candidate": 0.1547563225030899,
+              "gain": 0.00038923323154449463
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.6367499828338623,
+              "candidate": 0.6411666870117188,
+              "gain": -0.004416704177856445,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              },
+              "0.1": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              },
+              "0.2": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              },
+              "0.5": {
+                "baseline": null,
+                "candidate": null,
+                "gain": null
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.2": 0.0,
+              "0.5": 0.0
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.1560826301574707,
+                "candidate": 0.15914307534694672,
+                "gain": 0.003060445189476013
+              },
+              "0.1": {
+                "baseline": 0.32364192605018616,
+                "candidate": 0.33894413709640503,
+                "gain": 0.015302211046218872
+              },
+              "0.2": {
+                "baseline": 0.6373373866081238,
+                "candidate": 0.6396327614784241,
+                "gain": 0.002295374870300293
+              },
+              "0.5": {
+                "baseline": 0.9900535345077515,
+                "candidate": 0.9900535345077515,
+                "gain": 0.0
+              }
+            },
+            "visible_union_completeness_gain": 0.0012290030717849731
+          }
+        }
+      },
+      "candidate_view_id": "00010",
+      "corrected_visibility_semantic_tag": "duplicate_or_no_novel",
+      "heldout_pose_diagnostics": {
+        "candidate_cache_image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00010"
+        ],
+        "candidate_index_in_cache": 3,
+        "candidate_used_as_alignment_anchor": false,
+        "candidate_view_id": "00010",
+        "heldout_candidate_center_error_meters": 0.004752419888973236,
+        "heldout_candidate_forward_error_degrees": 8.583892800940282,
+        "heldout_candidate_rotation_error_degrees": 19.689305900929106,
+        "pairwise_distance_distortion": {
+          "max_abs_error_meters": 0.021046094596385956,
+          "max_abs_relative_error": 0.16154353635188362,
+          "mean_abs_error_meters": 0.008871395140886307,
+          "mean_abs_relative_error": 0.050993644228446044,
+          "mean_raw_predicted_to_gt_ratio": 0.4989753866684688,
+          "pairs": [
+            {
+              "aligned_minus_gt": 0.010319799184799194,
+              "aligned_predicted_distance": 0.36364123225212097,
+              "gt_distance": 0.3533214330673218,
+              "pair": [
+                "00000",
+                "00010"
+              ],
+              "predicted_raw_distance": 0.1866033375263214,
+              "raw_predicted_to_gt_ratio": 0.5281404411454599,
+              "relative_error": 0.029207962549027876
+            },
+            {
+              "aligned_minus_gt": -0.021046094596385956,
+              "aligned_predicted_distance": 0.10923516005277634,
+              "gt_distance": 0.1302812546491623,
+              "pair": [
+                "00000",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.05605432018637657,
+              "raw_predicted_to_gt_ratio": 0.4302562201855261,
+              "relative_error": -0.16154353635188362
+            },
+            {
+              "aligned_minus_gt": 0.010319799184799194,
+              "aligned_predicted_distance": 0.36364123225212097,
+              "gt_distance": 0.3533214330673218,
+              "pair": [
+                "00000",
+                "00010"
+              ],
+              "predicted_raw_distance": 0.1866033375263214,
+              "raw_predicted_to_gt_ratio": 0.5281404411454599,
+              "relative_error": 0.029207962549027876
+            },
+            {
+              "aligned_minus_gt": -0.005771338939666748,
+              "aligned_predicted_distance": 0.32393693923950195,
+              "gt_distance": 0.3297082781791687,
+              "pair": [
+                "00010",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.1662289947271347,
+              "raw_predicted_to_gt_ratio": 0.504169915432949,
+              "relative_error": -0.017504379846145418
+            },
+            {
+              "aligned_minus_gt": 0.0,
+              "aligned_predicted_distance": 0.0,
+              "gt_distance": 0.0,
+              "pair": [
+                "00010",
+                "00010"
+              ],
+              "predicted_raw_distance": 0.0,
+              "raw_predicted_to_gt_ratio": null,
+              "relative_error": null
+            },
+            {
+              "aligned_minus_gt": -0.005771338939666748,
+              "aligned_predicted_distance": 0.32393693923950195,
+              "gt_distance": 0.3297082781791687,
+              "pair": [
+                "00020",
+                "00010"
+              ],
+              "predicted_raw_distance": 0.1662289947271347,
+              "raw_predicted_to_gt_ratio": 0.504169915432949,
+              "relative_error": -0.017504379846145418
+            }
+          ]
+        },
+        "shared_observed_anchor_ids": [
+          "00000",
+          "00010",
+          "00020"
+        ]
+      },
+      "known_pose_cache_metadata": {
+        "cache_dir": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/reconstructions/23a55d429693f934__plus__00010",
+        "depth_scale_from_observed_anchor_sim3": 1.9487385749816895,
+        "flatten": {
+          "expected_point_count": 812224,
+          "height": 392,
+          "view_count": 4,
+          "width": 518
+        },
+        "image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00010"
+        ],
+        "method": "cached_v3_world_points_to_local_camera_then_gt_camera_to_world"
+      },
+      "original_candidate_sanity_tags": [
+        "duplicate_input_sensitivity"
+      ],
+      "scene_id": "scene0000_00",
+      "visibility_stats": {
+        "candidate_count": 747,
+        "candidate_fraction": 0.06225,
+        "candidate_novel_fraction": 0.0,
+        "candidate_overlap_fraction": 1.0,
+        "novel_count": 0,
+        "novel_scene_fraction": 0.0,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 747,
+        "overlap_fraction": 0.06225,
+        "total_surface_count": 12000,
+        "union_count": 1307,
+        "union_fraction": 0.10891666666666666
+      }
+    },
+    {
+      "branches": {
+        "known_pose": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 1,
+              "max": 0.18967700004577637,
+              "mean": 0.18967700004577637,
+              "median": 0.18967700004577637,
+              "min": 0.18967700004577637,
+              "p10": 0.18967700004577637,
+              "p25": 0.18967700004577637,
+              "p75": 0.18967700004577637,
+              "p90": 0.18967700004577637,
+              "p95": 0.18967700004577637
+            },
+            "target_to_candidate": {
+              "count": 1,
+              "max": 0.2225748598575592,
+              "mean": 0.2225748598575592,
+              "median": 0.2225748598575592,
+              "min": 0.2225748598575592,
+              "p10": 0.2225748598575592,
+              "p25": 0.2225748598575592,
+              "p75": 0.2225748598575592,
+              "p90": 0.2225748598575592,
+              "p95": 0.2225748598575592
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 1,
+                  "covered_ratio": 1.0
+                },
+                "0.5": {
+                  "covered_count": 1,
+                  "covered_ratio": 1.0
+                }
+              },
+              "total_count": 1
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.5": {
+                  "covered_count": 1,
+                  "covered_ratio": 1.0
+                }
+              },
+              "total_count": 1
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.1": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.2": {
+                "covered_count_gain": -1,
+                "novel_ratio_gain": -1.0,
+                "scene_normalized_gain": -8.333333333333333e-05
+              },
+              "0.5": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.13545070588588715,
+              "candidate": 0.1485522836446762,
+              "gain": -0.013101577758789062
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.5665833353996277,
+              "candidate": 0.6601666808128357,
+              "gain": -0.09358334541320801,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.1": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.2": {
+                "baseline": 1.0,
+                "candidate": 0.0,
+                "gain": -1.0
+              },
+              "0.5": {
+                "baseline": 1.0,
+                "candidate": 1.0,
+                "gain": 0.0
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.2": -8.333333333333333e-05,
+              "0.5": 0.0
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.17138485610485077,
+                "candidate": 0.12930375337600708,
+                "gain": -0.04208110272884369
+              },
+              "0.1": {
+                "baseline": 0.45524102449417114,
+                "candidate": 0.378729909658432,
+                "gain": -0.07651111483573914
+              },
+              "0.2": {
+                "baseline": 0.811782717704773,
+                "candidate": 0.744452953338623,
+                "gain": -0.0673297643661499
+              },
+              "0.5": {
+                "baseline": 0.9892884492874146,
+                "candidate": 0.987758219242096,
+                "gain": -0.0015302300453186035
+              }
+            },
+            "visible_union_completeness_gain": -0.017029404640197754
+          }
+        },
+        "predicted_world": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 1,
+              "max": 0.16368423402309418,
+              "mean": 0.16368423402309418,
+              "median": 0.16368423402309418,
+              "min": 0.16368423402309418,
+              "p10": 0.16368423402309418,
+              "p25": 0.16368423402309418,
+              "p75": 0.16368423402309418,
+              "p90": 0.16368423402309418,
+              "p95": 0.16368423402309418
+            },
+            "target_to_candidate": {
+              "count": 1,
+              "max": 0.1773126721382141,
+              "mean": 0.1773126721382141,
+              "median": 0.1773126721382141,
+              "min": 0.1773126721382141,
+              "p10": 0.1773126721382141,
+              "p25": 0.1773126721382141,
+              "p75": 0.1773126721382141,
+              "p90": 0.1773126721382141,
+              "p95": 0.1773126721382141
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 1,
+                  "covered_ratio": 1.0
+                },
+                "0.5": {
+                  "covered_count": 1,
+                  "covered_ratio": 1.0
+                }
+              },
+              "total_count": 1
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 1,
+                  "covered_ratio": 1.0
+                },
+                "0.5": {
+                  "covered_count": 1,
+                  "covered_ratio": 1.0
+                }
+              },
+              "total_count": 1
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.1": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.2": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.5": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.1551455557346344,
+              "candidate": 0.1632884293794632,
+              "gain": -0.008142873644828796
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.6367499828338623,
+              "candidate": 0.659416675567627,
+              "gain": -0.02266669273376465,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.1": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.2": {
+                "baseline": 1.0,
+                "candidate": 1.0,
+                "gain": 0.0
+              },
+              "0.5": {
+                "baseline": 1.0,
+                "candidate": 1.0,
+                "gain": 0.0
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.2": 0.0,
+              "0.5": 0.0
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.1560826301574707,
+                "candidate": 0.14613619446754456,
+                "gain": -0.009946435689926147
+              },
+              "0.1": {
+                "baseline": 0.32364192605018616,
+                "candidate": 0.3068094849586487,
+                "gain": -0.016832441091537476
+              },
+              "0.2": {
+                "baseline": 0.6373373866081238,
+                "candidate": 0.5921958684921265,
+                "gain": -0.045141518115997314
+              },
+              "0.5": {
+                "baseline": 0.9900535345077515,
+                "candidate": 0.987758219242096,
+                "gain": -0.0022953152656555176
+              }
+            },
+            "visible_union_completeness_gain": -0.013268783688545227
+          }
+        }
+      },
+      "candidate_view_id": "00019",
+      "corrected_visibility_semantic_tag": "high_overlap_low_novel",
+      "heldout_pose_diagnostics": {
+        "candidate_cache_image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00019"
+        ],
+        "candidate_index_in_cache": 3,
+        "candidate_used_as_alignment_anchor": false,
+        "candidate_view_id": "00019",
+        "heldout_candidate_center_error_meters": 0.014561993069946766,
+        "heldout_candidate_forward_error_degrees": 6.0967360405789615,
+        "heldout_candidate_rotation_error_degrees": 20.20761569315617,
+        "pairwise_distance_distortion": {
+          "max_abs_error_meters": 0.02171391248703003,
+          "max_abs_relative_error": 0.2654642078541036,
+          "mean_abs_error_meters": 0.010558286216109991,
+          "mean_abs_relative_error": 0.10843538556071199,
+          "mean_raw_predicted_to_gt_ratio": 0.5113152011658023,
+          "pairs": [
+            {
+              "aligned_minus_gt": 0.011507123708724976,
+              "aligned_predicted_distance": 0.36482855677604675,
+              "gt_distance": 0.3533214330673218,
+              "pair": [
+                "00000",
+                "00010"
+              ],
+              "predicted_raw_distance": 0.18817126750946045,
+              "raw_predicted_to_gt_ratio": 0.5325781282948843,
+              "relative_error": 0.03256842815570832
+            },
+            {
+              "aligned_minus_gt": -0.019767343997955322,
+              "aligned_predicted_distance": 0.11051391065120697,
+              "gt_distance": 0.1302812546491623,
+              "pair": [
+                "00000",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.05700094625353813,
+              "raw_predicted_to_gt_ratio": 0.43752223915126875,
+              "relative_error": -0.15172822867869445
+            },
+            {
+              "aligned_minus_gt": -0.02171391248703003,
+              "aligned_predicted_distance": 0.10165112465620041,
+              "gt_distance": 0.12336503714323044,
+              "pair": [
+                "00000",
+                "00019"
+              ],
+              "predicted_raw_distance": 0.0524296872317791,
+              "raw_predicted_to_gt_ratio": 0.424996323479453,
+              "relative_error": -0.17601350422988596
+            },
+            {
+              "aligned_minus_gt": -0.007757812738418579,
+              "aligned_predicted_distance": 0.3219504654407501,
+              "gt_distance": 0.3297082781791687,
+              "pair": [
+                "00010",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.1660555601119995,
+              "raw_predicted_to_gt_ratio": 0.5036438909846306,
+              "relative_error": -0.0235293235015557
+            },
+            {
+              "aligned_minus_gt": 0.0004285275936126709,
+              "aligned_predicted_distance": 0.32789355516433716,
+              "gt_distance": 0.3274650275707245,
+              "pair": [
+                "00010",
+                "00019"
+              ],
+              "predicted_raw_distance": 0.16912083327770233,
+              "raw_predicted_to_gt_ratio": 0.5164546410720954,
+              "relative_error": 0.0013086209443239534
+            },
+            {
+              "aligned_minus_gt": 0.0021749967709183693,
+              "aligned_predicted_distance": 0.01036817952990532,
+              "gt_distance": 0.00819318275898695,
+              "pair": [
+                "00020",
+                "00019"
+              ],
+              "predicted_raw_distance": 0.005347657483071089,
+              "raw_predicted_to_gt_ratio": 0.652695984012482,
+              "relative_error": 0.2654642078541036
+            }
+          ]
+        },
+        "shared_observed_anchor_ids": [
+          "00000",
+          "00010",
+          "00020"
+        ]
+      },
+      "known_pose_cache_metadata": {
+        "cache_dir": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/reconstructions/23a55d429693f934__plus__00019",
+        "depth_scale_from_observed_anchor_sim3": 1.9388113021850586,
+        "flatten": {
+          "expected_point_count": 812224,
+          "height": 392,
+          "view_count": 4,
+          "width": 518
+        },
+        "image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00019"
+        ],
+        "method": "cached_v3_world_points_to_local_camera_then_gt_camera_to_world"
+      },
+      "original_candidate_sanity_tags": [
+        "high_overlap_neighbor"
+      ],
+      "scene_id": "scene0000_00",
+      "visibility_stats": {
+        "candidate_count": 909,
+        "candidate_fraction": 0.07575,
+        "candidate_novel_fraction": 0.0011001100110011,
+        "candidate_overlap_fraction": 0.9988998899889989,
+        "novel_count": 1,
+        "novel_scene_fraction": 8.333333333333333e-05,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 908,
+        "overlap_fraction": 0.07566666666666666,
+        "total_surface_count": 12000,
+        "union_count": 1308,
+        "union_fraction": 0.109
+      }
+    },
+    {
+      "branches": {
+        "known_pose": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 2838,
+              "max": 7.352443695068359,
+              "mean": 5.240380764007568,
+              "median": 5.188563346862793,
+              "min": 3.0334365367889404,
+              "p10": 3.97316575050354,
+              "p25": 4.580894947052002,
+              "p75": 5.945024490356445,
+              "p90": 6.573569297790527,
+              "p95": 6.864616394042969
+            },
+            "target_to_candidate": {
+              "count": 2838,
+              "max": 0.9800484776496887,
+              "mean": 0.28950145840644836,
+              "median": 0.20361267030239105,
+              "min": 0.004784159827977419,
+              "p10": 0.04496431350708008,
+              "p25": 0.09145338833332062,
+              "p75": 0.45647376775741577,
+              "p90": 0.6698102355003357,
+              "p95": 0.7751930356025696
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                }
+              },
+              "total_count": 2838
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 331,
+                  "covered_ratio": 0.11663143058491895
+                },
+                "0.1": {
+                  "covered_count": 787,
+                  "covered_ratio": 0.277307963354475
+                },
+                "0.2": {
+                  "covered_count": 1395,
+                  "covered_ratio": 0.4915433403805497
+                },
+                "0.5": {
+                  "covered_count": 2239,
+                  "covered_ratio": 0.7889358703312191
+                }
+              },
+              "total_count": 2838
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 331,
+                "novel_ratio_gain": 0.11663143058491895,
+                "scene_normalized_gain": 0.027583333333333335
+              },
+              "0.1": {
+                "covered_count_gain": 787,
+                "novel_ratio_gain": 0.277307963354475,
+                "scene_normalized_gain": 0.06558333333333333
+              },
+              "0.2": {
+                "covered_count_gain": 1395,
+                "novel_ratio_gain": 0.4915433403805497,
+                "scene_normalized_gain": 0.11625
+              },
+              "0.5": {
+                "covered_count_gain": 2239,
+                "novel_ratio_gain": 0.7889358703312191,
+                "scene_normalized_gain": 0.18658333333333332
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.13545070588588715,
+              "candidate": 0.14366157352924347,
+              "gain": -0.008210867643356323
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.5665833353996277,
+              "candidate": 0.6286666393280029,
+              "gain": -0.062083303928375244,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": 0.0,
+                "candidate": 0.11663143336772919,
+                "gain": 0.11663143336772919
+              },
+              "0.1": {
+                "baseline": 0.0,
+                "candidate": 0.2773079574108124,
+                "gain": 0.2773079574108124
+              },
+              "0.2": {
+                "baseline": 0.0,
+                "candidate": 0.49154335260391235,
+                "gain": 0.49154335260391235
+              },
+              "0.5": {
+                "baseline": 0.0,
+                "candidate": 0.7889358997344971,
+                "gain": 0.7889358997344971
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.027583333333333335,
+              "0.1": 0.06558333333333333,
+              "0.2": 0.11625,
+              "0.5": 0.18658333333333332
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.17138485610485077,
+                "candidate": 0.10328997671604156,
+                "gain": -0.0680948793888092
+              },
+              "0.1": {
+                "baseline": 0.45524102449417114,
+                "candidate": 0.34736037254333496,
+                "gain": -0.10788065195083618
+              },
+              "0.2": {
+                "baseline": 0.811782717704773,
+                "candidate": 0.7360367178916931,
+                "gain": -0.07574599981307983
+              },
+              "0.5": {
+                "baseline": 0.9892884492874146,
+                "candidate": 0.9846977591514587,
+                "gain": -0.0045906901359558105
+              }
+            },
+            "visible_union_completeness_gain": 3.382317379117012
+          }
+        },
+        "predicted_world": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 2838,
+              "max": 7.212971210479736,
+              "mean": 5.083737850189209,
+              "median": 5.021547317504883,
+              "min": 2.82653546333313,
+              "p10": 3.8036696910858154,
+              "p25": 4.44884729385376,
+              "p75": 5.774250030517578,
+              "p90": 6.4239068031311035,
+              "p95": 6.742397785186768
+            },
+            "target_to_candidate": {
+              "count": 2838,
+              "max": 3.35831880569458,
+              "mean": 1.9133917093276978,
+              "median": 1.957930564880371,
+              "min": 0.16136643290519714,
+              "p10": 0.9572614431381226,
+              "p25": 1.4613875150680542,
+              "p75": 2.444066047668457,
+              "p90": 2.7787837982177734,
+              "p95": 2.9555954933166504
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                }
+              },
+              "total_count": 2838
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 6,
+                  "covered_ratio": 0.0021141649048625794
+                },
+                "0.5": {
+                  "covered_count": 81,
+                  "covered_ratio": 0.02854122621564482
+                }
+              },
+              "total_count": 2838
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.1": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.2": {
+                "covered_count_gain": 6,
+                "novel_ratio_gain": 0.0021141649048625794,
+                "scene_normalized_gain": 0.0005
+              },
+              "0.5": {
+                "covered_count_gain": 81,
+                "novel_ratio_gain": 0.02854122621564482,
+                "scene_normalized_gain": 0.00675
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.1551455557346344,
+              "candidate": 0.45380643010139465,
+              "gain": -0.29866087436676025
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.6367499828338623,
+              "candidate": 0.8365833163261414,
+              "gain": -0.19983333349227905,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.1": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.2": {
+                "baseline": 0.0,
+                "candidate": 0.002114164875820279,
+                "gain": 0.002114164875820279
+              },
+              "0.5": {
+                "baseline": 0.0,
+                "candidate": 0.02854122593998909,
+                "gain": 0.02854122593998909
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.2": 0.0005,
+              "0.5": 0.00675
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.1560826301574707,
+                "candidate": 0.12241774797439575,
+                "gain": -0.03366488218307495
+              },
+              "0.1": {
+                "baseline": 0.32364192605018616,
+                "candidate": 0.28079572319984436,
+                "gain": -0.0428462028503418
+              },
+              "0.2": {
+                "baseline": 0.6373373866081238,
+                "candidate": 0.5791890025138855,
+                "gain": -0.05814838409423828
+              },
+              "0.5": {
+                "baseline": 0.9900535345077515,
+                "candidate": 0.9846977591514587,
+                "gain": -0.005355775356292725
+              }
+            },
+            "visible_union_completeness_gain": 2.1643699407577515
+          }
+        }
+      },
+      "candidate_view_id": "00325",
+      "corrected_visibility_semantic_tag": "disconnected_novel_view",
+      "heldout_pose_diagnostics": {
+        "candidate_cache_image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00325"
+        ],
+        "candidate_index_in_cache": 3,
+        "candidate_used_as_alignment_anchor": false,
+        "candidate_view_id": "00325",
+        "heldout_candidate_center_error_meters": 2.521772861480713,
+        "heldout_candidate_forward_error_degrees": 21.32837413518905,
+        "heldout_candidate_rotation_error_degrees": 21.380790886423927,
+        "pairwise_distance_distortion": {
+          "max_abs_error_meters": 2.524562753736973,
+          "max_abs_relative_error": 0.9644196183427759,
+          "mean_abs_error_meters": 1.1890860075751941,
+          "mean_abs_relative_error": 0.5057870903022966,
+          "mean_raw_predicted_to_gt_ratio": 0.23468561413618602,
+          "pairs": [
+            {
+              "aligned_minus_gt": 0.014345020055770874,
+              "aligned_predicted_distance": 0.36766645312309265,
+              "gt_distance": 0.3533214330673218,
+              "pair": [
+                "00000",
+                "00010"
+              ],
+              "predicted_raw_distance": 0.16993924975395203,
+              "raw_predicted_to_gt_ratio": 0.4809763400953144,
+              "relative_error": 0.04060048078950698
+            },
+            {
+              "aligned_minus_gt": -0.019929267466068268,
+              "aligned_predicted_distance": 0.11035198718309402,
+              "gt_distance": 0.1302812546491623,
+              "pair": [
+                "00000",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.05100582167506218,
+              "raw_predicted_to_gt_ratio": 0.39150545343163184,
+              "relative_error": -0.15297110485876345
+            },
+            {
+              "aligned_minus_gt": -2.4881128668785095,
+              "aligned_predicted_distance": 0.09179407358169556,
+              "gt_distance": 2.579906940460205,
+              "pair": [
+                "00000",
+                "00325"
+              ],
+              "predicted_raw_distance": 0.04242820665240288,
+              "raw_predicted_to_gt_ratio": 0.01644563452541994,
+              "relative_error": -0.9644196183427759
+            },
+            {
+              "aligned_minus_gt": -0.012083083391189575,
+              "aligned_predicted_distance": 0.3176251947879791,
+              "gt_distance": 0.3297082781791687,
+              "pair": [
+                "00010",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.1468096226453781,
+              "raw_predicted_to_gt_ratio": 0.4452712666365005,
+              "relative_error": -0.036647801074085974
+            },
+            {
+              "aligned_minus_gt": -2.075483053922653,
+              "aligned_predicted_distance": 0.28338220715522766,
+              "gt_distance": 2.358865261077881,
+              "pair": [
+                "00010",
+                "00325"
+              ],
+              "predicted_raw_distance": 0.1309821456670761,
+              "raw_predicted_to_gt_ratio": 0.05552760805304495,
+              "relative_error": -0.8798650300925893
+            },
+            {
+              "aligned_minus_gt": -2.524562753736973,
+              "aligned_predicted_distance": 0.10459169000387192,
+              "gt_distance": 2.6291544437408447,
+              "pair": [
+                "00020",
+                "00325"
+              ],
+              "predicted_raw_distance": 0.048343267291784286,
+              "raw_predicted_to_gt_ratio": 0.018387382075204354,
+              "relative_error": -0.960218506656058
+            }
+          ]
+        },
+        "shared_observed_anchor_ids": [
+          "00000",
+          "00010",
+          "00020"
+        ]
+      },
+      "known_pose_cache_metadata": {
+        "cache_dir": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/reconstructions/23a55d429693f934__plus__00325",
+        "depth_scale_from_observed_anchor_sim3": 2.163518190383911,
+        "flatten": {
+          "expected_point_count": 812224,
+          "height": 392,
+          "view_count": 4,
+          "width": 518
+        },
+        "image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00325"
+        ],
+        "method": "cached_v3_world_points_to_local_camera_then_gt_camera_to_world"
+      },
+      "original_candidate_sanity_tags": [
+        "old_oracle_best"
+      ],
+      "scene_id": "scene0000_00",
+      "visibility_stats": {
+        "candidate_count": 2838,
+        "candidate_fraction": 0.2365,
+        "candidate_novel_fraction": 1.0,
+        "candidate_overlap_fraction": 0.0,
+        "novel_count": 2838,
+        "novel_scene_fraction": 0.2365,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 0,
+        "overlap_fraction": 0.0,
+        "total_surface_count": 12000,
+        "union_count": 4145,
+        "union_fraction": 0.34541666666666665
+      }
+    },
+    {
+      "branches": {
+        "known_pose": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 325,
+              "max": 4.65447473526001,
+              "mean": 3.7138314247131348,
+              "median": 3.778186321258545,
+              "min": 2.582768440246582,
+              "p10": 2.8843367099761963,
+              "p25": 3.2130990028381348,
+              "p75": 4.262955188751221,
+              "p90": 4.493262767791748,
+              "p95": 4.534956455230713
+            },
+            "target_to_candidate": {
+              "count": 325,
+              "max": 3.3817691802978516,
+              "mean": 2.893738269805908,
+              "median": 2.9110395908355713,
+              "min": 2.141808032989502,
+              "p10": 2.5047216415405273,
+              "p25": 2.6674726009368896,
+              "p75": 3.163891315460205,
+              "p90": 3.2329468727111816,
+              "p95": 3.2850944995880127
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                }
+              },
+              "total_count": 325
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                }
+              },
+              "total_count": 325
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.1": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.2": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.5": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.13545070588588715,
+              "candidate": 0.1470913141965866,
+              "gain": -0.011640608310699463
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.5665833353996277,
+              "candidate": 0.5865833163261414,
+              "gain": -0.019999980926513672,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.1": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.2": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.5": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.2": 0.0,
+              "0.5": 0.0
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.17138485610485077,
+                "candidate": 0.16755929589271545,
+                "gain": -0.003825560212135315
+              },
+              "0.1": {
+                "baseline": 0.45524102449417114,
+                "candidate": 0.45447590947151184,
+                "gain": -0.0007651150226593018
+              },
+              "0.2": {
+                "baseline": 0.811782717704773,
+                "candidate": 0.8018362522125244,
+                "gain": -0.009946465492248535
+              },
+              "0.5": {
+                "baseline": 0.9892884492874146,
+                "candidate": 0.987758219242096,
+                "gain": -0.0015302300453186035
+              }
+            },
+            "visible_union_completeness_gain": 0.16102004051208496
+          }
+        },
+        "predicted_world": {
+          "novel_distance_distribution": {
+            "target_to_baseline": {
+              "count": 325,
+              "max": 4.380687713623047,
+              "mean": 3.480509042739868,
+              "median": 3.562955617904663,
+              "min": 2.386878490447998,
+              "p10": 2.6627933979034424,
+              "p25": 2.9927732944488525,
+              "p75": 4.0278754234313965,
+              "p90": 4.2390313148498535,
+              "p95": 4.297941207885742
+            },
+            "target_to_candidate": {
+              "count": 325,
+              "max": 4.3353447914123535,
+              "mean": 3.451866626739502,
+              "median": 3.525714874267578,
+              "min": 2.3834900856018066,
+              "p10": 2.661616325378418,
+              "p25": 2.978991746902466,
+              "p75": 3.98274827003479,
+              "p90": 4.157322406768799,
+              "p95": 4.224678039550781
+            }
+          },
+          "novel_raw_coverage": {
+            "baseline": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                }
+              },
+              "total_count": 325
+            },
+            "candidate": {
+              "thresholds": {
+                "0.05": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.1": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.2": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                },
+                "0.5": {
+                  "covered_count": 0,
+                  "covered_ratio": 0.0
+                }
+              },
+              "total_count": 325
+            },
+            "gain": {
+              "0.05": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.1": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.2": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              },
+              "0.5": {
+                "covered_count_gain": 0,
+                "novel_ratio_gain": 0.0,
+                "scene_normalized_gain": 0.0
+              }
+            }
+          },
+          "visibility_metrics": {
+            "global_accuracy": {
+              "baseline": 0.1551455557346344,
+              "candidate": 0.21714892983436584,
+              "gain": -0.062003374099731445
+            },
+            "global_outlier_ratio": {
+              "baseline": 0.6367499828338623,
+              "candidate": 0.6886666417121887,
+              "gain": -0.051916658878326416,
+              "threshold_meters": 0.1
+            },
+            "novel_coverage_gain": {
+              "0.05": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.1": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.2": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              },
+              "0.5": {
+                "baseline": 0.0,
+                "candidate": 0.0,
+                "gain": 0.0
+              }
+            },
+            "novel_surface_gain_scene_normalized": {
+              "0.05": 0.0,
+              "0.1": 0.0,
+              "0.2": 0.0,
+              "0.5": 0.0
+            },
+            "observed_retention_gain": {
+              "0.05": {
+                "baseline": 0.1560826301574707,
+                "candidate": 0.14843152463436127,
+                "gain": -0.007651105523109436
+              },
+              "0.1": {
+                "baseline": 0.32364192605018616,
+                "candidate": 0.32670238614082336,
+                "gain": 0.003060460090637207
+              },
+              "0.2": {
+                "baseline": 0.6373373866081238,
+                "candidate": 0.6235654354095459,
+                "gain": -0.01377195119857788
+              },
+              "0.5": {
+                "baseline": 0.9900535345077515,
+                "candidate": 0.987758219242096,
+                "gain": -0.0022953152656555176
+              }
+            },
+            "visible_union_completeness_gain": 0.002318263053894043
+          }
+        }
+      },
+      "candidate_view_id": "00425",
+      "corrected_visibility_semantic_tag": "disconnected_novel_view",
+      "heldout_pose_diagnostics": {
+        "candidate_cache_image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00425"
+        ],
+        "candidate_index_in_cache": 3,
+        "candidate_used_as_alignment_anchor": false,
+        "candidate_view_id": "00425",
+        "heldout_candidate_center_error_meters": 4.793531894683838,
+        "heldout_candidate_forward_error_degrees": 20.87497356153233,
+        "heldout_candidate_rotation_error_degrees": 42.91878210299155,
+        "pairwise_distance_distortion": {
+          "max_abs_error_meters": 3.276018440723419,
+          "max_abs_relative_error": 0.8062461229752924,
+          "mean_abs_error_meters": 1.5328550065557163,
+          "mean_abs_relative_error": 0.42369421462668316,
+          "mean_raw_predicted_to_gt_ratio": 0.27306901733960587,
+          "pairs": [
+            {
+              "aligned_minus_gt": 0.01467856764793396,
+              "aligned_predicted_distance": 0.36800000071525574,
+              "gt_distance": 0.3533214330673218,
+              "pair": [
+                "00000",
+                "00010"
+              ],
+              "predicted_raw_distance": 0.17027664184570312,
+              "raw_predicted_to_gt_ratio": 0.4819312555354055,
+              "relative_error": 0.04154451520391379
+            },
+            {
+              "aligned_minus_gt": -0.021010443568229675,
+              "aligned_predicted_distance": 0.10927081108093262,
+              "gt_distance": 0.1302812546491623,
+              "pair": [
+                "00000",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.05056045204401016,
+              "raw_predicted_to_gt_ratio": 0.3880869291608044,
+              "relative_error": -0.16126988970753492
+            },
+            {
+              "aligned_minus_gt": -3.276018440723419,
+              "aligned_predicted_distance": 0.7872797846794128,
+              "gt_distance": 4.063298225402832,
+              "pair": [
+                "00000",
+                "00425"
+              ],
+              "predicted_raw_distance": 0.3642808496952057,
+              "raw_predicted_to_gt_ratio": 0.08965151694202587,
+              "relative_error": -0.8062461229752924
+            },
+            {
+              "aligned_minus_gt": -0.012388467788696289,
+              "aligned_predicted_distance": 0.3173198103904724,
+              "gt_distance": 0.3297082781791687,
+              "pair": [
+                "00010",
+                "00020"
+              ],
+              "predicted_raw_distance": 0.14682646095752716,
+              "raw_predicted_to_gt_ratio": 0.4453223369712887,
+              "relative_error": -0.03757402712820028
+            },
+            {
+              "aligned_minus_gt": -2.8286824226379395,
+              "aligned_predicted_distance": 1.0861318111419678,
+              "gt_distance": 3.9148142337799072,
+              "pair": [
+                "00010",
+                "00425"
+              ],
+              "predicted_raw_distance": 0.5025621056556702,
+              "raw_predicted_to_gt_ratio": 0.12837444528508998,
+              "relative_error": -0.7225585311890356
+            },
+            {
+              "aligned_minus_gt": -3.0443516969680786,
+              "aligned_predicted_distance": 0.8941491842269897,
+              "gt_distance": 3.9385008811950684,
+              "pair": [
+                "00020",
+                "00425"
+              ],
+              "predicted_raw_distance": 0.4137301445007324,
+              "raw_predicted_to_gt_ratio": 0.10504762014302085,
+              "relative_error": -0.772972201556122
+            }
+          ]
+        },
+        "shared_observed_anchor_ids": [
+          "00000",
+          "00010",
+          "00020"
+        ]
+      },
+      "known_pose_cache_metadata": {
+        "cache_dir": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/reconstructions/23a55d429693f934__plus__00425",
+        "depth_scale_from_observed_anchor_sim3": 2.161189079284668,
+        "flatten": {
+          "expected_point_count": 812224,
+          "height": 392,
+          "view_count": 4,
+          "width": 518
+        },
+        "image_view_ids": [
+          "00000",
+          "00010",
+          "00020",
+          "00425"
+        ],
+        "method": "cached_v3_world_points_to_local_camera_then_gt_camera_to_world"
+      },
+      "original_candidate_sanity_tags": [
+        "new_area"
+      ],
+      "scene_id": "scene0000_00",
+      "visibility_stats": {
+        "candidate_count": 325,
+        "candidate_fraction": 0.027083333333333334,
+        "candidate_novel_fraction": 1.0,
+        "candidate_overlap_fraction": 0.0,
+        "novel_count": 325,
+        "novel_scene_fraction": 0.027083333333333334,
+        "observed_count": 1307,
+        "observed_fraction": 0.10891666666666666,
+        "overlap_count": 0,
+        "overlap_fraction": 0.0,
+        "total_surface_count": 12000,
+        "union_count": 1632,
+        "union_fraction": 0.136
+      }
+    }
+  ],
+  "config": {
+    "coverage_thresholds": [
+      0.05,
+      0.1,
+      0.2,
+      0.5
+    ],
+    "global_outlier_threshold": 0.1,
+    "gt_voxel_size": 0.02,
+    "intrinsics": {
+      "cx": 646.295044,
+      "cy": 489.927032,
+      "fx": 1169.621094,
+      "fy": 1167.105103,
+      "height": 968,
+      "width": 1296
+    },
+    "max_prediction_points": 12000,
+    "max_surface_points": 12000,
+    "novel_connectivity_min_largest_component_count": 10,
+    "prediction_sample_method": "hash",
+    "sample_method": "hash",
+    "visibility_depth_tolerance": 0.05
+  },
+  "did_run_vggt": false,
+  "inputs": {
+    "audit_records": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c_deterministic_smoke_v3/camera_anchor_oracle_gain.jsonl",
+    "c2_variant_records": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c2/stage_c2_visibility_records.jsonl",
+    "intrinsics": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt",
+    "posed_image_dir": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00",
+    "target_points": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin"
+  },
+  "known_pose_branch": {
+    "baseline_cache_metadata": {
+      "cache_dir": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/reconstructions/23a55d429693f934",
+      "depth_scale_from_observed_anchor_sim3": 1.9494023323059082,
+      "flatten": {
+        "expected_point_count": 609168,
+        "height": 392,
+        "view_count": 3,
+        "width": 518
+      },
+      "image_view_ids": [
+        "00000",
+        "00010",
+        "00020"
+      ],
+      "method": "cached_v3_world_points_to_local_camera_then_gt_camera_to_world"
+    },
+    "cached_known_pose_branch_supported": true,
+    "known_pose_failures": [],
+    "v4_depth_backprojection_status": "blocked_missing_v4_depth_conf_per_view_offsets_and_preprocessing_transform; cached v3 diagnostic used local camera coordinates recovered from world_points and pose_enc instead"
+  },
+  "outputs": {
+    "docs_markdown": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c3/run_log.md",
+    "docs_summary_json": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c3/stage_c3_known_pose_summary.json",
+    "output_summary_json": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c3/stage_c3_known_pose_summary.json",
+    "variant_records_jsonl": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c3/stage_c3_known_pose_records.jsonl"
+  },
+  "overlap_stability_by_candidate": {
+    "00010": {
+      "candidate_overlap_fraction": {
+        "count": 27,
+        "max": 1.0,
+        "mean": 1.0,
+        "min": 1.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "scene_overlap_fraction": {
+        "count": 27,
+        "max": 0.0625,
+        "mean": 0.062064814814814816,
+        "min": 0.06041666666666667,
+        "range": 0.002083333333333333,
+        "std": 0.0006032036101815679
+      },
+      "variant_count": 27
+    },
+    "00019": {
+      "candidate_overlap_fraction": {
+        "count": 27,
+        "max": 0.9989071038251366,
+        "mean": 0.9980833376503055,
+        "min": 0.9965116279069768,
+        "range": 0.002395475918159806,
+        "std": 0.0009747444274739537
+      },
+      "scene_overlap_fraction": {
+        "count": 27,
+        "max": 0.07616666666666666,
+        "mean": 0.07316666666666666,
+        "min": 0.06966666666666667,
+        "range": 0.006499999999999992,
+        "std": 0.0024990739025427715
+      },
+      "variant_count": 27
+    },
+    "00325": {
+      "candidate_overlap_fraction": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "scene_overlap_fraction": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "variant_count": 27
+    },
+    "00425": {
+      "candidate_overlap_fraction": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "scene_overlap_fraction": {
+        "count": 27,
+        "max": 0.0,
+        "mean": 0.0,
+        "min": 0.0,
+        "range": 0.0,
+        "std": 0.0
+      },
+      "variant_count": 27
+    }
+  },
+  "overlap_stability_variant_count": 27,
+  "runtime_seconds": 100.33343402296305,
+  "status": "complete"
+}

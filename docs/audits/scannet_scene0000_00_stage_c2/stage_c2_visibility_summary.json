@@ -1,9 +1,7 @@
 {
   "assessment": {
-    "connected_new_area_candidates_with_novel_surface": [
-      "00325",
-      "00425"
-    ],
+    "connected_new_area_candidates_with_novel_surface": [],
+    "connected_novel_requires_overlap": true,
     "damaged_observed_retention": [
       {
         "candidate_view_id": "00325",
@@ -16,9 +14,13 @@
         "threshold": "0.1"
       }
     ],
+    "disconnected_novel_candidates": [
+      "00325",
+      "00425"
+    ],
     "duplicate_novel_near_zero": true,
     "duplicate_novel_scene_fraction_max": 0.005,
-    "high_overlap_novel_less_than_connected_new_area": true,
+    "high_overlap_novel_less_than_connected_new_area": false,
     "novel_connectivity_min_largest_component_count": 10,
     "observed_retention_gain_min": -0.02,
     "observed_retention_not_badly_damaged": false,
@@ -1690,7 +1692,7 @@
       }
     ]
   },
-  "runtime_seconds": 90.59227854758501,
+  "runtime_seconds": 265.20457957684994,
   "stability_by_candidate": {
     "00010": {
       "candidate_novel_fraction": {
