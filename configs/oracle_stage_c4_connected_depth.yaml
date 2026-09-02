@@ -1,0 +1,24 @@
+audit-records: outputs/oracle_calibration/scannet_scene0000_00_stage_c_deterministic_smoke_v3/camera_anchor_oracle_gain.jsonl
+c3-summary: docs/audits/scannet_scene0000_00_stage_c3/stage_c3_known_pose_summary.json
+target-points: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin
+posed-image-dir: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00
+intrinsics: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt
+checkpoint: /mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/model_weights/vggt/model.pt
+output-dir: outputs/oracle_calibration/scannet_scene0000_00_stage_c4
+docs-output-dir: docs/audits/scannet_scene0000_00_stage_c4
+image-extension: jpg
+point-stride: 6
+preprocess-mode: crop
+visibility-depth-tolerance: 0.05
+visibility-pixel-radius: 0
+stability-point-limits: [12000, 50000]
+stability-depth-tolerances: [0.02, 0.05, 0.10]
+stability-pixel-radii: [0, 1]
+surface-sample-method: hash
+confidence-quantiles: [0.0, 0.10, 0.25, 0.50, 0.75, 0.90, 0.95]
+coverage-thresholds: [0.05, 0.10, 0.20, 0.50]
+outlier-threshold: 0.10
+nn-chunk-size: 128
+max-outlier-points: 30000
+seed: 0
+diagnostic-candidate-id: "00425"

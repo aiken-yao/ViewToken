@@ -245,10 +245,14 @@ def visible_surface_mask(
     intrinsics: PinholeIntrinsics,
     depth_tolerance: float,
     near: float = 1e-5,
+    pixel_radius: int = 0,
 ) -> Tensor:
-    """Return points visible from one camera after same-pixel z-buffer occlusion."""
+    """Return points visible from one camera after z-buffer occlusion."""
 
     points = _validate_points(points)
+    pixel_radius = int(pixel_radius)
+    if pixel_radius < 0:
+        raise ValueError("pixel_radius must be non-negative")
     projection = project_world_points(
         points,
         camera_to_world=camera_to_world,
@@ -261,15 +265,54 @@ def visible_surface_mask(
         return visible
 
     pixel_xy = projection.pixel_xy[candidate_indices]
-    linear_pixels = pixel_xy[:, 1] * int(intrinsics.width) + pixel_xy[:, 0]
     depths = projection.depths[candidate_indices].to(torch.float32)
+    if pixel_radius == 0:
+        linear_pixels = pixel_xy[:, 1] * int(intrinsics.width) + pixel_xy[:, 0]
+        depth_buffer = _minimum_depth_per_pixel(
+            linear_pixels=linear_pixels,
+            depths=depths,
+            pixel_count=int(intrinsics.width) * int(intrinsics.height),
+        )
+        nearest_depths = depth_buffer[linear_pixels]
+        visible[candidate_indices] = depths <= nearest_depths + float(depth_tolerance)
+        return visible
+
+    offsets = torch.tensor(
+        [
+            (dx, dy)
+            for dy in range(-pixel_radius, pixel_radius + 1)
+            for dx in range(-pixel_radius, pixel_radius + 1)
+        ],
+        dtype=torch.long,
+    )
+    expanded_xy = pixel_xy[:, None, :] + offsets[None, :, :]
+    inside = (
+        (expanded_xy[..., 0] >= 0)
+        & (expanded_xy[..., 0] < int(intrinsics.width))
+        & (expanded_xy[..., 1] >= 0)
+        & (expanded_xy[..., 1] < int(intrinsics.height))
+    )
+    expanded_point_positions = (
+        torch.arange(candidate_indices.shape[0], dtype=torch.long)[:, None]
+        .expand(-1, offsets.shape[0])
+    )[inside]
+    expanded_depths = depths[expanded_point_positions]
+    expanded_xy = expanded_xy[inside]
+    linear_pixels = expanded_xy[:, 1] * int(intrinsics.width) + expanded_xy[:, 0]
     depth_buffer = _minimum_depth_per_pixel(
         linear_pixels=linear_pixels,
-        depths=depths,
+        depths=expanded_depths,
         pixel_count=int(intrinsics.width) * int(intrinsics.height),
     )
     nearest_depths = depth_buffer[linear_pixels]
-    visible[candidate_indices] = depths <= nearest_depths + float(depth_tolerance)
+    expanded_visible = expanded_depths <= nearest_depths + float(depth_tolerance)
+    per_candidate_visible = torch.zeros((candidate_indices.shape[0],), dtype=torch.int32)
+    per_candidate_visible.index_add_(
+        0,
+        expanded_point_positions,
+        expanded_visible.to(torch.int32),
+    )
+    visible[candidate_indices] = per_candidate_visible > 0
     return visible
 
 
@@ -279,6 +322,7 @@ def union_visible_surface_mask(
     intrinsics: PinholeIntrinsics,
     depth_tolerance: float,
     near: float = 1e-5,
+    pixel_radius: int = 0,
 ) -> Tensor:
     """Return the union of per-camera visible surface masks."""
 
@@ -291,6 +335,7 @@ def union_visible_surface_mask(
             intrinsics=intrinsics,
             depth_tolerance=depth_tolerance,
             near=near,
+            pixel_radius=pixel_radius,
         )
     return union
 
@@ -302,6 +347,7 @@ def build_visibility_masks(
     intrinsics: PinholeIntrinsics,
     depth_tolerance: float,
     near: float = 1e-5,
+    pixel_radius: int = 0,
 ) -> VisibilityMasks:
     observed = union_visible_surface_mask(
         points,
@@ -309,6 +355,7 @@ def build_visibility_masks(
         intrinsics=intrinsics,
         depth_tolerance=depth_tolerance,
         near=near,
+        pixel_radius=pixel_radius,
     )
     candidate = visible_surface_mask(
         points,
@@ -316,6 +363,7 @@ def build_visibility_masks(
         intrinsics=intrinsics,
         depth_tolerance=depth_tolerance,
         near=near,
+        pixel_radius=pixel_radius,
     )
     overlap = observed & candidate
     novel = candidate & ~observed

@@ -137,6 +137,20 @@ class VisibilityTest(unittest.TestCase):
         self.assertAlmostEqual(delta.min_distance_to_observed_meters, 5.0)
         self.assertAlmostEqual(delta.min_view_direction_change_degrees, 90.0, places=4)
 
+    def test_pixel_radius_splatting_can_occlude_adjacent_far_surface(self) -> None:
+        intrinsics = PinholeIntrinsics(fx=1.0, fy=1.0, cx=0.0, cy=0.0, width=3, height=1)
+        points = torch.tensor([[1.0, 0.0, 1.0], [4.0, 0.0, 2.0]], dtype=torch.float32)
+
+        without_splat = visible_surface_mask(
+            points, identity_pose(), intrinsics, depth_tolerance=0.0, pixel_radius=0
+        )
+        with_splat = visible_surface_mask(
+            points, identity_pose(), intrinsics, depth_tolerance=0.0, pixel_radius=1
+        )
+
+        self.assertEqual(without_splat.tolist(), [True, True])
+        self.assertEqual(with_splat.tolist(), [True, False])
+
 
 if __name__ == "__main__":
     unittest.main()

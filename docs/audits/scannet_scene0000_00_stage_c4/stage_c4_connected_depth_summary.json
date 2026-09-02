@@ -1,0 +1,2716 @@
+{
+  "candidate_mining": {
+    "candidate_pose_count": 597,
+    "connected_novel_count": 190,
+    "connected_novel_rgb_count": 190,
+    "observed_visible_count": 5409,
+    "scene_pose_count": 600,
+    "semantic_counts": {
+      "connected_novel": 190,
+      "not_connected_novel": 407
+    },
+    "target_point_count": 50000,
+    "visibility_source": "ScanNet GT point z-buffer over full 50k target points; no dense depth/mesh visibility is used. C4 adds pixel_radius splatting stability checks to expose sparse-point sensitivity."
+  },
+  "candidate_selection": {
+    "distributions": {
+      "all_candidates": {
+        "candidate_fraction": {
+          "count": 597,
+          "max": 0.24092000722885132,
+          "mean": 0.09662804007530212,
+          "median": 0.08386000245809555,
+          "min": 0.011699999682605267,
+          "p10": 0.0399480015039444,
+          "p25": 0.05959999933838844,
+          "p75": 0.12223999947309494,
+          "p90": 0.18228797614574432,
+          "p95": 0.20728401839733124,
+          "p99": 0.23297518491744995
+        },
+        "candidate_overlap_fraction": {
+          "count": 597,
+          "max": 0.9978552460670471,
+          "mean": 0.1687481701374054,
+          "median": 0.0,
+          "min": 0.0,
+          "p10": 0.0,
+          "p25": 0.0,
+          "p75": 0.18588747084140778,
+          "p90": 0.7906184792518616,
+          "p95": 0.8870231509208679,
+          "p99": 0.9827297329902649
+        },
+        "novel_scene_fraction": {
+          "count": 597,
+          "max": 0.24092000722885132,
+          "mean": 0.08397403359413147,
+          "median": 0.07348000258207321,
+          "min": 0.00015999999595806003,
+          "p10": 0.01632400043308735,
+          "p25": 0.03500000014901161,
+          "p75": 0.11490000039339066,
+          "p90": 0.18228797614574432,
+          "p95": 0.20728401839733124,
+          "p99": 0.23297518491744995
+        }
+      },
+      "connected_novel_candidates": {
+        "candidate_fraction": {
+          "count": 190,
+          "max": 0.2090200036764145,
+          "mean": 0.08428041636943817,
+          "median": 0.07718999683856964,
+          "min": 0.037140000611543655,
+          "p10": 0.055677998811006546,
+          "p25": 0.06402000039815903,
+          "p75": 0.09291499853134155,
+          "p90": 0.12470399588346481,
+          "p95": 0.1420230120420456,
+          "p99": 0.1739135980606079
+        },
+        "candidate_overlap_fraction": {
+          "count": 190,
+          "max": 0.9978552460670471,
+          "mean": 0.5302245020866394,
+          "median": 0.5547733306884766,
+          "min": 0.0002589331998024136,
+          "p10": 0.059390515089035034,
+          "p25": 0.21054279804229736,
+          "p75": 0.824954628944397,
+          "p90": 0.9441760182380676,
+          "p95": 0.9765657186508179,
+          "p99": 0.996323823928833
+        },
+        "novel_scene_fraction": {
+          "count": 190,
+          "max": 0.20893999934196472,
+          "mean": 0.044520214200019836,
+          "median": 0.02727000042796135,
+          "min": 0.00015999999595806003,
+          "p10": 0.004137999843806028,
+          "p25": 0.013615000061690807,
+          "p75": 0.07171999663114548,
+          "p90": 0.11379799991846085,
+          "p95": 0.12028900533914566,
+          "p99": 0.1511469930410385
+        }
+      }
+    },
+    "selected_by_rule": {
+      "farthest_connected": {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 4.2037739753723145,
+          "min_view_direction_change_degrees": 12.65404251728591,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00432",
+        "ranked_pool_count": 190,
+        "reason": "maximum distance to any observed camera among connected-novel RGB poses",
+        "visibility_stats": {
+          "candidate_count": 5177,
+          "candidate_fraction": 0.10354,
+          "candidate_novel_fraction": 0.7539115317751593,
+          "candidate_overlap_fraction": 0.24608846822484065,
+          "novel_count": 3903,
+          "novel_scene_fraction": 0.07806,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 1274,
+          "overlap_fraction": 0.02548,
+          "total_surface_count": 50000,
+          "union_count": 9312,
+          "union_fraction": 0.18624
+        }
+      },
+      "high_novel_connected": {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 3.102315664291382,
+          "min_view_direction_change_degrees": 44.77801397302918,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00332",
+        "ranked_pool_count": 19,
+        "reason": "novel_scene >= connected p90; sort by novelty desc, overlap desc, id asc",
+        "visibility_stats": {
+          "candidate_count": 10451,
+          "candidate_fraction": 0.20902,
+          "candidate_novel_fraction": 0.999617261506076,
+          "candidate_overlap_fraction": 0.0003827384939240264,
+          "novel_count": 10447,
+          "novel_scene_fraction": 0.20894,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 4,
+          "overlap_fraction": 8e-05,
+          "total_surface_count": 50000,
+          "union_count": 15856,
+          "union_fraction": 0.31712
+        }
+      },
+      "high_overlap_low_novel": {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.008384084329009056,
+          "min_view_direction_change_degrees": 1.0030769871247398,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00018",
+        "ranked_pool_count": 43,
+        "reason": "overlap >= connected p75 and novel_scene <= connected p25; sort by overlap desc, novelty asc, id asc",
+        "visibility_stats": {
+          "candidate_count": 3730,
+          "candidate_fraction": 0.0746,
+          "candidate_novel_fraction": 0.0021447721179624667,
+          "candidate_overlap_fraction": 0.9978552278820375,
+          "novel_count": 8,
+          "novel_scene_fraction": 0.00016,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3722,
+          "overlap_fraction": 0.07444,
+          "total_surface_count": 50000,
+          "union_count": 5417,
+          "union_fraction": 0.10834
+        }
+      },
+      "medium_overlap_medium_novel": {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 1.578866720199585,
+          "min_view_direction_change_degrees": 4.830104638224184,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00369",
+        "ranked_pool_count": 80,
+        "reason": "overlap and novel_scene both within connected p25-p75; sort by distance to connected medians, id asc",
+        "visibility_stats": {
+          "candidate_count": 2995,
+          "candidate_fraction": 0.0599,
+          "candidate_novel_fraction": 0.44507512520868114,
+          "candidate_overlap_fraction": 0.5549248747913189,
+          "novel_count": 1333,
+          "novel_scene_fraction": 0.02666,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 1662,
+          "overlap_fraction": 0.03324,
+          "total_surface_count": 50000,
+          "union_count": 6742,
+          "union_fraction": 0.13484
+        }
+      },
+      "nearest_connected": {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.00819318275898695,
+          "min_view_direction_change_degrees": 0.23903110827999308,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00019",
+        "ranked_pool_count": 190,
+        "reason": "minimum distance to any observed camera among connected-novel RGB poses",
+        "visibility_stats": {
+          "candidate_count": 3782,
+          "candidate_fraction": 0.07564,
+          "candidate_novel_fraction": 0.0037017451084082496,
+          "candidate_overlap_fraction": 0.9962982548915917,
+          "novel_count": 14,
+          "novel_scene_fraction": 0.00028,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3768,
+          "overlap_fraction": 0.07536,
+          "total_surface_count": 50000,
+          "union_count": 5423,
+          "union_fraction": 0.10846
+        }
+      }
+    },
+    "selected_unique_candidate_ids": [
+      "00018",
+      "00369",
+      "00332",
+      "00019",
+      "00432"
+    ],
+    "selection_rule": {
+      "pool": "non-observed poses with RGB, novel_count > 0, overlap_count > 0",
+      "status": "complete",
+      "thresholds": {
+        "connected_novel_scene_median": 0.02727000042796135,
+        "connected_novel_scene_p25": 0.013615000061690807,
+        "connected_novel_scene_p75": 0.07171999663114548,
+        "connected_novel_scene_p90": 0.11379799991846085,
+        "connected_overlap_median": 0.5547733306884766,
+        "connected_overlap_p25": 0.21054279804229736,
+        "connected_overlap_p75": 0.824954628944397
+      }
+    },
+    "top_connected_by_novel_scene_fraction": [
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 3.102315664291382,
+          "min_view_direction_change_degrees": 44.77801397302918,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00332",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 10451,
+          "candidate_fraction": 0.20902,
+          "candidate_novel_fraction": 0.999617261506076,
+          "candidate_overlap_fraction": 0.0003827384939240264,
+          "novel_count": 10447,
+          "novel_scene_fraction": 0.20894,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 4,
+          "overlap_fraction": 8e-05,
+          "total_surface_count": 50000,
+          "union_count": 15856,
+          "union_fraction": 0.31712
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 1.0061650276184082,
+          "min_view_direction_change_degrees": 59.721779790092796,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00082",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 7724,
+          "candidate_fraction": 0.15448,
+          "candidate_novel_fraction": 0.9997410668047644,
+          "candidate_overlap_fraction": 0.0002589331952356292,
+          "novel_count": 7722,
+          "novel_scene_fraction": 0.15444,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 2,
+          "overlap_fraction": 4e-05,
+          "total_surface_count": 50000,
+          "union_count": 13131,
+          "union_fraction": 0.26262
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 1.006006121635437,
+          "min_view_direction_change_degrees": 59.48040527227708,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00081",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 7539,
+          "candidate_fraction": 0.15078,
+          "candidate_novel_fraction": 0.9997347128266348,
+          "candidate_overlap_fraction": 0.00026528717336516777,
+          "novel_count": 7537,
+          "novel_scene_fraction": 0.15074,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 2,
+          "overlap_fraction": 4e-05,
+          "total_surface_count": 50000,
+          "union_count": 12946,
+          "union_fraction": 0.25892
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.9831256866455078,
+          "min_view_direction_change_degrees": 58.099569917315286,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00080",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 7116,
+          "candidate_fraction": 0.14232,
+          "candidate_novel_fraction": 0.9985947161326588,
+          "candidate_overlap_fraction": 0.001405283867341203,
+          "novel_count": 7106,
+          "novel_scene_fraction": 0.14212,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 10,
+          "overlap_fraction": 0.0002,
+          "total_surface_count": 50000,
+          "union_count": 12515,
+          "union_fraction": 0.2503
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.14761482179164886,
+          "min_view_direction_change_degrees": 51.771300695089245,
+          "nearest_observed_view_id": "00000",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00065",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 7083,
+          "candidate_fraction": 0.14166,
+          "candidate_novel_fraction": 0.8653113087674714,
+          "candidate_overlap_fraction": 0.13468869123252858,
+          "novel_count": 6129,
+          "novel_scene_fraction": 0.12258,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 954,
+          "overlap_fraction": 0.01908,
+          "total_surface_count": 50000,
+          "union_count": 11538,
+          "union_fraction": 0.23076
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.1889725923538208,
+          "min_view_direction_change_degrees": 51.130776004904114,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00071",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6264,
+          "candidate_fraction": 0.12528,
+          "candidate_novel_fraction": 0.9747765006385696,
+          "candidate_overlap_fraction": 0.025223499361430396,
+          "novel_count": 6106,
+          "novel_scene_fraction": 0.12212,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 158,
+          "overlap_fraction": 0.00316,
+          "total_surface_count": 50000,
+          "union_count": 11515,
+          "union_fraction": 0.2303
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.42270129919052124,
+          "min_view_direction_change_degrees": 45.924297386506225,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00074",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6232,
+          "candidate_fraction": 0.12464,
+          "candidate_novel_fraction": 0.9741655969191271,
+          "candidate_overlap_fraction": 0.025834403080872915,
+          "novel_count": 6071,
+          "novel_scene_fraction": 0.12142,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 161,
+          "overlap_fraction": 0.00322,
+          "total_surface_count": 50000,
+          "union_count": 11480,
+          "union_fraction": 0.2296
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 4.188448429107666,
+          "min_view_direction_change_degrees": 3.5303068268031925,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00437",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 8686,
+          "candidate_fraction": 0.17372,
+          "candidate_novel_fraction": 0.698019801980198,
+          "candidate_overlap_fraction": 0.30198019801980197,
+          "novel_count": 6063,
+          "novel_scene_fraction": 0.12126,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 2623,
+          "overlap_fraction": 0.05246,
+          "total_surface_count": 50000,
+          "union_count": 11472,
+          "union_fraction": 0.22944
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 4.190285682678223,
+          "min_view_direction_change_degrees": 3.608854299260727,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00438",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 8623,
+          "candidate_fraction": 0.17246,
+          "candidate_novel_fraction": 0.7009161544706018,
+          "candidate_overlap_fraction": 0.2990838455293981,
+          "novel_count": 6044,
+          "novel_scene_fraction": 0.12088,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 2579,
+          "overlap_fraction": 0.05158,
+          "total_surface_count": 50000,
+          "union_count": 11453,
+          "union_fraction": 0.22906
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.4039236903190613,
+          "min_view_direction_change_degrees": 46.062010964951774,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00073",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6170,
+          "candidate_fraction": 0.1234,
+          "candidate_novel_fraction": 0.9776337115072934,
+          "candidate_overlap_fraction": 0.022366288492706644,
+          "novel_count": 6032,
+          "novel_scene_fraction": 0.12064,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 138,
+          "overlap_fraction": 0.00276,
+          "total_surface_count": 50000,
+          "union_count": 11441,
+          "union_fraction": 0.22882
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.8399410247802734,
+          "min_view_direction_change_degrees": 53.06673288424879,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00079",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6224,
+          "candidate_fraction": 0.12448,
+          "candidate_novel_fraction": 0.9628856041131105,
+          "candidate_overlap_fraction": 0.03711439588688946,
+          "novel_count": 5993,
+          "novel_scene_fraction": 0.11986,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 231,
+          "overlap_fraction": 0.00462,
+          "total_surface_count": 50000,
+          "union_count": 11402,
+          "union_fraction": 0.22804
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 4.190593242645264,
+          "min_view_direction_change_degrees": 4.722150703957745,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00439",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 8597,
+          "candidate_fraction": 0.17194,
+          "candidate_novel_fraction": 0.6967546818657672,
+          "candidate_overlap_fraction": 0.3032453181342329,
+          "novel_count": 5990,
+          "novel_scene_fraction": 0.1198,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 2607,
+          "overlap_fraction": 0.05214,
+          "total_surface_count": 50000,
+          "union_count": 11399,
+          "union_fraction": 0.22798
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 4.185878276824951,
+          "min_view_direction_change_degrees": 7.263499527238081,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00436",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 8774,
+          "candidate_fraction": 0.17548,
+          "candidate_novel_fraction": 0.678253932072031,
+          "candidate_overlap_fraction": 0.321746067927969,
+          "novel_count": 5951,
+          "novel_scene_fraction": 0.11902,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 2823,
+          "overlap_fraction": 0.05646,
+          "total_surface_count": 50000,
+          "union_count": 11360,
+          "union_fraction": 0.2272
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.8196484446525574,
+          "min_view_direction_change_degrees": 53.25392563873404,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00078",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6112,
+          "candidate_fraction": 0.12224,
+          "candidate_novel_fraction": 0.9669502617801047,
+          "candidate_overlap_fraction": 0.033049738219895285,
+          "novel_count": 5910,
+          "novel_scene_fraction": 0.1182,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 202,
+          "overlap_fraction": 0.00404,
+          "total_surface_count": 50000,
+          "union_count": 11319,
+          "union_fraction": 0.22638
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.5335706472396851,
+          "min_view_direction_change_degrees": 66.52101359355632,
+          "nearest_observed_view_id": "00000",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00385",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 5879,
+          "candidate_fraction": 0.11758,
+          "candidate_novel_fraction": 0.999659806089471,
+          "candidate_overlap_fraction": 0.0003401939105290015,
+          "novel_count": 5877,
+          "novel_scene_fraction": 0.11754,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 2,
+          "overlap_fraction": 4e-05,
+          "total_surface_count": 50000,
+          "union_count": 11286,
+          "union_fraction": 0.22572
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 2.882542371749878,
+          "min_view_direction_change_degrees": 39.623156027055295,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00351",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6264,
+          "candidate_fraction": 0.12528,
+          "candidate_novel_fraction": 0.9265644955300127,
+          "candidate_overlap_fraction": 0.07343550446998723,
+          "novel_count": 5804,
+          "novel_scene_fraction": 0.11608,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 460,
+          "overlap_fraction": 0.0092,
+          "total_surface_count": 50000,
+          "union_count": 11213,
+          "union_fraction": 0.22426
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 3.1783649921417236,
+          "min_view_direction_change_degrees": 36.17725447025043,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00333",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6548,
+          "candidate_fraction": 0.13096,
+          "candidate_novel_fraction": 0.8827122785583384,
+          "candidate_overlap_fraction": 0.11728772144166158,
+          "novel_count": 5780,
+          "novel_scene_fraction": 0.1156,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 768,
+          "overlap_fraction": 0.01536,
+          "total_surface_count": 50000,
+          "union_count": 11189,
+          "union_fraction": 0.22378
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.8043639063835144,
+          "min_view_direction_change_degrees": 53.20525554709996,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00077",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 5936,
+          "candidate_fraction": 0.11872,
+          "candidate_novel_fraction": 0.9678234501347709,
+          "candidate_overlap_fraction": 0.03217654986522911,
+          "novel_count": 5745,
+          "novel_scene_fraction": 0.1149,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 191,
+          "overlap_fraction": 0.00382,
+          "total_surface_count": 50000,
+          "union_count": 11154,
+          "union_fraction": 0.22308
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.21399015188217163,
+          "min_view_direction_change_degrees": 50.562790811462754,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00070",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 5977,
+          "candidate_fraction": 0.11954,
+          "candidate_novel_fraction": 0.9548268362054543,
+          "candidate_overlap_fraction": 0.04517316379454576,
+          "novel_count": 5707,
+          "novel_scene_fraction": 0.11414,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 270,
+          "overlap_fraction": 0.0054,
+          "total_surface_count": 50000,
+          "union_count": 11116,
+          "union_fraction": 0.22232
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.5750417113304138,
+          "min_view_direction_change_degrees": 45.42419441266595,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00075",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 6382,
+          "candidate_fraction": 0.12764,
+          "candidate_novel_fraction": 0.8912566593544343,
+          "candidate_overlap_fraction": 0.10874334064556565,
+          "novel_count": 5688,
+          "novel_scene_fraction": 0.11376,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 694,
+          "overlap_fraction": 0.01388,
+          "total_surface_count": 50000,
+          "union_count": 11097,
+          "union_fraction": 0.22194
+        }
+      }
+    ],
+    "top_connected_by_overlap_fraction": [
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.008384084329009056,
+          "min_view_direction_change_degrees": 1.0030769871247398,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00018",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3730,
+          "candidate_fraction": 0.0746,
+          "candidate_novel_fraction": 0.0021447721179624667,
+          "candidate_overlap_fraction": 0.9978552278820375,
+          "novel_count": 8,
+          "novel_scene_fraction": 0.00016,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3722,
+          "overlap_fraction": 0.07444,
+          "total_surface_count": 50000,
+          "union_count": 5417,
+          "union_fraction": 0.10834
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.058044787496328354,
+          "min_view_direction_change_degrees": 1.021249925748018,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00017",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3747,
+          "candidate_fraction": 0.07494,
+          "candidate_novel_fraction": 0.003469442220443021,
+          "candidate_overlap_fraction": 0.996530557779557,
+          "novel_count": 13,
+          "novel_scene_fraction": 0.00026,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3734,
+          "overlap_fraction": 0.07468,
+          "total_surface_count": 50000,
+          "union_count": 5422,
+          "union_fraction": 0.10844
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.00819318275898695,
+          "min_view_direction_change_degrees": 0.23903110827999308,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00019",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3782,
+          "candidate_fraction": 0.07564,
+          "candidate_novel_fraction": 0.0037017451084082496,
+          "candidate_overlap_fraction": 0.9962982548915917,
+          "novel_count": 14,
+          "novel_scene_fraction": 0.00028,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3768,
+          "overlap_fraction": 0.07536,
+          "total_surface_count": 50000,
+          "union_count": 5423,
+          "union_fraction": 0.10846
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.035085469484329224,
+          "min_view_direction_change_degrees": 4.152609063200266,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00009",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3299,
+          "candidate_fraction": 0.06598,
+          "candidate_novel_fraction": 0.013034252803879964,
+          "candidate_overlap_fraction": 0.9869657471961201,
+          "novel_count": 43,
+          "novel_scene_fraction": 0.00086,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3256,
+          "overlap_fraction": 0.06512,
+          "total_surface_count": 50000,
+          "union_count": 5452,
+          "union_fraction": 0.10904
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.20251129567623138,
+          "min_view_direction_change_degrees": 6.046107651545258,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00016",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3522,
+          "candidate_fraction": 0.07044,
+          "candidate_novel_fraction": 0.015616127200454287,
+          "candidate_overlap_fraction": 0.9843838727995458,
+          "novel_count": 55,
+          "novel_scene_fraction": 0.0011,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3467,
+          "overlap_fraction": 0.06934,
+          "total_surface_count": 50000,
+          "union_count": 5464,
+          "union_fraction": 0.10928
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.06562241166830063,
+          "min_view_direction_change_degrees": 4.618170384426252,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00008",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3314,
+          "candidate_fraction": 0.06628,
+          "candidate_novel_fraction": 0.015691007845503924,
+          "candidate_overlap_fraction": 0.9843089921544961,
+          "novel_count": 52,
+          "novel_scene_fraction": 0.00104,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3262,
+          "overlap_fraction": 0.06524,
+          "total_surface_count": 50000,
+          "union_count": 5461,
+          "union_fraction": 0.10922
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.19891272485256195,
+          "min_view_direction_change_degrees": 6.3945146327404645,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00015",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3461,
+          "candidate_fraction": 0.06922,
+          "candidate_novel_fraction": 0.017336030049118753,
+          "candidate_overlap_fraction": 0.9826639699508812,
+          "novel_count": 60,
+          "novel_scene_fraction": 0.0012,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3401,
+          "overlap_fraction": 0.06802,
+          "total_surface_count": 50000,
+          "union_count": 5469,
+          "union_fraction": 0.10938
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.1895221620798111,
+          "min_view_direction_change_degrees": 6.520531134992781,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00596",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 4112,
+          "candidate_fraction": 0.08224,
+          "candidate_novel_fraction": 0.01848249027237354,
+          "candidate_overlap_fraction": 0.9815175097276264,
+          "novel_count": 76,
+          "novel_scene_fraction": 0.00152,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 4036,
+          "overlap_fraction": 0.08072,
+          "total_surface_count": 50000,
+          "union_count": 5485,
+          "union_fraction": 0.1097
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.37134113907814026,
+          "min_view_direction_change_degrees": 2.537519143575071,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00262",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3640,
+          "candidate_fraction": 0.0728,
+          "candidate_novel_fraction": 0.018956043956043955,
+          "candidate_overlap_fraction": 0.981043956043956,
+          "novel_count": 69,
+          "novel_scene_fraction": 0.00138,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3571,
+          "overlap_fraction": 0.07142,
+          "total_surface_count": 50000,
+          "union_count": 5478,
+          "union_fraction": 0.10956
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.19801481068134308,
+          "min_view_direction_change_degrees": 7.321371248012826,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00014",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3376,
+          "candidate_fraction": 0.06752,
+          "candidate_novel_fraction": 0.019549763033175356,
+          "candidate_overlap_fraction": 0.9804502369668247,
+          "novel_count": 66,
+          "novel_scene_fraction": 0.00132,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3310,
+          "overlap_fraction": 0.0662,
+          "total_surface_count": 50000,
+          "union_count": 5475,
+          "union_fraction": 0.1095
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.06405117362737656,
+          "min_view_direction_change_degrees": 8.168876929127233,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00007",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3229,
+          "candidate_fraction": 0.06458,
+          "candidate_novel_fraction": 0.028182099721275937,
+          "candidate_overlap_fraction": 0.9718179002787241,
+          "novel_count": 91,
+          "novel_scene_fraction": 0.00182,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3138,
+          "overlap_fraction": 0.06276,
+          "total_surface_count": 50000,
+          "union_count": 5500,
+          "union_fraction": 0.11
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.2024887651205063,
+          "min_view_direction_change_degrees": 7.572818709266063,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00013",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3314,
+          "candidate_fraction": 0.06628,
+          "candidate_novel_fraction": 0.028666264333132168,
+          "candidate_overlap_fraction": 0.9713337356668679,
+          "novel_count": 95,
+          "novel_scene_fraction": 0.0019,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3219,
+          "overlap_fraction": 0.06438,
+          "total_surface_count": 50000,
+          "union_count": 5504,
+          "union_fraction": 0.11008
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.21034610271453857,
+          "min_view_direction_change_degrees": 6.972657796526125,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00010"
+        },
+        "candidate_view_id": "00012",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3277,
+          "candidate_fraction": 0.06554,
+          "candidate_novel_fraction": 0.031736344217271895,
+          "candidate_overlap_fraction": 0.9682636557827281,
+          "novel_count": 104,
+          "novel_scene_fraction": 0.00208,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3173,
+          "overlap_fraction": 0.06346,
+          "total_surface_count": 50000,
+          "union_count": 5513,
+          "union_fraction": 0.11026
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.7359285950660706,
+          "min_view_direction_change_degrees": 4.455532961923723,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00021",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3673,
+          "candidate_fraction": 0.07346,
+          "candidate_novel_fraction": 0.04628369180506398,
+          "candidate_overlap_fraction": 0.953716308194936,
+          "novel_count": 170,
+          "novel_scene_fraction": 0.0034,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3503,
+          "overlap_fraction": 0.07006,
+          "total_surface_count": 50000,
+          "union_count": 5579,
+          "union_fraction": 0.11158
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.7895312309265137,
+          "min_view_direction_change_degrees": 3.4358138219522423,
+          "nearest_observed_view_id": "00020",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00022",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3663,
+          "candidate_fraction": 0.07326,
+          "candidate_novel_fraction": 0.04695604695604696,
+          "candidate_overlap_fraction": 0.9530439530439531,
+          "novel_count": 172,
+          "novel_scene_fraction": 0.00344,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3491,
+          "overlap_fraction": 0.06982,
+          "total_surface_count": 50000,
+          "union_count": 5581,
+          "union_fraction": 0.11162
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.25975126028060913,
+          "min_view_direction_change_degrees": 4.897130282125051,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00595",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3692,
+          "candidate_fraction": 0.07384,
+          "candidate_novel_fraction": 0.04794149512459372,
+          "candidate_overlap_fraction": 0.9520585048754063,
+          "novel_count": 177,
+          "novel_scene_fraction": 0.00354,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3515,
+          "overlap_fraction": 0.0703,
+          "total_surface_count": 50000,
+          "union_count": 5586,
+          "union_fraction": 0.11172
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.2909911274909973,
+          "min_view_direction_change_degrees": 8.305862635697682,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00250",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 4153,
+          "candidate_fraction": 0.08306,
+          "candidate_novel_fraction": 0.04960269684565374,
+          "candidate_overlap_fraction": 0.9503973031543462,
+          "novel_count": 206,
+          "novel_scene_fraction": 0.00412,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3947,
+          "overlap_fraction": 0.07894,
+          "total_surface_count": 50000,
+          "union_count": 5615,
+          "union_fraction": 0.1123
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.22571076452732086,
+          "min_view_direction_change_degrees": 13.65973223934696,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00261",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 4606,
+          "candidate_fraction": 0.09212,
+          "candidate_novel_fraction": 0.052105948762483714,
+          "candidate_overlap_fraction": 0.9478940512375162,
+          "novel_count": 240,
+          "novel_scene_fraction": 0.0048,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 4366,
+          "overlap_fraction": 0.08732,
+          "total_surface_count": 50000,
+          "union_count": 5649,
+          "union_fraction": 0.11298
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.1855543702840805,
+          "min_view_direction_change_degrees": 4.116801097964279,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00020"
+        },
+        "candidate_view_id": "00597",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 4195,
+          "candidate_fraction": 0.0839,
+          "candidate_novel_fraction": 0.05363528009535161,
+          "candidate_overlap_fraction": 0.9463647199046484,
+          "novel_count": 225,
+          "novel_scene_fraction": 0.0045,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3970,
+          "overlap_fraction": 0.0794,
+          "total_surface_count": 50000,
+          "union_count": 5634,
+          "union_fraction": 0.11268
+        }
+      },
+      {
+        "camera_delta_to_observed": {
+          "min_distance_to_observed_meters": 0.3019518554210663,
+          "min_view_direction_change_degrees": 4.177529839256239,
+          "nearest_observed_view_id": "00010",
+          "nearest_view_direction_view_id": "00000"
+        },
+        "candidate_view_id": "00594",
+        "connected_novel": true,
+        "rgb_exists": true,
+        "visibility_stats": {
+          "candidate_count": 3692,
+          "candidate_fraction": 0.07384,
+          "candidate_novel_fraction": 0.05606717226435536,
+          "candidate_overlap_fraction": 0.9439328277356447,
+          "novel_count": 207,
+          "novel_scene_fraction": 0.00414,
+          "observed_count": 5409,
+          "observed_fraction": 0.10818,
+          "overlap_count": 3485,
+          "overlap_fraction": 0.0697,
+          "total_surface_count": 50000,
+          "union_count": 5616,
+          "union_fraction": 0.11232
+        }
+      }
+    ]
+  },
+  "config": {
+    "confidence_quantiles": [
+      0.0,
+      0.1,
+      0.25,
+      0.5,
+      0.75,
+      0.9,
+      0.95
+    ],
+    "coverage_thresholds": [
+      0.05,
+      0.1,
+      0.2,
+      0.5
+    ],
+    "image_size_wh": [
+      1296,
+      968
+    ],
+    "max_outlier_points": 30000,
+    "nn_chunk_size": 128,
+    "observed_view_ids": [
+      "00000",
+      "00010",
+      "00020"
+    ],
+    "outlier_threshold": 0.1,
+    "point_stride": 6,
+    "preprocess_mode": "crop",
+    "stability_depth_tolerances": [
+      0.02,
+      0.05,
+      0.1
+    ],
+    "stability_pixel_radii": [
+      0,
+      1
+    ],
+    "stability_point_limits": [
+      12000,
+      50000
+    ],
+    "surface_sample_method": "hash",
+    "visibility_depth_tolerance": 0.05,
+    "visibility_pixel_radius": 0
+  },
+  "diagnostic_00425": {
+    "assessment": {
+      "best_novel_covered_count_0.05": 0,
+      "best_novel_covered_count_0.10": 0,
+      "confidence_range": 6.794929504394531e-06,
+      "evidence": [
+        "GT visibility marks 00425 as disconnected novel: novel_count > 0 and overlap_count == 0",
+        "point-head local Z median is <= 0 while GT novel Z median is > 0",
+        "candidate-view confidence is nearly constant, so quantile filtering cannot separate good geometry",
+        "confidence sweep recovered zero GT novel points at 0.05m and 0.10m",
+        "ray/intrinsics checks have zero positive-Z local points to project"
+      ],
+      "is_low_confidence_failure": false,
+      "likely_primary_failure": "point_head_local_geometry_behind_candidate_camera",
+      "ray_consistency_has_positive_z_points": false
+    },
+    "cache_dir": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/reconstructions/23a55d429693f934__plus__00425",
+    "cache_image_view_ids": [
+      "00000",
+      "00010",
+      "00020",
+      "00425"
+    ],
+    "candidate_index": 3,
+    "candidate_view_id": "00425",
+    "confidence_quantile_sweep": [
+      {
+        "confidence_quantile": 0.0,
+        "confidence_threshold": 1.0,
+        "kept_point_count": 203056,
+        "kept_point_ratio": 1.0,
+        "novel_coverage": {
+          "target_count": 1402,
+          "thresholds": {
+            "0.05": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.1": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.2": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.5": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            }
+          }
+        },
+        "novel_distance_distribution": {
+          "count": 1402,
+          "max": 3.406494617462158,
+          "mean": 2.9259722232818604,
+          "median": 3.015894889831543,
+          "min": 1.9632996320724487,
+          "p10": 2.4792447090148926,
+          "p25": 2.6359188556671143,
+          "p75": 3.209702730178833,
+          "p90": 3.3202295303344727,
+          "p95": 3.3610167503356934,
+          "p99": 3.387364625930786
+        },
+        "outlier_ratio_to_full_gt": 0.366100013256073,
+        "outlier_sample_count": 30000,
+        "outlier_threshold_meters": 0.1
+      },
+      {
+        "confidence_quantile": 0.1,
+        "confidence_threshold": 1.0,
+        "kept_point_count": 203056,
+        "kept_point_ratio": 1.0,
+        "novel_coverage": {
+          "target_count": 1402,
+          "thresholds": {
+            "0.05": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.1": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.2": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.5": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            }
+          }
+        },
+        "novel_distance_distribution": {
+          "count": 1402,
+          "max": 3.406494617462158,
+          "mean": 2.9259722232818604,
+          "median": 3.015894889831543,
+          "min": 1.9632996320724487,
+          "p10": 2.4792447090148926,
+          "p25": 2.6359188556671143,
+          "p75": 3.209702730178833,
+          "p90": 3.3202295303344727,
+          "p95": 3.3610167503356934,
+          "p99": 3.387364625930786
+        },
+        "outlier_ratio_to_full_gt": 0.3672333359718323,
+        "outlier_sample_count": 30000,
+        "outlier_threshold_meters": 0.1
+      },
+      {
+        "confidence_quantile": 0.25,
+        "confidence_threshold": 1.0,
+        "kept_point_count": 203056,
+        "kept_point_ratio": 1.0,
+        "novel_coverage": {
+          "target_count": 1402,
+          "thresholds": {
+            "0.05": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.1": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.2": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.5": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            }
+          }
+        },
+        "novel_distance_distribution": {
+          "count": 1402,
+          "max": 3.406494617462158,
+          "mean": 2.9259722232818604,
+          "median": 3.015894889831543,
+          "min": 1.9632996320724487,
+          "p10": 2.4792447090148926,
+          "p25": 2.6359188556671143,
+          "p75": 3.209702730178833,
+          "p90": 3.3202295303344727,
+          "p95": 3.3610167503356934,
+          "p99": 3.387364625930786
+        },
+        "outlier_ratio_to_full_gt": 0.366100013256073,
+        "outlier_sample_count": 30000,
+        "outlier_threshold_meters": 0.1
+      },
+      {
+        "confidence_quantile": 0.5,
+        "confidence_threshold": 1.0,
+        "kept_point_count": 203056,
+        "kept_point_ratio": 1.0,
+        "novel_coverage": {
+          "target_count": 1402,
+          "thresholds": {
+            "0.05": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.1": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.2": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.5": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            }
+          }
+        },
+        "novel_distance_distribution": {
+          "count": 1402,
+          "max": 3.406494617462158,
+          "mean": 2.9259722232818604,
+          "median": 3.015894889831543,
+          "min": 1.9632996320724487,
+          "p10": 2.4792447090148926,
+          "p25": 2.6359188556671143,
+          "p75": 3.209702730178833,
+          "p90": 3.3202295303344727,
+          "p95": 3.3610167503356934,
+          "p99": 3.387364625930786
+        },
+        "outlier_ratio_to_full_gt": 0.366266667842865,
+        "outlier_sample_count": 30000,
+        "outlier_threshold_meters": 0.1
+      },
+      {
+        "confidence_quantile": 0.75,
+        "confidence_threshold": 1.0,
+        "kept_point_count": 203056,
+        "kept_point_ratio": 1.0,
+        "novel_coverage": {
+          "target_count": 1402,
+          "thresholds": {
+            "0.05": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.1": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.2": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.5": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            }
+          }
+        },
+        "novel_distance_distribution": {
+          "count": 1402,
+          "max": 3.406494617462158,
+          "mean": 2.9259722232818604,
+          "median": 3.015894889831543,
+          "min": 1.9632996320724487,
+          "p10": 2.4792447090148926,
+          "p25": 2.6359188556671143,
+          "p75": 3.209702730178833,
+          "p90": 3.3202295303344727,
+          "p95": 3.3610167503356934,
+          "p99": 3.387364625930786
+        },
+        "outlier_ratio_to_full_gt": 0.3665333390235901,
+        "outlier_sample_count": 30000,
+        "outlier_threshold_meters": 0.1
+      },
+      {
+        "confidence_quantile": 0.9,
+        "confidence_threshold": 1.0,
+        "kept_point_count": 203056,
+        "kept_point_ratio": 1.0,
+        "novel_coverage": {
+          "target_count": 1402,
+          "thresholds": {
+            "0.05": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.1": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.2": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.5": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            }
+          }
+        },
+        "novel_distance_distribution": {
+          "count": 1402,
+          "max": 3.406494617462158,
+          "mean": 2.9259722232818604,
+          "median": 3.015894889831543,
+          "min": 1.9632996320724487,
+          "p10": 2.4792447090148926,
+          "p25": 2.6359188556671143,
+          "p75": 3.209702730178833,
+          "p90": 3.3202295303344727,
+          "p95": 3.3610167503356934,
+          "p99": 3.387364625930786
+        },
+        "outlier_ratio_to_full_gt": 0.3693999946117401,
+        "outlier_sample_count": 30000,
+        "outlier_threshold_meters": 0.1
+      },
+      {
+        "confidence_quantile": 0.95,
+        "confidence_threshold": 1.0,
+        "kept_point_count": 203056,
+        "kept_point_ratio": 1.0,
+        "novel_coverage": {
+          "target_count": 1402,
+          "thresholds": {
+            "0.05": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.1": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.2": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            },
+            "0.5": {
+              "covered_count": 0,
+              "covered_ratio": 0.0
+            }
+          }
+        },
+        "novel_distance_distribution": {
+          "count": 1402,
+          "max": 3.406494617462158,
+          "mean": 2.9259722232818604,
+          "median": 3.015894889831543,
+          "min": 1.9632996320724487,
+          "p10": 2.4792447090148926,
+          "p25": 2.6359188556671143,
+          "p75": 3.209702730178833,
+          "p90": 3.3202295303344727,
+          "p95": 3.3610167503356934,
+          "p99": 3.387364625930786
+        },
+        "outlier_ratio_to_full_gt": 0.36473333835601807,
+        "outlier_sample_count": 30000,
+        "outlier_threshold_meters": 0.1
+      }
+    ],
+    "depth_scale_from_candidate_camera_anchor_sim3": 2.161189079284668,
+    "flatten": {
+      "expected_point_count": 812224,
+      "height": 392,
+      "view_count": 4,
+      "width": 518
+    },
+    "gt_novel_points_in_candidate_camera_frame": {
+      "finite_count": 1402,
+      "positive_z_ratio": 1.0,
+      "radial_depth": {
+        "count": 1402,
+        "max": 2.4118287563323975,
+        "mean": 2.0649805068969727,
+        "median": 2.083974838256836,
+        "min": 1.5141823291778564,
+        "p10": 1.7997385263442993,
+        "p25": 1.9627420902252197,
+        "p75": 2.20687198638916,
+        "p90": 2.280697822570801,
+        "p95": 2.3090484142303467,
+        "p99": 2.3631932735443115
+      },
+      "x": {
+        "count": 1402,
+        "max": 1.1441658735275269,
+        "mean": 0.0007686604512855411,
+        "median": -0.0313420295715332,
+        "min": -0.9273960590362549,
+        "p10": -0.8088469505310059,
+        "p25": -0.5550518035888672,
+        "p75": 0.5317528247833252,
+        "p90": 0.8078320026397705,
+        "p95": 0.939643144607544,
+        "p99": 1.071149230003357
+      },
+      "xy_radius": {
+        "count": 1402,
+        "max": 1.175021767616272,
+        "mean": 0.6605283617973328,
+        "median": 0.6722744107246399,
+        "min": 0.04650290310382843,
+        "p10": 0.33051201701164246,
+        "p25": 0.4520091414451599,
+        "p75": 0.8699614405632019,
+        "p90": 0.9862836003303528,
+        "p95": 1.0515836477279663,
+        "p99": 1.1296254396438599
+      },
+      "y": {
+        "count": 1402,
+        "max": 0.6029538512229919,
+        "mean": -0.06585526466369629,
+        "median": -0.025939494371414185,
+        "min": -0.8231831789016724,
+        "p10": -0.5878663063049316,
+        "p25": -0.35716933012008667,
+        "p75": 0.2273607701063156,
+        "p90": 0.4014275074005127,
+        "p95": 0.4885699152946472,
+        "p99": 0.5705141425132751
+      },
+      "z_depth": {
+        "count": 1402,
+        "max": 2.3249013423919678,
+        "mean": 1.9376929998397827,
+        "median": 1.9596922397613525,
+        "min": 1.3226802349090576,
+        "p10": 1.666896104812622,
+        "p25": 1.804234266281128,
+        "p75": 2.08892560005188,
+        "p90": 2.1897945404052734,
+        "p95": 2.2394356727600098,
+        "p99": 2.292595148086548
+      }
+    },
+    "local_camera_space_raw_point_head": {
+      "finite_count": 203056,
+      "positive_z_ratio": 0.0,
+      "radial_depth": {
+        "count": 203056,
+        "max": 1.134545922279358,
+        "mean": 0.9281166791915894,
+        "median": 0.9507161974906921,
+        "min": 0.7132660150527954,
+        "p10": 0.8490360975265503,
+        "p25": 0.8982932567596436,
+        "p75": 0.965577244758606,
+        "p90": 0.9783646464347839,
+        "p95": 0.9879392385482788,
+        "p99": 1.0161374807357788
+      },
+      "x": {
+        "count": 203056,
+        "max": 0.12151855230331421,
+        "mean": -0.532430112361908,
+        "median": -0.549011766910553,
+        "min": -1.012038230895996,
+        "p10": -0.6779926419258118,
+        "p25": -0.6162301898002625,
+        "p75": -0.4572298526763916,
+        "p90": -0.3491364121437073,
+        "p95": -0.2850936949253082,
+        "p99": -0.21792340278625488
+      },
+      "xy_radius": {
+        "count": 203056,
+        "max": 1.0838284492492676,
+        "mean": 0.8937816619873047,
+        "median": 0.9230539202690125,
+        "min": 0.50321364402771,
+        "p10": 0.7763099670410156,
+        "p25": 0.8639189004898071,
+        "p75": 0.9483827948570251,
+        "p90": 0.9634379148483276,
+        "p95": 0.9701869487762451,
+        "p99": 0.9813345074653625
+      },
+      "y": {
+        "count": 203056,
+        "max": 0.9817366600036621,
+        "mean": 0.7000302672386169,
+        "median": 0.7397838234901428,
+        "min": 0.3648907542228699,
+        "p10": 0.5218326449394226,
+        "p25": 0.6093334555625916,
+        "p75": 0.7910225987434387,
+        "p90": 0.8325115442276001,
+        "p95": 0.8650023341178894,
+        "p99": 0.9266252517700195
+      },
+      "z_depth": {
+        "count": 203056,
+        "max": -0.08952417224645615,
+        "mean": -0.22991693019866943,
+        "median": -0.21513012051582336,
+        "min": -0.6036007404327393,
+        "p10": -0.3369552493095398,
+        "p25": -0.2749156951904297,
+        "p75": -0.16276440024375916,
+        "p90": -0.1396857351064682,
+        "p95": -0.13197191059589386,
+        "p99": -0.11942201107740402
+      }
+    },
+    "local_camera_space_scaled_by_anchor_sim3": {
+      "finite_count": 203056,
+      "positive_z_ratio": 0.0,
+      "radial_depth": {
+        "count": 203056,
+        "max": 2.451968193054199,
+        "mean": 2.00583553314209,
+        "median": 2.0546774864196777,
+        "min": 1.5415027141571045,
+        "p10": 1.8349275588989258,
+        "p25": 1.941381573677063,
+        "p75": 2.086794853210449,
+        "p90": 2.1144309043884277,
+        "p95": 2.1351234912872314,
+        "p99": 2.1960649490356445
+      },
+      "x": {
+        "count": 203056,
+        "max": 0.2626245617866516,
+        "mean": -1.1506822109222412,
+        "median": -1.1865181922912598,
+        "min": -2.1872060298919678,
+        "p10": -1.4652702808380127,
+        "p25": -1.3317899703979492,
+        "p75": -0.9881601929664612,
+        "p90": -0.7545497417449951,
+        "p95": -0.6161413788795471,
+        "p99": -0.4709736704826355
+      },
+      "xy_radius": {
+        "count": 203056,
+        "max": 2.342358112335205,
+        "mean": 1.9316312074661255,
+        "median": 1.994894027709961,
+        "min": 1.0875399112701416,
+        "p10": 1.6777527332305908,
+        "p25": 1.8670918941497803,
+        "p75": 2.0496344566345215,
+        "p90": 2.0821714401245117,
+        "p95": 2.096757411956787,
+        "p99": 2.120849370956421
+      },
+      "y": {
+        "count": 203056,
+        "max": 2.121718645095825,
+        "mean": 1.5128976106643677,
+        "median": 1.5988126993179321,
+        "min": 0.7885979413986206,
+        "p10": 1.1277790069580078,
+        "p25": 1.3168847560882568,
+        "p75": 1.7095494270324707,
+        "p90": 1.7992149591445923,
+        "p95": 1.8694336414337158,
+        "p99": 2.002612352371216
+      },
+      "z_depth": {
+        "count": 203056,
+        "max": -0.19347865879535675,
+        "mean": -0.4968939423561096,
+        "median": -0.46493688225746155,
+        "min": -1.3044953346252441,
+        "p10": -0.7282240390777588,
+        "p25": -0.5941448211669922,
+        "p75": -0.35176461935043335,
+        "p90": -0.30188727378845215,
+        "p95": -0.2852162718772888,
+        "p99": -0.25809353590011597
+      }
+    },
+    "nominal_gt_visibility_stats": {
+      "candidate_count": 1402,
+      "candidate_fraction": 0.02804,
+      "candidate_novel_fraction": 1.0,
+      "candidate_overlap_fraction": 0.0,
+      "novel_count": 1402,
+      "novel_scene_fraction": 0.02804,
+      "observed_count": 5409,
+      "observed_fraction": 0.10818,
+      "overlap_count": 0,
+      "overlap_fraction": 0.0,
+      "total_surface_count": 50000,
+      "union_count": 6811,
+      "union_fraction": 0.13622
+    },
+    "ray_consistency": {
+      "point_head_local_vs_predicted_intrinsics": {
+        "pixel_reprojection_error": {
+          "count": 0,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "p95": null,
+          "p99": null
+        },
+        "projected_in_frame_ratio": null,
+        "ray_angle_degrees": {
+          "count": 0,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "p95": null,
+          "p99": null
+        },
+        "valid_count": 0
+      },
+      "point_head_local_vs_transformed_calibrated_intrinsics": {
+        "pixel_reprojection_error": {
+          "count": 0,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "p95": null,
+          "p99": null
+        },
+        "projected_in_frame_ratio": null,
+        "ray_angle_degrees": {
+          "count": 0,
+          "max": null,
+          "mean": null,
+          "median": null,
+          "min": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "p95": null,
+          "p99": null
+        },
+        "valid_count": 0
+      },
+      "predicted_intrinsics": [
+        [
+          482.1861267089844,
+          0.0,
+          259.0
+        ],
+        [
+          0.0,
+          482.14495849609375,
+          196.0
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "preprocessing_transform": {
+        "batch_pad_left": 0,
+        "batch_pad_top": 0,
+        "crop_left": 0,
+        "crop_top": 0,
+        "mode": "crop",
+        "original_height": 968,
+        "original_width": 1296,
+        "output_height": 392,
+        "output_width": 518,
+        "pad_left": 0,
+        "pad_top": 0,
+        "resized_height": 392,
+        "resized_width": 518,
+        "scale_x": 0.39969135802469136,
+        "scale_y": 0.4049586776859504
+      },
+      "transformed_calibrated_intrinsics": [
+        [
+          467.4874267578125,
+          0.0,
+          258.31854248046875
+        ],
+        [
+          0.0,
+          472.62933349609375,
+          198.4001922607422
+        ],
+        [
+          0.0,
+          0.0,
+          1.0
+        ]
+      ]
+    },
+    "stage_c3_branch_comparison": {
+      "corrected_visibility_semantic_tag": "disconnected_novel_view",
+      "point_head_known_pose": {
+        "novel_distance_distribution": {
+          "target_to_baseline": {
+            "count": 325,
+            "max": 4.65447473526001,
+            "mean": 3.7138314247131348,
+            "median": 3.778186321258545,
+            "min": 2.582768440246582,
+            "p10": 2.8843367099761963,
+            "p25": 3.2130990028381348,
+            "p75": 4.262955188751221,
+            "p90": 4.493262767791748,
+            "p95": 4.534956455230713
+          },
+          "target_to_candidate": {
+            "count": 325,
+            "max": 3.3817691802978516,
+            "mean": 2.893738269805908,
+            "median": 2.9110395908355713,
+            "min": 2.141808032989502,
+            "p10": 2.5047216415405273,
+            "p25": 2.6674726009368896,
+            "p75": 3.163891315460205,
+            "p90": 3.2329468727111816,
+            "p95": 3.2850944995880127
+          }
+        },
+        "novel_raw_coverage": {
+          "baseline": {
+            "thresholds": {
+              "0.05": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.1": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.2": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.5": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              }
+            },
+            "total_count": 325
+          },
+          "candidate": {
+            "thresholds": {
+              "0.05": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.1": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.2": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.5": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              }
+            },
+            "total_count": 325
+          },
+          "gain": {
+            "0.05": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            },
+            "0.1": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            },
+            "0.2": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            },
+            "0.5": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            }
+          }
+        },
+        "visibility_metrics": {
+          "global_accuracy": {
+            "baseline": 0.13545070588588715,
+            "candidate": 0.1470913141965866,
+            "gain": -0.011640608310699463
+          },
+          "global_outlier_ratio": {
+            "baseline": 0.5665833353996277,
+            "candidate": 0.5865833163261414,
+            "gain": -0.019999980926513672,
+            "threshold_meters": 0.1
+          },
+          "novel_coverage_gain": {
+            "0.05": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            },
+            "0.1": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            },
+            "0.2": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            },
+            "0.5": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            }
+          },
+          "novel_surface_gain_scene_normalized": {
+            "0.05": 0.0,
+            "0.1": 0.0,
+            "0.2": 0.0,
+            "0.5": 0.0
+          },
+          "observed_retention_gain": {
+            "0.05": {
+              "baseline": 0.17138485610485077,
+              "candidate": 0.16755929589271545,
+              "gain": -0.003825560212135315
+            },
+            "0.1": {
+              "baseline": 0.45524102449417114,
+              "candidate": 0.45447590947151184,
+              "gain": -0.0007651150226593018
+            },
+            "0.2": {
+              "baseline": 0.811782717704773,
+              "candidate": 0.8018362522125244,
+              "gain": -0.009946465492248535
+            },
+            "0.5": {
+              "baseline": 0.9892884492874146,
+              "candidate": 0.987758219242096,
+              "gain": -0.0015302300453186035
+            }
+          },
+          "visible_union_completeness_gain": 0.16102004051208496
+        }
+      },
+      "predicted_world": {
+        "novel_distance_distribution": {
+          "target_to_baseline": {
+            "count": 325,
+            "max": 4.380687713623047,
+            "mean": 3.480509042739868,
+            "median": 3.562955617904663,
+            "min": 2.386878490447998,
+            "p10": 2.6627933979034424,
+            "p25": 2.9927732944488525,
+            "p75": 4.0278754234313965,
+            "p90": 4.2390313148498535,
+            "p95": 4.297941207885742
+          },
+          "target_to_candidate": {
+            "count": 325,
+            "max": 4.3353447914123535,
+            "mean": 3.451866626739502,
+            "median": 3.525714874267578,
+            "min": 2.3834900856018066,
+            "p10": 2.661616325378418,
+            "p25": 2.978991746902466,
+            "p75": 3.98274827003479,
+            "p90": 4.157322406768799,
+            "p95": 4.224678039550781
+          }
+        },
+        "novel_raw_coverage": {
+          "baseline": {
+            "thresholds": {
+              "0.05": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.1": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.2": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.5": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              }
+            },
+            "total_count": 325
+          },
+          "candidate": {
+            "thresholds": {
+              "0.05": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.1": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.2": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              },
+              "0.5": {
+                "covered_count": 0,
+                "covered_ratio": 0.0
+              }
+            },
+            "total_count": 325
+          },
+          "gain": {
+            "0.05": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            },
+            "0.1": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            },
+            "0.2": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            },
+            "0.5": {
+              "covered_count_gain": 0,
+              "novel_ratio_gain": 0.0,
+              "scene_normalized_gain": 0.0
+            }
+          }
+        },
+        "visibility_metrics": {
+          "global_accuracy": {
+            "baseline": 0.1551455557346344,
+            "candidate": 0.21714892983436584,
+            "gain": -0.062003374099731445
+          },
+          "global_outlier_ratio": {
+            "baseline": 0.6367499828338623,
+            "candidate": 0.6886666417121887,
+            "gain": -0.051916658878326416,
+            "threshold_meters": 0.1
+          },
+          "novel_coverage_gain": {
+            "0.05": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            },
+            "0.1": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            },
+            "0.2": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            },
+            "0.5": {
+              "baseline": 0.0,
+              "candidate": 0.0,
+              "gain": 0.0
+            }
+          },
+          "novel_surface_gain_scene_normalized": {
+            "0.05": 0.0,
+            "0.1": 0.0,
+            "0.2": 0.0,
+            "0.5": 0.0
+          },
+          "observed_retention_gain": {
+            "0.05": {
+              "baseline": 0.1560826301574707,
+              "candidate": 0.14843152463436127,
+              "gain": -0.007651105523109436
+            },
+            "0.1": {
+              "baseline": 0.32364192605018616,
+              "candidate": 0.32670238614082336,
+              "gain": 0.003060460090637207
+            },
+            "0.2": {
+              "baseline": 0.6373373866081238,
+              "candidate": 0.6235654354095459,
+              "gain": -0.01377195119857788
+            },
+            "0.5": {
+              "baseline": 0.9900535345077515,
+              "candidate": 0.987758219242096,
+              "gain": -0.0022953152656555176
+            }
+          },
+          "visible_union_completeness_gain": 0.002318263053894043
+        }
+      },
+      "stage_c3_passed": false,
+      "status": "loaded_from_stage_c3"
+    },
+    "v4_depth_branches": {
+      "C_depth_predicted_intrinsics_known_pose": {
+        "required_artifacts": [
+          "depth.pt",
+          "depth_conf.pt",
+          "predicted_intrinsics.pt",
+          "pose_enc.pt"
+        ],
+        "status": "implemented_not_run_no_v4_cache"
+      },
+      "D_depth_calibrated_intrinsics_known_pose": {
+        "required_artifacts": [
+          "depth.pt",
+          "depth_conf.pt",
+          "transformed_gt_intrinsics.pt",
+          "preprocessing_transforms",
+          "pose_enc.pt"
+        ],
+        "status": "implemented_not_run_no_v4_cache"
+      }
+    },
+    "world_points_confidence": {
+      "count": 203056,
+      "max": 1.0000067949295044,
+      "mean": 1.0,
+      "median": 1.0,
+      "min": 1.0,
+      "p10": 1.0,
+      "p25": 1.0,
+      "p75": 1.0,
+      "p90": 1.0,
+      "p95": 1.0,
+      "p99": 1.0,
+      "quantile_thresholds": {
+        "q0": 1.0,
+        "q0.1": 1.0,
+        "q0.25": 1.0,
+        "q0.5": 1.0,
+        "q0.75": 1.0,
+        "q0.9": 1.0,
+        "q0.95": 1.0
+      }
+    }
+  },
+  "did_expand_audit20": false,
+  "did_run_vggt": false,
+  "did_train_policy": false,
+  "inputs": {
+    "audit_records": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c_deterministic_smoke_v3/camera_anchor_oracle_gain.jsonl",
+    "c3_summary": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c3/stage_c3_known_pose_summary.json",
+    "checkpoint": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/model_weights/vggt/model.pt",
+    "intrinsics": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt",
+    "posed_image_dir": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00",
+    "target_points": "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin"
+  },
+  "outputs": {
+    "candidate_records_jsonl": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c4/stage_c4_candidate_visibility_records.jsonl",
+    "docs_candidate_records_jsonl": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c4/stage_c4_candidate_visibility_records.jsonl",
+    "docs_markdown": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c4/run_log.md",
+    "docs_stability_records_jsonl": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c4/stage_c4_splatting_stability_records.jsonl",
+    "docs_summary_json": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c4/stage_c4_connected_depth_summary.json",
+    "output_summary_json": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c4/stage_c4_connected_depth_summary.json",
+    "proposed_v4_config": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c4/proposed_v4_connected_candidates.yaml",
+    "stability_records_jsonl": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/outputs/oracle_calibration/scannet_scene0000_00_stage_c4/stage_c4_splatting_stability_records.jsonl"
+  },
+  "proposed_v4_run": {
+    "exact_c4_command_after_v4": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/vggt/.venv/vggt-nv-sys/bin/python scripts/audit_stage_c4_connected_depth.py --config configs/oracle_stage_c4_connected_depth.yaml",
+    "exact_generate_command": "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/vggt/.venv/vggt-nv-sys/bin/python scripts/generate_oracle_gain.py --config /mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken/docs/audits/scannet_scene0000_00_stage_c4/proposed_v4_connected_candidates.yaml",
+    "expected_cache_count": 6,
+    "requires_user_approval_before_running_vggt": true,
+    "selected_candidate_ids": [
+      "00018",
+      "00369",
+      "00332",
+      "00019",
+      "00432"
+    ]
+  },
+  "runtime_seconds": 56.025614995509386,
+  "stability": {
+    "candidate_ids": [
+      "00018",
+      "00369",
+      "00332",
+      "00019",
+      "00432",
+      "00325",
+      "00425"
+    ],
+    "summary_by_candidate": {
+      "00018": {
+        "candidate_overlap_fraction": {
+          "count": 12,
+          "max": 0.9988814317673378,
+          "mean": 0.998390317045016,
+          "min": 0.9975838926174496,
+          "range": 0.0012975391498881717,
+          "std": 0.0005314345805138864
+        },
+        "connected_variant_count": 12,
+        "novel_count": {
+          "count": 12,
+          "max": 9.0,
+          "mean": 4.416666666666667,
+          "min": 1.0,
+          "range": 8.0,
+          "std": 3.4990077958695025
+        },
+        "novel_scene_fraction": {
+          "count": 12,
+          "max": 0.00018,
+          "mean": 0.00011999999999999999,
+          "min": 8.333333333333333e-05,
+          "range": 9.666666666666668e-05,
+          "std": 3.96512575112344e-05
+        },
+        "overlap_count": {
+          "count": 12,
+          "max": 3726.0,
+          "mean": 2307.0833333333335,
+          "min": 893.0,
+          "range": 2833.0,
+          "std": 1414.085774056471
+        },
+        "variant_count": 12
+      },
+      "00019": {
+        "candidate_overlap_fraction": {
+          "count": 12,
+          "max": 0.9989010989010989,
+          "mean": 0.9975775370535448,
+          "min": 0.9957660756813972,
+          "range": 0.003135023219701716,
+          "std": 0.0013474797861273361
+        },
+        "connected_variant_count": 12,
+        "novel_count": {
+          "count": 12,
+          "max": 16.0,
+          "mean": 7.583333333333333,
+          "min": 1.0,
+          "range": 15.0,
+          "std": 6.651545350935793
+        },
+        "novel_scene_fraction": {
+          "count": 12,
+          "max": 0.00032,
+          "mean": 0.0001833333333333333,
+          "min": 8.333333333333333e-05,
+          "range": 0.0002366666666666667,
+          "std": 0.00010178954323068313
+        },
+        "overlap_count": {
+          "count": 12,
+          "max": 3773.0,
+          "mean": 2338.4166666666665,
+          "min": 909.0,
+          "range": 2864.0,
+          "std": 1429.4190812082447
+        },
+        "variant_count": 12
+      },
+      "00325": {
+        "candidate_overlap_fraction": {
+          "count": 12,
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "range": 0.0,
+          "std": 0.0
+        },
+        "connected_variant_count": 0,
+        "novel_count": {
+          "count": 12,
+          "max": 12064.0,
+          "mean": 7447.5,
+          "min": 2856.0,
+          "range": 9208.0,
+          "std": 4591.184605669144
+        },
+        "novel_scene_fraction": {
+          "count": 12,
+          "max": 0.24128,
+          "mean": 0.23940055555555553,
+          "min": 0.238,
+          "range": 0.003280000000000005,
+          "std": 0.0013968302962576434
+        },
+        "overlap_count": {
+          "count": 12,
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "range": 0.0,
+          "std": 0.0
+        },
+        "variant_count": 12
+      },
+      "00332": {
+        "candidate_overlap_fraction": {
+          "count": 12,
+          "max": 0.0003944773175542406,
+          "mean": 0.00038870625473667425,
+          "min": 0.00038218994840435696,
+          "range": 1.2287369149883661e-05,
+          "std": 5.466223492474571e-06
+        },
+        "connected_variant_count": 12,
+        "novel_count": {
+          "count": 12,
+          "max": 10462.0,
+          "mean": 6484.333333333333,
+          "min": 2534.0,
+          "range": 7928.0,
+          "std": 3948.1973383079803
+        },
+        "novel_scene_fraction": {
+          "count": 12,
+          "max": 0.2115,
+          "mean": 0.2099986111111111,
+          "min": 0.20786,
+          "range": 0.0036400000000000043,
+          "std": 0.001386195471714747
+        },
+        "overlap_count": {
+          "count": 12,
+          "max": 4.0,
+          "mean": 2.5,
+          "min": 1.0,
+          "range": 3.0,
+          "std": 1.5
+        },
+        "variant_count": 12
+      },
+      "00369": {
+        "candidate_overlap_fraction": {
+          "count": 12,
+          "max": 0.5641025641025641,
+          "mean": 0.5594278744431752,
+          "min": 0.55462746408286,
+          "range": 0.009475100019704086,
+          "std": 0.004485274705400302
+        },
+        "connected_variant_count": 12,
+        "novel_count": {
+          "count": 12,
+          "max": 1333.0,
+          "mean": 828.0,
+          "min": 323.0,
+          "range": 1010.0,
+          "std": 505.0
+        },
+        "novel_scene_fraction": {
+          "count": 12,
+          "max": 0.026916666666666665,
+          "mean": 0.026788333333333334,
+          "min": 0.02666,
+          "range": 0.00025666666666666546,
+          "std": 0.00012833333333333273
+        },
+        "overlap_count": {
+          "count": 12,
+          "max": 1664.0,
+          "mean": 1039.9166666666667,
+          "min": 417.0,
+          "range": 1247.0,
+          "std": 622.2509486176422
+        },
+        "variant_count": 12
+      },
+      "00425": {
+        "candidate_overlap_fraction": {
+          "count": 12,
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "range": 0.0,
+          "std": 0.0
+        },
+        "connected_variant_count": 0,
+        "novel_count": {
+          "count": 12,
+          "max": 1402.0,
+          "mean": 862.0,
+          "min": 322.0,
+          "range": 1080.0,
+          "std": 540.0
+        },
+        "novel_scene_fraction": {
+          "count": 12,
+          "max": 0.02804,
+          "mean": 0.027436666666666665,
+          "min": 0.026833333333333334,
+          "range": 0.001206666666666665,
+          "std": 0.0006033333333333325
+        },
+        "overlap_count": {
+          "count": 12,
+          "max": 0.0,
+          "mean": 0.0,
+          "min": 0.0,
+          "range": 0.0,
+          "std": 0.0
+        },
+        "variant_count": 12
+      },
+      "00432": {
+        "candidate_overlap_fraction": {
+          "count": 12,
+          "max": 0.24657269743193666,
+          "mean": 0.24426639712110285,
+          "min": 0.24259868421052633,
+          "range": 0.003974013221410333,
+          "std": 0.0017022391803231183
+        },
+        "connected_variant_count": 12,
+        "novel_count": {
+          "count": 12,
+          "max": 3903.0,
+          "mean": 2411.8333333333335,
+          "min": 921.0,
+          "range": 2982.0,
+          "std": 1490.833370598099
+        },
+        "novel_scene_fraction": {
+          "count": 12,
+          "max": 0.07806,
+          "mean": 0.07740166666666666,
+          "min": 0.07675,
+          "range": 0.0013100000000000056,
+          "std": 0.0006517007663712628
+        },
+        "overlap_count": {
+          "count": 12,
+          "max": 1277.0,
+          "mean": 783.9166666666666,
+          "min": 295.0,
+          "range": 982.0,
+          "std": 488.9218510037048
+        },
+        "variant_count": 12
+      }
+    },
+    "variant_count": 84
+  },
+  "status": "complete",
+  "v4_depth_branch_implementation": {
+    "artifact_schema": [
+      "depth.pt",
+      "depth_conf.pt",
+      "predicted_intrinsics.pt",
+      "transformed_gt_intrinsics.pt",
+      "preprocessing_transforms",
+      "per_view_shape_offsets"
+    ],
+    "source_files": [
+      "viewtoken/oracle/depth_branch.py",
+      "viewtoken/oracle/cache.py",
+      "scripts/generate_oracle_gain.py"
+    ],
+    "status": "implemented_not_run"
+  },
+  "validation": {
+    "commands": [
+      "env PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/vggt/.venv/vggt-nv-sys/bin/python -m pytest tests -q",
+      "/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/vggt/.venv/vggt-nv-sys/bin/python -m compileall viewtoken scripts tests",
+      "git diff --check"
+    ],
+    "compileall": {
+      "status": "passed"
+    },
+    "git_diff_check": {
+      "status": "passed"
+    },
+    "pytest": {
+      "status": "passed",
+      "test_count": 64
+    },
+    "status": "passed",
+    "tests_recorded_after_script": true
+  }
+}

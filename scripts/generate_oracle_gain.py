@@ -11,7 +11,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 import torch
+from PIL import Image
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 VGGT_ROOT = PROJECT_ROOT / "vggt"
@@ -29,13 +31,23 @@ from scripts.extract_vggt_features import (  # noqa: E402
 from vggt.utils.load_fn import load_and_preprocess_images  # noqa: E402
 from viewtoken.backbones import VGGTFeatureExtractor  # noqa: E402
 from viewtoken.oracle import (  # noqa: E402
+    CACHE_SCHEMA_VERSION,
+    CACHE_SCHEMA_VERSION_V4,
     OracleGainRecord,
     align_sim3_icp,
     build_memory_id,
+    build_per_view_shape_offsets,
     build_reconstruction_cache_identity,
+    build_v4_reconstruction_cache_identity,
+    compute_batch_preprocess_transforms,
     compute_pointcloud_metrics,
+    decode_vggt_pose_enc,
+    infer_image_size_hw,
     sample_point_indices,
+    save_v4_depth_artifacts,
+    transform_intrinsics,
     validate_reconstruction_cache,
+    validate_reconstruction_cache_v4,
     load_point_cloud,
     load_pose_matrix,
     scene_split,
@@ -81,6 +93,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--split", choices=("train", "val", "test"), default=None)
     parser.add_argument("--point-stride", type=int, default=None)
+    parser.add_argument(
+        "--cache-schema-version",
+        choices=("v3", "v4", CACHE_SCHEMA_VERSION, CACHE_SCHEMA_VERSION_V4),
+        default=None,
+    )
+    parser.add_argument("--calibrated-intrinsics", type=Path, default=None)
     return parser.parse_args()
 
 
@@ -128,6 +146,29 @@ def optional_int(value: object) -> int | None:
         return None
     parsed = int(value)
     return None if parsed <= 0 else parsed
+
+
+def normalize_cache_schema_version(value: object) -> str:
+    text = str(value or CACHE_SCHEMA_VERSION).lower()
+    if text in {"v3", CACHE_SCHEMA_VERSION}:
+        return CACHE_SCHEMA_VERSION
+    if text in {"v4", CACHE_SCHEMA_VERSION_V4}:
+        return CACHE_SCHEMA_VERSION_V4
+    raise ValueError(f"Unsupported cache schema version: {value}")
+
+
+def read_image_size(path: Path) -> tuple[int, int]:
+    with Image.open(path) as image:
+        return int(image.width), int(image.height)
+
+
+def load_calibrated_intrinsics(path: Path) -> torch.Tensor:
+    matrix = torch.tensor(np.loadtxt(path, dtype=np.float64), dtype=torch.float32)
+    if matrix.shape == (4, 4):
+        matrix = matrix[:3, :3]
+    if matrix.shape != (3, 3):
+        raise ValueError(f"calibrated intrinsics must be 3x3 or 4x4, got {tuple(matrix.shape)}")
+    return matrix
 
 
 def candidate_identifier(value: object) -> str:
@@ -212,28 +253,82 @@ def reconstruct_points(
     seed: int,
     sample_method: str = "random",
     reuse_existing: bool = False,
+    cache_schema_version: str = CACHE_SCHEMA_VERSION,
+    calibrated_intrinsics: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, dict[str, object]]:
     output_dir.mkdir(parents=True, exist_ok=True)
     points_path = output_dir / "points.pt"
     metadata_path = output_dir / "metadata.json"
-    cache_identity = build_reconstruction_cache_identity(
-        checkpoint_path=checkpoint_path,
-        image_paths=image_paths,
-        preprocess_mode=preprocess_mode,
-        layer_index=layer_index,
-        min_confidence=min_confidence,
-        max_points=max_points,
-        seed=seed,
-        sample_method=sample_method,
-    )
-    if reuse_existing and points_path.is_file() and metadata_path.is_file():
-        metadata = validate_reconstruction_cache(
-            output_dir, expected_fingerprint=str(cache_identity["fingerprint"])
+    cache_schema_version = normalize_cache_schema_version(cache_schema_version)
+    use_v4_cache = cache_schema_version == CACHE_SCHEMA_VERSION_V4
+    preprocessing_transforms = None
+    per_view_shape_offsets = None
+    transformed_gt_intrinsics = None
+    if use_v4_cache:
+        if calibrated_intrinsics is None:
+            raise ValueError("cache-schema-version v4 requires calibrated intrinsics")
+        if max_points is not None or sample_method.lower() not in {"none", "all"} or min_confidence > 0.0:
+            raise ValueError(
+                "cache-schema-version v4 requires unfiltered per-view tensors: "
+                "max_points=None, reconstruction_sample_method=none/all, min_confidence<=0"
+            )
+        image_sizes = [read_image_size(path) for path in image_paths]
+        preprocessing_transforms = compute_batch_preprocess_transforms(
+            image_sizes,
+            mode=preprocess_mode,
+            target_size=518,
+            patch_size=14,
         )
+        height = int(preprocessing_transforms[0].output_height)
+        width = int(preprocessing_transforms[0].output_width)
+        per_view_shape_offsets = build_per_view_shape_offsets(
+            [view_id_from_path(path) for path in image_paths],
+            height=height,
+            width=width,
+        )
+        transformed_gt_intrinsics = torch.stack(
+            [
+                transform_intrinsics(calibrated_intrinsics, transform)
+                for transform in preprocessing_transforms
+            ],
+            dim=0,
+        )
+        cache_identity = build_v4_reconstruction_cache_identity(
+            checkpoint_path=checkpoint_path,
+            image_paths=image_paths,
+            preprocess_mode=preprocess_mode,
+            layer_index=layer_index,
+            min_confidence=min_confidence,
+            max_points=max_points,
+            seed=seed,
+            sample_method=sample_method,
+            preprocessing_transforms=[transform.to_dict() for transform in preprocessing_transforms],
+            per_view_shape_offsets=per_view_shape_offsets,
+        )
+        validator = validate_reconstruction_cache_v4
+    else:
+        cache_identity = build_reconstruction_cache_identity(
+            checkpoint_path=checkpoint_path,
+            image_paths=image_paths,
+            preprocess_mode=preprocess_mode,
+            layer_index=layer_index,
+            min_confidence=min_confidence,
+            max_points=max_points,
+            seed=seed,
+            sample_method=sample_method,
+        )
+        validator = validate_reconstruction_cache
+    if reuse_existing and points_path.is_file() and metadata_path.is_file():
+        metadata = validator(output_dir, expected_fingerprint=str(cache_identity["fingerprint"]))
         points = torch.load(points_path, map_location="cpu", weights_only=True).float()
         metadata["reused_existing_reconstruction"] = True
         return points, metadata
     images = load_and_preprocess_images([str(path) for path in image_paths], mode=preprocess_mode).to(device)
+    if use_v4_cache:
+        expected_hw = (int(preprocessing_transforms[0].output_height), int(preprocessing_transforms[0].output_width))
+        actual_hw = tuple(int(value) for value in images.shape[-2:])
+        if actual_hw != expected_hw:
+            raise RuntimeError(f"v4 preprocessing transform mismatch: expected {expected_hw}, got {actual_hw}")
     extractor = VGGTFeatureExtractor(model, layer_index=layer_index)
     autocast_context = (
         torch.amp.autocast(device_type="cuda", dtype=compute_dtype)
@@ -246,7 +341,7 @@ def reconstruct_points(
     if features.pose_enc is None:
         raise RuntimeError(
             "VGGT extraction did not return pose_enc; refusing to write an incomplete "
-            "oracle-reconstruction-v3 cache"
+            f"{cache_schema_version} cache"
         )
 
     raw_points = features.world_points.detach().reshape(-1, 3).float().cpu()
@@ -256,6 +351,8 @@ def reconstruct_points(
         & torch.isfinite(raw_confidence)
         & (raw_confidence > min_confidence)
     )
+    if use_v4_cache and not bool(valid.all().item()):
+        raise RuntimeError("v4 cache requires every per-view point and confidence value to be finite")
     points = raw_points[valid]
     confidence = raw_confidence[valid]
     filtered_point_count = int(points.shape[0])
@@ -271,6 +368,28 @@ def reconstruct_points(
     torch.save(confidence.contiguous(), output_dir / "confidence.pt")
     pose_enc_path = output_dir / "pose_enc.pt"
     torch.save(features.pose_enc.detach().float().cpu().contiguous(), pose_enc_path)
+    v4_artifacts: dict[str, str] | None = None
+    predicted_intrinsics = None
+    if use_v4_cache:
+        _extrinsics, predicted_intrinsics = decode_vggt_pose_enc(
+            features.pose_enc.detach().float().cpu(),
+            image_size_hw=infer_image_size_hw({"input_shape": list(images.shape)}),
+            build_intrinsics=True,
+        )
+        predicted_intrinsics = predicted_intrinsics.squeeze(0).float().cpu()
+        depth = features.depth.detach().float().cpu()
+        depth_conf = features.depth_conf.detach().float().cpu()
+        if depth.ndim == 5 and depth.shape[0] == 1:
+            depth = depth[0]
+        if depth_conf.ndim == 5 and depth_conf.shape[0] == 1:
+            depth_conf = depth_conf[0]
+        v4_artifacts = save_v4_depth_artifacts(
+            output_dir=output_dir,
+            depth=depth,
+            depth_conf=depth_conf,
+            predicted_intrinsics=predicted_intrinsics,
+            transformed_gt_intrinsics=transformed_gt_intrinsics,
+        )
     metadata = {
         "cache_schema_version": cache_identity["schema_version"],
         "cache_fingerprint": cache_identity["fingerprint"],
@@ -295,12 +414,24 @@ def reconstruct_points(
         "confidence_max": confidence.max().item() if confidence.numel() else 0.0,
         "reused_existing_reconstruction": False,
     }
+    if use_v4_cache:
+        metadata.update(
+            {
+                "preprocessing_transforms": [transform.to_dict() for transform in preprocessing_transforms],
+                "per_view_shape_offsets": per_view_shape_offsets,
+                "v4_artifacts": {
+                    key: str(Path(path).name) for key, path in (v4_artifacts or {}).items()
+                },
+                "depth_backprojection_branches": {
+                    "C_depth_predicted_intrinsics_known_pose": "depth.pt + predicted_intrinsics.pt + ScanNet GT pose",
+                    "D_depth_calibrated_intrinsics_known_pose": "depth.pt + transformed_gt_intrinsics.pt + ScanNet GT pose",
+                },
+            }
+        )
     with (output_dir / "metadata.json").open("w", encoding="utf-8") as handle:
         json.dump(metadata, handle, indent=2)
         handle.write("\n")
-    metadata = validate_reconstruction_cache(
-        output_dir, expected_fingerprint=str(cache_identity["fingerprint"])
-    )
+    metadata = validator(output_dir, expected_fingerprint=str(cache_identity["fingerprint"]))
     return points, metadata
 
 
@@ -343,6 +474,20 @@ def main() -> None:
     split = args.split or str(config.get("split") or scene_split(scene_id))
     point_stride_value = config_value(args, config, "point-stride", None)
     point_stride = None if point_stride_value is None else int(point_stride_value)
+    cache_schema_version = normalize_cache_schema_version(
+        config_value(args, config, "cache-schema-version", CACHE_SCHEMA_VERSION)
+    )
+    calibrated_intrinsics_path_value = config_value(args, config, "calibrated-intrinsics", None)
+    calibrated_intrinsics_path = (
+        None
+        if calibrated_intrinsics_path_value is None
+        else resolve_path(calibrated_intrinsics_path_value, "calibrated-intrinsics")
+    )
+    calibrated_intrinsics = (
+        None if calibrated_intrinsics_path is None else load_calibrated_intrinsics(calibrated_intrinsics_path)
+    )
+    if cache_schema_version == CACHE_SCHEMA_VERSION_V4 and calibrated_intrinsics is None:
+        raise ValueError("cache-schema-version v4 requires calibrated-intrinsics")
     sanity_checks = normalize_sanity_checks(config.get("sanity-checks", {}))
 
     runtime_config = dict(config)
@@ -390,6 +535,8 @@ def main() -> None:
         "target_point_stride": point_stride,
         "reuse_reconstructions": reuse_reconstructions,
         "preprocess_mode": preprocess_mode,
+        "cache_schema_version": cache_schema_version,
+        "calibrated_intrinsics": None if calibrated_intrinsics_path is None else str(calibrated_intrinsics_path),
         "fscore_thresholds_meters_after_alignment": list(thresholds),
         "coverage_radius_meters_after_alignment": coverage_radius,
     }
@@ -411,6 +558,8 @@ def main() -> None:
         seed=random_seed,
         sample_method=reconstruction_sample_method,
         reuse_existing=reuse_reconstructions,
+        cache_schema_version=cache_schema_version,
+        calibrated_intrinsics=calibrated_intrinsics,
     )
     baseline_eval_points = maybe_align(
         baseline_points, target_points, alignment=alignment, seed=random_seed
@@ -454,6 +603,8 @@ def main() -> None:
             seed=random_seed,
             sample_method=reconstruction_sample_method,
             reuse_existing=reuse_reconstructions,
+            cache_schema_version=cache_schema_version,
+            calibrated_intrinsics=calibrated_intrinsics,
         )
         candidate_eval_points = maybe_align(
             candidate_points, target_points, alignment=alignment, seed=random_seed
