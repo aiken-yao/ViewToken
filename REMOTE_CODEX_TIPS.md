@@ -112,9 +112,10 @@ F-score@0.10 gain mean = -0.00999, positive ratio = 0.35
 ## 当前唯一主任务：校准 Oracle 测量协议
 
 阶段 A、Stage B camera-anchor smoke 和 Stage C deterministic smoke 已于 2026-09-02
-完成，但整体校准仍未通过。当前唯一任务是 Stage C2：使用 ScanNet GT 几何验证
-frustum overlap 和 novel visible surface，并据此校准 visibility-aware oracle。只复用
-已有完整 v3 caches，不再运行 VGGT，不扩展 audit20，不训练 policy。
+完成，但整体校准仍未通过。Stage C2 visibility audit 也已完成。当前唯一任务是
+Stage C3：在“相机位姿已知”的机器人 NBV 设定下，分离 VGGT 相机注册误差与局部
+深度/几何误差，并验证 known-pose fusion。优先复用已有完整 v3 caches；未经用户再次
+批准不运行 VGGT，不扩展 audit20，不训练 policy。
 
 ### 阶段 A：已完成——隔离 metric/alignment 噪声
 
@@ -324,9 +325,9 @@ docs/audits/scannet_scene0000_00_stage_c/run_log.md
 docs/audits/scannet_scene0000_00_stage_c/stage_c_deterministic_smoke_summary.json
 ```
 
-### 阶段 C2：当前唯一任务——GT visibility 与 novel-surface 审计
+### 阶段 C2：已完成——GT visibility 与 novel-surface 审计
 
-本阶段不得运行 VGGT。只复用
+该阶段不得运行 VGGT，实际也没有运行。审计只复用
 `outputs/oracle_gain/scannet_scene0000_00_stage_c_deterministic_smoke_v3/` 中的完整 v3
 caches。首先只检查 `scene0000_00` 对应的数据目录和元数据，确认可用的 GT mesh/points、
 RGB/depth intrinsics、camera poses 和 depth maps；不要递归扫描整个共享存储。若缺少完成
@@ -402,6 +403,120 @@ C2 只有满足以下条件才通过：
 完整测试数量。先汇报结果并等待用户决定：若原 smoke candidate 语义有效且 novel gain
 可信，再考虑完整 audit20；若 `00325/00425` 并非 connected new-area，则先用 GT
 visibility 离线选择少量合格候选，得到批准后才运行新的 VGGT smoke。
+
+Stage C2 实际结果：
+
+```text
+00010: candidate overlap = 1.0000, novel scene fraction = 0
+00019: candidate overlap = 0.9989, novel scene fraction = 0.000083
+00325: candidate overlap = 0, novel scene fraction = 0.2365
+00425: candidate overlap = 0, novel scene fraction = 0.0271
+
+00325/00425 novel coverage baseline@0.05/0.10 = 0
+00325/00425 novel coverage candidate@0.05/0.10 = 0
+27 variants: all candidates tie at gain@0.05 = 0
+00325 observed retention@0.05 = -0.0337
+00325 observed retention@0.10 = -0.0428
+```
+
+visibility projection 的 duplicate/high-overlap sanity 基本通过，但必须修正报告中的
+“connected new-area”解释：`00325/00425` 与 `M_obs` 的 overlap 都严格为 0，它们只能
+称为 disconnected novel views。当前 `connected_component_summary` 只检查 novel 点内部
+是否聚成团，不能证明 candidate 与 observed surface 可连接或可注册。后续 connected
+candidate 至少必须同时满足 `novel > 0` 与 `overlap > 0`，并报告 overlap 的稳定性。
+
+另一个剩余风险是：当前 visibility 使用 12k GT point sample 在 `1296x968` 图像上做
+same-pixel z-buffer，采样相对像素网格很稀疏。重复相机通过只能证明投影一致，不能完全
+证明真实遮挡正确。优先寻找 ScanNet 原始 depth/mesh；若只能使用 point cloud，应使用
+更密集表面、point splatting 或 mesh rasterization，将“visibility 用的密集几何”与
+“metric 用的 12k sample”分开。
+
+### 阶段 C3：当前唯一任务——Known-Pose Fusion 失败来源分解
+
+#### 固定应用假设
+
+ViewToken 当前面向具有相机标定与位姿来源的机器人/仿真 NBV。决策前允许使用 candidate
+pose/rays；相机移动后实际 pose 也可由机器人定位系统获得。因此配准不作为论文必须学习
+的核心目标，而作为 VGGT reconstruction backend 的诊断项。主问题保持为：scene tokens
+能否预测一个候选视角带来的新表面收益与已有表面损伤。
+
+#### C3.1 先修正 C2 诊断，不运行 VGGT
+
+1. 将 `connected_new_area` 改为显式要求 observed-candidate overlap，而不是只检查 novel
+   component。把 `00325/00425` 标为 `disconnected_novel_view`。
+2. 在 `M_novel` 上分别保存 baseline 与 candidate 的最近邻距离分布：
+
+   ```text
+   min, p10, p25, median, p75, p90, p95, mean, max
+   covered count/ratio @ 0.05, 0.10, 0.20, 0.50 m
+   ```
+
+   必须保存原始 baseline/candidate covered count，不能只保存二者差值。
+3. 使用 observed anchors 拟合的 Sim(3) 变换 VGGT 预测 candidate camera，但不把
+   candidate 用作 anchor；报告 held-out candidate center error、orientation error 和
+   pairwise-distance distortion。这一步用于判断 novel points 是否因 candidate 注册错误
+   而整体错位。
+4. 同时报告 overlap fraction 在 27 个 voxel/tolerance/hash variants 下的 mean/std/range。
+
+#### C3.2 比较两条重建分支
+
+对完全相同的输入图像和 visibility masks 比较：
+
+```text
+A. predicted-world branch:
+   当前 VGGT world_points + observed-camera-anchor Sim(3)
+
+B. known-pose branch:
+   VGGT 每视角局部 depth/geometry + ScanNet GT camera pose 融合到世界坐标
+```
+
+known-pose branch 必须使用与 `crop` preprocessing 完全一致的相机内参变换。当前
+ScanNet RGB 为 `1296x968`，VGGT 输入为 `518x392`；不能直接复用原始 K，也不能假设
+统一比例。应复现 resize/round/crop/pad 对 `fx, fy, cx, cy` 的变换并增加投影回归测试。
+优先复用官方 `vggt.utils.geometry` 中的 depth backprojection 工具，不修改官方代码。
+
+现有 v3 cache 没有保存 `depth.pt/depth_conf.pt`。在不运行 VGGT 的前提下，可先检查
+无截断 cache 是否仍保留严格的 `[view, H, W]` flatten 顺序且所有点均有效；若条件可被
+metadata 和断言证明，可将每视角 world points 通过该视角 VGGT predicted extrinsic
+转换回局部 camera coordinates，再使用 GT camera-to-world pose 融合，作为 cached
+known-pose diagnostic。任何点被 filtering 删除、顺序无法证明或 shape 不匹配时必须
+fail closed，不能猜测 view ownership。
+
+若现有 cache 无法可靠完成 B 分支，先只修改代码与 cache schema，新增 v4 artifacts：
+
+```text
+depth.pt
+depth_conf.pt
+per-view shape/offsets
+preprocessing transform
+transformed intrinsics
+```
+
+完成单元测试后先汇报，获得用户明确批准才可重新运行同一小规模 smoke；不得直接运行
+完整 audit20。
+
+#### C3.3 离线选择真正 connected-novel 的候选
+
+利用改进后的 dense GT visibility，在 scene0000_00 的候选 pose 集中离线计算 overlap
+与 novelty，不运行候选 RGB/VGGT。按分布选择少量代表候选：高 overlap/低 novelty、
+中等 overlap/中等 novelty、非零 overlap/高 novelty。先报告候选表与选择阈值，得到
+用户批准后才对新候选运行 VGGT。
+
+#### C3 决策规则
+
+- 若 A 分支失败，但 B 分支在 connected-novel views 上获得稳定正 novel coverage：
+  深度/局部几何可用，失败主要来自 VGGT camera registration；后续采用 known-pose
+  fusion，registrability 不作为 ViewToken 主贡献。
+- 若 A、B 都失败且 held-out candidate pose error 很小：问题主要在 VGGT depth/geometry
+  或 confidence/outlier filtering，先诊断局部深度，不训练 policy。
+- 若 disconnected views 失败而真正 connected-novel views 成功：将 overlap 作为候选
+  可行域约束，继续 ViewToken ranking。
+- 若 known-pose branch 对合理 connected candidates 仍无正 gain：VGGT 不适合作为当前
+  reconstruction backend；考虑保留 VGGT tokens 作为策略表征，但更换深度/融合模块。
+
+C3 汇报必须同时包含完整测试数量、`compileall`、`git diff --check`、是否运行 VGGT、
+GPU 时间/显存（若获准运行），以及 A/B 两分支的逐候选距离分布、coverage、retention、
+outlier 和 held-out pose error。完成前不训练任何 ViewToken probe/policy。
 
 ### 校准通过条件
 
