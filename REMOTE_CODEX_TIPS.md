@@ -521,7 +521,7 @@ B 分支可安全恢复 per-view point-head local geometry；不满足这些条�
 fail closed。v3 没有 `depth.pt/depth_conf.pt`，因此不能用 B 分支冒充真正的 VGGT
 depth-backprojection。v4 artifacts 与测试转入下面的 C4.3 实现。
 
-### 阶段 C4：当前唯一任务——Connected Candidate Mining 与真 Depth Branch 准备
+### 阶段 C4：已完成——Connected Candidate Mining 与真 Depth Branch 准备
 
 #### C4.1 离线选择真正 connected-novel 的候选
 
@@ -600,6 +600,156 @@ artifact shape/fingerprint 和 per-view ownership 测试。代码与测试完成
 C4 汇报必须同时包含完整测试数量、`compileall`、`git diff --check`、是否运行 VGGT、
 候选 mining 分布、逐候选 overlap/novelty、00425 局部几何诊断，以及 v4 A/B/C/D
 分支的测试状态。完成前不训练任何 ViewToken probe/policy。
+
+Stage C4 已于 2026-09-03 完成并提交，commit 为 `d57d026`。该阶段没有运行 VGGT，
+没有扩展 audit20，也没有训练 policy。报告位置：
+
+```text
+docs/audits/scannet_scene0000_00_stage_c4/run_log.md
+docs/audits/scannet_scene0000_00_stage_c4/stage_c4_connected_depth_summary.json
+docs/audits/scannet_scene0000_00_stage_c4/stage_c4_candidate_visibility_records.jsonl
+docs/audits/scannet_scene0000_00_stage_c4/stage_c4_splatting_stability_records.jsonl
+```
+
+关键结果：
+
+```text
+candidate poses scanned = 597
+formal novel_count > 0 && overlap_count > 0 candidates = 190
+tests = 64 passed
+
+00425:
+  overlap_count = 0
+  point-head local Z median = -0.215 m
+  GT novel local Z median = +1.960 m
+  confidence is nearly constant around 1.0
+  covered novel points @0.05/@0.10 = 0/0 for every confidence quantile
+```
+
+因此 `00425` 的主要失败不是 confidence threshold，而是 candidate-view 局部几何位于
+相机后方。v4 cache、深度 artifact、预处理内参变换和 backprojection 的实现及单测已经
+存在，但尚未经过真实 v4 cache 验证。
+
+必须修正 C4 的一个选择缺陷：`overlap_count > 0` 只适合作为形式定义，不足以证明
+registrability。C4 选择的 `00332` 虽然 `novel_count=10447`，但 `overlap_count=4`、
+candidate overlap fraction 仅 `0.000383`；在所有 splatting variants 中也只有约
+`0.000382--0.000394`，它实际上仍接近 disconnected view。`00018` 与 `00019` 又都是
+接近重复的高重叠视角。不得直接使用 C4 自动生成的五候选列表启动 GPU。
+
+### 阶段 C5：当前唯一任务——Robust-Connected v4 Depth Smoke
+
+用户在收到 C4 汇报后要求继续。本轮允许的新增 GPU 工作严格限于
+`scene0000_00` 的 1 个 baseline cache 加 5 个 candidate cache；不得扩展 audit20、
+不得运行其他场景、不得训练 probe/policy。先完成下面的 CPU preflight 和审计代码，
+全部测试通过后再执行这 6 个 v4 cache。
+
+#### C5.1 固定 robust-connected 候选
+
+本轮不要再次按 `overlap_count > 0` 自动选样，也不要修改 C4 历史报告。创建新的
+`configs/oracle_stage_c5_v4_smoke.yaml`，固定 observed IDs 为
+`00000, 00010, 00020`，candidate IDs 为：
+
+| candidate | 角色 | novel count | overlap count | candidate overlap | 最近距离 | 最小朝向变化 |
+|---|---|---:|---:|---:|---:|---:|
+| `00018` | high-overlap control | 8 | 3722 | 0.9979 | 0.008 m | 1.00 deg |
+| `00369` | balanced overlap/novelty | 1333 | 1662 | 0.5549 | 1.579 m | 4.83 deg |
+| `00384` | rotation/intermediate stress | 4894 | 1754 | 0.2638 | 0.491 m | 46.30 deg |
+| `00065` | high-novel angular move | 6129 | 954 | 0.1347 | 0.148 m | 51.77 deg |
+| `00437` | high-novel far translation | 6063 | 2623 | 0.3020 | 4.188 m | 3.53 deg |
+
+这五个候选均满足 nominal `overlap_count >= 500` 且
+`candidate_overlap_fraction >= 0.05`。这不是最终论文里的通用阈值，只是本次 smoke
+用于排除稀疏 z-buffer 偶然产生的 1--4 点伪连接。报告这五个候选在现有 12k/50k、
+depth tolerance 0.02/0.05/0.10、pixel radius 0/1 variants 下的 overlap 是否始终非零；
+若任一非 control 候选在稳定性检查中退化为零 overlap，先停下报告，不运行 VGGT。
+
+#### C5.2 先实现真实 v4 分支审计器
+
+现有 `scripts/audit_stage_c4_connected_depth.py` 只会重新执行 C4 mining 和 `00425`
+v3 diagnosis；它不会读取新 v4 cache，也不会真正计算 C/D 分支。因此不得把它当作
+生成 v4 cache 后的最终审计命令。
+
+新增 `scripts/audit_stage_c5_v4_branches.py`（以及必要的 `viewtoken/oracle/` 模块和测试），
+要求：
+
+1. 对 baseline 与五个 candidate cache 调用 `validate_reconstruction_cache_v4`，严格核对
+   fingerprint、ordered image IDs、tensor shape、per-view offsets、预处理变换和所有 v4
+   artifacts；任一项不符就 fail closed。
+2. 从同一个 v4 cache 计算并比较四条分支：
+
+   ```text
+   A. world_points + predicted pose + observed-camera-anchor Sim(3)
+   B. point-head local geometry + ScanNet known pose
+   C. depth head + predicted intrinsics + ScanNet known pose
+   D. depth head + transformed calibrated intrinsics + ScanNet known pose
+   ```
+
+3. B/C/D 的深度尺度只能由 shared observed IDs 校准；candidate pose、candidate GT depth、
+   candidate novel mask 不能参与尺度拟合。对 baseline 和每个 observed+candidate
+   reconstruction 分别使用其自身 observed-anchor scale，并记录 scale 与稳定性。
+4. candidate 始终追加在 observed views 之后。baseline/candidate 的每条分支必须使用同一
+   GT target、同一 visibility mask、同一 deterministic sampling 与相同 metric 参数。
+5. 对每个 candidate/branch 至少输出：
+
+   ```text
+   novel covered count/ratio @0.05, 0.10, 0.20 m
+   novel nearest-distance median/p90
+   observed covered count/ratio 与 retention gain @0.05, 0.10 m
+   prediction->GT accuracy median/p90 与 outlier ratio
+   depth/depth_conf finite ratio、min/median/max
+   candidate-view positive-depth ratio
+   predicted-vs-calibrated intrinsics 差异
+   held-out candidate camera center/orientation error（A 分支诊断）
+   ```
+
+6. 增加 synthetic tests，覆盖 v4 artifact 加载、view ownership、baseline/candidate 分离、
+   observed-only scale calibration、candidate 不参与 calibration、C/D 内参差异以及
+   identical-depth/identical-cloud gain 为零。
+
+CPU preflight 必须先通过：完整 tests、`compileall`、`git diff --check`。审计器可以在 cache
+不存在时输出精确的 `blocked_missing_v4_cache` 和预期目录，但不能以 placeholder 结果
+冒充真实分支审计。
+
+#### C5.3 只运行 6 个 v4 cache，再执行分支审计
+
+preflight 通过后，使用已验证的 H20 Python 与 VGGT-1B 权重运行新的 C5 config。固定：
+
+```text
+cache-schema-version = v4
+preprocess-mode = crop
+max-reconstruction-points = null
+reconstruction-sample-method = none
+min-world-point-confidence = 0.0
+reuse-reconstructions = false
+random-seed = 0
+```
+
+预计 cache 数必须恰好为 6：1 个 `00000+00010+00020` baseline，加上述 5 个
+observed+candidate。生成结束后先逐 cache 做完整性验证，再运行 C5 审计器。不要运行旧
+free Sim(3) oracle 指标来决定成败；可以保留其输出作历史对照，但 C5 结论必须来自
+known-pose/observed-anchor 的 A/B/C/D 分解。
+
+#### C5.4 验收与下一步决策
+
+- `00018` 是接近重复的 control，预期 novel gain 很小；它用于检测多视图输入扰动，
+  不要求严格为零，也不能作为 NBV 正样本。
+- 如果 C 或 D 至少在两个非 control robust-connected candidates 上，于 5 cm 和 10 cm
+  产生一致的正 novel covered-count gain，并且不是以严重 observed retention 或大量
+  outlier 为代价，则 VGGT depth + known-pose fusion 具备继续构造小规模 oracle label
+  的可行性。
+- 如果 B 成功而 C/D 失败，重点检查 depth head 的尺度、内参和定义；不要归因给 camera
+  registration。
+- 如果 C 成功而 D 失败，重点检查 ScanNet calibrated intrinsics 的 resize/crop/pad
+  变换；如果 D 成功而 C 失败，则 predicted intrinsics 是主要误差源。
+- 如果 B/C/D 在所有四个非 control candidates 上于 10 cm 仍为零或稳定为负，则当前
+  VGGT geometry backend 不适合生成 ViewToken oracle label。此时停止扩展数据，考虑
+  更换深度/融合后端，同时保留 VGGT token 作为策略表征。
+- 无论结果如何，本轮结束后只提交代码、配置和轻量 `docs/audits/` 报告，先汇报；不得
+  自动进入 full audit20、五场景数据集或 policy 训练。
+
+C5 报告必须明确列出实际 VGGT forward/cache 数、运行时间、峰值显存、每个 cache 的
+artifact shapes、所有 candidate/branch 指标、通过/失败的验收条款、完整测试数量，以及
+是否修改官方 `vggt/`（应为否）。
 
 ### 校准通过条件
 
