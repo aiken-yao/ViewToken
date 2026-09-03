@@ -181,6 +181,32 @@ def build_per_view_shape_offsets(
     return rows
 
 
+def normalize_depth_stack(depth: Tensor, label: str = "depth") -> Tensor:
+    tensor = torch.as_tensor(depth, dtype=torch.float32).detach().cpu()
+    if tensor.ndim == 5 and tensor.shape[0] == 1 and tensor.shape[-1] == 1:
+        tensor = tensor[0, ..., 0]
+    elif tensor.ndim == 5 and tensor.shape[0] == 1:
+        tensor = tensor[0]
+    if tensor.ndim == 4 and tensor.shape[-1] == 1:
+        tensor = tensor[..., 0]
+    elif tensor.ndim == 4 and tensor.shape[0] == 1:
+        tensor = tensor[0]
+    if tensor.ndim != 3:
+        raise ValueError(f"{label} must normalize to [S, H, W], got {tuple(tensor.shape)}")
+    return tensor.contiguous()
+
+
+def normalize_intrinsics_stack(intrinsics: Tensor, view_count: int | None = None) -> Tensor:
+    tensor = torch.as_tensor(intrinsics, dtype=torch.float32).detach().cpu()
+    if tensor.ndim == 4 and tensor.shape[0] == 1:
+        tensor = tensor[0]
+    if tensor.ndim != 3 or tensor.shape[-2:] != (3, 3):
+        raise ValueError(f"intrinsics must normalize to [S, 3, 3], got {tuple(tensor.shape)}")
+    if view_count is not None and int(tensor.shape[0]) != int(view_count):
+        raise ValueError(f"intrinsics view count mismatch: expected {view_count}, got {tensor.shape[0]}")
+    return tensor.contiguous()
+
+
 def save_v4_depth_artifacts(
     output_dir: Path | str,
     depth: Tensor,
@@ -196,16 +222,22 @@ def save_v4_depth_artifacts(
         "predicted_intrinsics": output_path / "predicted_intrinsics.pt",
         "transformed_gt_intrinsics": output_path / "transformed_gt_intrinsics.pt",
     }
-    torch.save(torch.as_tensor(depth).detach().float().cpu().contiguous(), artifacts["depth"])
-    torch.save(torch.as_tensor(depth_conf).detach().float().cpu().contiguous(), artifacts["depth_conf"])
-    torch.save(
-        torch.as_tensor(predicted_intrinsics).detach().float().cpu().contiguous(),
-        artifacts["predicted_intrinsics"],
+    depth_stack = normalize_depth_stack(depth, label="depth")
+    depth_conf_stack = normalize_depth_stack(depth_conf, label="depth_conf")
+    if depth_conf_stack.shape != depth_stack.shape:
+        raise ValueError(
+            f"depth_conf shape must match depth after normalization: {tuple(depth_conf_stack.shape)} vs {tuple(depth_stack.shape)}"
+        )
+    predicted_intrinsics_stack = normalize_intrinsics_stack(
+        predicted_intrinsics, view_count=int(depth_stack.shape[0])
     )
-    torch.save(
-        torch.as_tensor(transformed_gt_intrinsics).detach().float().cpu().contiguous(),
-        artifacts["transformed_gt_intrinsics"],
+    transformed_gt_intrinsics_stack = normalize_intrinsics_stack(
+        transformed_gt_intrinsics, view_count=int(depth_stack.shape[0])
     )
+    torch.save(depth_stack, artifacts["depth"])
+    torch.save(depth_conf_stack, artifacts["depth_conf"])
+    torch.save(predicted_intrinsics_stack, artifacts["predicted_intrinsics"])
+    torch.save(transformed_gt_intrinsics_stack, artifacts["transformed_gt_intrinsics"])
     return {key: str(path) for key, path in artifacts.items()}
 
 

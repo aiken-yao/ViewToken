@@ -181,7 +181,11 @@ def _normalize_depth_shape(shape: tuple[int, ...], label: str) -> tuple[int, int
         return shape
     if len(shape) == 4 and shape[-1] == 1:
         return shape[:3]
-    raise ValueError(f"{label} must have shape [S, H, W] or [S, H, W, 1], got {shape}")
+    if len(shape) == 4 and shape[0] == 1:
+        return shape[1:]
+    raise ValueError(
+        f"{label} must have shape [S, H, W], [S, H, W, 1], or [1, S, H, W], got {shape}"
+    )
 
 
 def _normalize_intrinsics_shape(shape: tuple[int, ...], label: str) -> tuple[int, int, int]:

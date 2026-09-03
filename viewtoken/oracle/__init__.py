@@ -59,6 +59,14 @@ from .depth_branch import (
     transform_intrinsics,
 )
 from .io import load_point_cloud, load_pose_matrix, view_id_from_path
+from .v4_branches import (
+    V4CacheData,
+    cache_artifact_shape_summary,
+    candidate_view_depth_diagnostics,
+    load_gt_poses_for_view_ids,
+    load_v4_cache_data,
+    recover_v4_branch_points,
+)
 from .known_pose import (
     KnownPoseCacheEligibilityError,
     PerViewFlattenMetadata,
@@ -195,4 +203,10 @@ __all__ = [
     "local_camera_points_to_known_world",
     "predicted_world_to_local_camera_points",
     "reshape_flattened_points_by_view",
+    "V4CacheData",
+    "cache_artifact_shape_summary",
+    "candidate_view_depth_diagnostics",
+    "load_gt_poses_for_view_ids",
+    "load_v4_cache_data",
+    "recover_v4_branch_points",
 ]

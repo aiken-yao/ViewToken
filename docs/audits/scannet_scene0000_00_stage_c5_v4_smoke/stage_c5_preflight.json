@@ -1,0 +1,69 @@
+{
+  "stage": "C5",
+  "expected_cache_count": 6,
+  "validated_cache_count": 0,
+  "missing": [
+    {
+      "label": "baseline",
+      "expected_view_ids": [
+        "00000",
+        "00010",
+        "00020"
+      ],
+      "expected_directory_suffix": ""
+    },
+    {
+      "label": "00018",
+      "expected_view_ids": [
+        "00000",
+        "00010",
+        "00020",
+        "00018"
+      ],
+      "expected_directory_suffix": "__plus__00018"
+    },
+    {
+      "label": "00369",
+      "expected_view_ids": [
+        "00000",
+        "00010",
+        "00020",
+        "00369"
+      ],
+      "expected_directory_suffix": "__plus__00369"
+    },
+    {
+      "label": "00384",
+      "expected_view_ids": [
+        "00000",
+        "00010",
+        "00020",
+        "00384"
+      ],
+      "expected_directory_suffix": "__plus__00384"
+    },
+    {
+      "label": "00065",
+      "expected_view_ids": [
+        "00000",
+        "00010",
+        "00020",
+        "00065"
+      ],
+      "expected_directory_suffix": "__plus__00065"
+    },
+    {
+      "label": "00437",
+      "expected_view_ids": [
+        "00000",
+        "00010",
+        "00020",
+        "00437"
+      ],
+      "expected_directory_suffix": "__plus__00437"
+    }
+  ],
+  "invalid": [],
+  "status": "blocked_missing_v4_cache",
+  "caches": []
+}

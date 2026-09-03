@@ -1,0 +1,21 @@
+scene-id: scene0000_00
+observed-views: ["/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00000.jpg", "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00010.jpg", "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00020.jpg"]
+candidate-views: ["/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00018.jpg", "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00369.jpg", "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00384.jpg", "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00065.jpg", "/mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/00437.jpg"]
+target-points: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/points/scene0000_00.bin
+posed-image-dir: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00
+calibrated-intrinsics: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt
+intrinsics: /mnt/datasets/scannet-processed/26-06-21-1/ScanNet_processed/posed_images/scene0000_00/intrinsic.txt
+checkpoint: /mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/model_weights/vggt/model.pt
+output-dir: outputs/oracle_calibration/scannet_scene0000_00_stage_c5_v4_smoke
+docs-output-dir: docs/audits/scannet_scene0000_00_stage_c5_v4_smoke
+image-extension: jpg
+preprocess-mode: crop
+cache-schema-version: v4
+max-reconstruction-points: null
+reconstruction-sample-method: none
+min-world-point-confidence: 0.0
+reuse-reconstructions: false
+random-seed: 0
+stability-point-limits: [12000, 50000]
+stability-depth-tolerances: [0.02, 0.05, 0.10]
+stability-pixel-radii: [0, 1]
