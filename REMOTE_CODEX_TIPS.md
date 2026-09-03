@@ -951,6 +951,117 @@ C6 完成后只提交代码、测试和轻量报告，先汇报。不得自动�
 数据生成或训练。报告必须注明 `did_run_vggt=false`、复用的 cache commit `25490b5`、
 完整测试数、`compileall`、`git diff --check` 以及官方 `vggt/` 未修改。
 
+### 阶段 C7：当前唯一任务——Memory-Anchored Depth Scale Calibration
+
+Stage C6 已于 2026-09-04 完成，远程提交为 `0983fce`。其结论是：
+
+- H2 append-only 对四个非 control candidate 在 B/C/D 分支均稳定产生正 novel coverage；
+- `00384`、`00065` 的 H3 joint-recompute 确实产生历史视角扰动；
+- 但 candidate-specific scale 与 fixed baseline scale 会改变 C/D 候选排序（C 的 Spearman
+  仅 `0.4`，D 为 `0.7`），因此当前不能直接生成稳定 ranking label；
+- `did_run_vggt=false`，只复用了 C5 的六个 v4 cache；测试 `71 passed`。
+
+本阶段仍然只复用以下六个 cache，不运行新 VGGT、不扩展 audit20、不增加场景、不训练
+任何 policy/probe：
+
+```text
+outputs/oracle_calibration/scannet_scene0000_00_stage_c5_v4_smoke/reconstructions/
+cache commit = 25490b5
+observed = 00000, 00010, 00020
+candidates = 00018, 00369, 00384, 00065, 00437
+```
+
+#### C7.1 实现 observed-depth memory anchor
+
+新增 `viewtoken/oracle/scale_calibration.py` 和
+`scripts/audit_stage_c7_scale_calibration.py`。对每个 candidate cache，只使用其与
+baseline **共同的三个 observed views** 做尺度估计，candidate view、candidate GT、
+candidate visibility mask 和完整 GT 点云均不得参与尺度拟合。
+
+对 C/D depth 分支分别计算：
+
+```text
+baseline raw depth:       d_base(s,u,v)
+candidate raw depth:      d_cand(s,u,v)
+per-pixel ratio:          r = d_base / d_cand
+candidate metric scale:   scale_cand = scale_base * robust_median(r)
+```
+
+要求：
+
+- 只保留两边 finite 且 positive 的像素；不根据 candidate view 的深度筛选像素；
+- 每个 observed view 单独报告 median、p10/p90、MAD 和有效像素比例；
+- 全局尺度使用三个 observed view 的 robust median，不能使用 candidate view；
+- 若单视角 ratio 分歧过大，返回 `blocked_inconsistent_observed_depth_scale`，不生成
+  标签；不能挑选最有利的 observed view；
+- 同时保留 C5 的 per-cache camera-anchor scale 和固定 baseline scale 作为对照，不能
+  用结果事后选择更好的协议。
+
+scale calibration 必须有 synthetic tests：恒定深度比例恢复、零/负/NaN 像素过滤、单视角
+异常不应覆盖其他视角、candidate view 不影响尺度、baseline/candidate image order 不匹配
+时 fail closed。
+
+#### C7.2 用 memory scale 重跑 C6 的核心分解
+
+在不运行 VGGT 的前提下，使用 memory-anchored scale 重算 C6 的 H0/H1/H2/H3：
+
+```text
+branches = B, C, D
+per-view quota = 3000
+target = 12000，seeds = 0..4
+target = 50000，seed = 0
+thresholds = 0.05 / 0.10 / 0.20 m
+```
+
+每个 candidate 必须报告：
+
+```text
+memory-anchored scale、per-cache scale、fixed-baseline scale
+H2-H0 candidate-addition effect
+H3-H2 history-recompute effect
+H3-H0 joint-net effect
+novel/observed coverage @5/10/20 cm
+candidate-view outlier ratio @10/20 cm
+```
+
+重点检查：
+
+1. `00369`、`00437` 的 history effect 在 memory scale 下是否仍发生符号翻转；
+2. `00384`、`00065` 的 history disturbance 是否保持负号；
+3. C/D 候选排序在 memory scale 下是否对 seed、target size 和 branch 稳定；
+4. `00018` control 的 novel gain 是否接近 0；
+5. append-only coverage 是否始终单调不降。
+
+#### C7.3 验收标准
+
+C7 仅在以下条件同时满足时通过：
+
+- 三个 observed view 的 depth-ratio MAD/分位数分歧在报告中明确给出，且没有
+  `blocked_inconsistent_observed_depth_scale`；
+- memory-anchored scale 不依赖 candidate view 或 GT novel mask；
+- C/D 的 append-only novel gain 在至少两个非 control candidate 上，于 5/10 cm 对
+  五个 seed 和 12k/50k target 保持正号；
+- C/D 的 candidate ranking 在 memory scale 下对 seeds 和 target size 基本稳定，并且
+  不再依赖在 per-cache/fixed-baseline 两个不兼容协议之间做事后选择；
+- `00384`、`00065` 的 joint history disturbance 若仍稳定为负，作为独立 consequence
+  target 记录，不与 novel gain 混成单一加权分数；
+- 新增单测、完整 unittest、`compileall`、`git diff --check` 全部通过。
+
+#### C7.4 通过或失败后的方向
+
+- 若 C7 通过：只设计下一阶段的小规模多场景 oracle dataset（建议 5 个场景、每场景
+  3 个 observed views、每场景 10--20 个候选），先提交设计和 split，不自动生成数据。
+- 若尺度仍不稳定：优先改为基于 observed RGB-D/外部 metric depth 的尺度锚定；若实验设定
+  不提供真实深度，则暂停 oracle label 扩展。
+- 若 memory scale 下 append-only 成功、joint-recompute 失败：论文方法固定为冻结 memory
+  加候选追加，并将 joint disturbance 作为诊断或辅助预测目标。
+- 若 C/D 仍有大量外点：保留 VGGT token 作为候选视角表征，考虑更换 depth/fusion backend，
+  不要训练一个模型去掩盖后端几何错误。
+
+C7 完成后先报告，不得自动进入多场景数据生成、完整 policy 或 RL。报告必须注明
+`did_run_vggt=false`、复用 cache commit、尺度协议、每视角 ratio 统计、C6 对照结果、
+完整测试数量以及官方 `vggt/` 是否修改（应为否）。
+
 ### 校准通过条件
 
 只有同时满足以下条件，才能重新运行完整 audit20 并考虑扩展到 5 个场景：
