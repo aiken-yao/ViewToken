@@ -99,6 +99,13 @@ def parse_args() -> argparse.Namespace:
         default=None,
     )
     parser.add_argument("--calibrated-intrinsics", type=Path, default=None)
+    parser.add_argument(
+        "--cache-only",
+        dest="cache_only",
+        action="store_true",
+        default=None,
+        help="Generate validated reconstruction caches without legacy alignment/metrics.",
+    )
     return parser.parse_args()
 
 
@@ -304,6 +311,7 @@ def reconstruct_points(
             sample_method=sample_method,
             preprocessing_transforms=[transform.to_dict() for transform in preprocessing_transforms],
             per_view_shape_offsets=per_view_shape_offsets,
+            calibrated_intrinsics=calibrated_intrinsics.tolist(),
         )
         validator = validate_reconstruction_cache_v4
     else:
@@ -471,6 +479,7 @@ def main() -> None:
     random_seed = int(config_value(args, config, "random-seed", 0))
     min_held_out_candidates = int(config_value(args, config, "min-held-out-candidates", 0))
     reuse_reconstructions = bool(config_value(args, config, "reuse-reconstructions", False))
+    cache_only = bool(config_value(args, config, "cache-only", False))
     split = args.split or str(config.get("split") or scene_split(scene_id))
     point_stride_value = config_value(args, config, "point-stride", None)
     point_stride = None if point_stride_value is None else int(point_stride_value)
@@ -539,6 +548,7 @@ def main() -> None:
         "calibrated_intrinsics": None if calibrated_intrinsics_path is None else str(calibrated_intrinsics_path),
         "fscore_thresholds_meters_after_alignment": list(thresholds),
         "coverage_radius_meters_after_alignment": coverage_radius,
+        "cache_only": cache_only,
     }
 
     reconstruction_root = output_dir / "reconstructions"
@@ -561,21 +571,31 @@ def main() -> None:
         cache_schema_version=cache_schema_version,
         calibrated_intrinsics=calibrated_intrinsics,
     )
-    baseline_eval_points = maybe_align(
-        baseline_points, target_points, alignment=alignment, seed=random_seed
-    )
-    baseline_metrics = compute_pointcloud_metrics(
-        baseline_eval_points,
-        target_points,
-        thresholds=thresholds,
-        coverage_radius=coverage_radius,
-        max_points=max_metric_points,
-        voxel_size=voxel_size,
-        seed=random_seed,
-        sample_method=metric_sample_method,
-    )
+    baseline_metrics = None
+    if not cache_only:
+        baseline_eval_points = maybe_align(
+            baseline_points, target_points, alignment=alignment, seed=random_seed
+        )
+        baseline_metrics = compute_pointcloud_metrics(
+            baseline_eval_points,
+            target_points,
+            thresholds=thresholds,
+            coverage_radius=coverage_radius,
+            max_points=max_metric_points,
+            voxel_size=voxel_size,
+            seed=random_seed,
+            sample_method=metric_sample_method,
+        )
 
     records = []
+    cache_manifest = [
+        {
+            "label": "baseline",
+            "view_ids": observed_view_ids,
+            "cache_dir": str(baseline_dir),
+            "metadata": baseline_reconstruction_metadata,
+        }
+    ]
     for index, candidate_path in enumerate(candidate_views):
         candidate_view_id = view_id_from_path(candidate_path)
         pose_path = candidate_path.with_suffix(".txt")
@@ -606,6 +626,16 @@ def main() -> None:
             cache_schema_version=cache_schema_version,
             calibrated_intrinsics=calibrated_intrinsics,
         )
+        cache_manifest.append(
+            {
+                "label": candidate_view_id,
+                "view_ids": observed_view_ids + [candidate_view_id],
+                "cache_dir": str(candidate_dir),
+                "metadata": candidate_reconstruction_metadata,
+            }
+        )
+        if cache_only:
+            continue
         candidate_eval_points = maybe_align(
             candidate_points, target_points, alignment=alignment, seed=random_seed
         )
@@ -650,6 +680,25 @@ def main() -> None:
                 },
             )
         )
+
+    if cache_only:
+        manifest_path = output_dir / "cache_manifest.json"
+        cache_run_metadata = {
+            "scene_id": scene_id,
+            "memory_id": memory_id,
+            "cache_only": True,
+            "expected_cache_count": 1 + len(candidate_views),
+            "cache_count": len(cache_manifest),
+            "caches": cache_manifest,
+            "runtime_seconds": time.perf_counter() - started_at,
+            "peak_gpu_memory_bytes": torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None,
+        }
+        cache_run_metadata["output_size_bytes"] = directory_size_bytes(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(json.dumps(cache_run_metadata, indent=2) + "\n", encoding="utf-8")
+        print(f"Wrote {len(cache_manifest)} validated reconstruction caches to {reconstruction_root}")
+        print(json.dumps(cache_run_metadata, indent=2))
+        return
 
     labels_path = output_dir / "oracle_gain.jsonl"
     write_jsonl(labels_path, records)

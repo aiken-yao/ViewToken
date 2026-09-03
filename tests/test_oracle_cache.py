@@ -18,6 +18,33 @@ from viewtoken.oracle import (
 
 
 class OracleCacheTest(unittest.TestCase):
+    def test_v4_fingerprint_changes_with_calibrated_intrinsics(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            checkpoint = root / "model.pt"
+            image = root / "00000.jpg"
+            checkpoint.write_bytes(b"weights")
+            image.write_bytes(b"image")
+            common = dict(
+                checkpoint_path=checkpoint,
+                image_paths=[image],
+                preprocess_mode="crop",
+                layer_index=23,
+                min_confidence=0.0,
+                max_points=None,
+                seed=0,
+                sample_method="none",
+                preprocessing_transforms=[],
+                per_view_shape_offsets=[],
+            )
+            first = build_v4_reconstruction_cache_identity(
+                **common, calibrated_intrinsics=[[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+            )
+            second = build_v4_reconstruction_cache_identity(
+                **common, calibrated_intrinsics=[[2.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+            )
+        self.assertNotEqual(first["fingerprint"], second["fingerprint"])
+
     def test_reconstruction_cache_fingerprint_changes_with_ordered_images(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)

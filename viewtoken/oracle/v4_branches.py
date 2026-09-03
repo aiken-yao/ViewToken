@@ -26,7 +26,7 @@ from .known_pose import (
     predicted_world_to_local_camera_points,
     reshape_flattened_points_by_view,
 )
-from .metrics import apply_similarity_transform
+from .metrics import apply_similarity_transform, nearest_neighbor_squared_distances, sample_points
 
 
 @dataclass(frozen=True)
@@ -244,6 +244,136 @@ def recover_v4_branch_points(
             "valid_point_count": int(valid.sum().item()),
         }
     raise ValueError(f"Unsupported branch: {branch}")
+
+
+def heldout_candidate_pose_diagnostics(
+    cache: V4CacheData,
+    gt_camera_to_world_poses: Tensor,
+    observed_ids: list[str],
+    candidate_view_id: str,
+) -> dict[str, Any]:
+    """Evaluate a candidate pose without using it as an alignment anchor."""
+
+    if candidate_view_id not in cache.image_view_ids:
+        raise ValueError(f"candidate {candidate_view_id} missing from cache")
+    poses = torch.as_tensor(gt_camera_to_world_poses, dtype=torch.float32).cpu()
+    alignment = estimate_observed_anchor_alignment_for_cache(
+        cache.image_view_ids,
+        cache.world_to_camera_extrinsics,
+        poses,
+        observed_ids,
+    )
+    index = cache.image_view_ids.index(candidate_view_id)
+    predicted_centers = camera_centers_from_world_to_camera(cache.world_to_camera_extrinsics).squeeze(0)
+    aligned_center = alignment.transform.apply(predicted_centers[index : index + 1])[0]
+    gt_center = poses[index, :3, 3]
+
+    predicted_camera_to_world_rotation = cache.world_to_camera_extrinsics[index, :3, :3].T
+    predicted_forward = predicted_camera_to_world_rotation[:, 2]
+    aligned_forward = alignment.transform.rotation @ predicted_forward
+    gt_forward = poses[index, :3, 2]
+    cosine = torch.dot(aligned_forward, gt_forward) / (
+        torch.linalg.norm(aligned_forward) * torch.linalg.norm(gt_forward)
+    ).clamp_min(1e-12)
+    angle = torch.rad2deg(torch.acos(cosine.clamp(-1.0, 1.0)))
+    return {
+        "candidate_view_id": candidate_view_id,
+        "alignment_uses_observed_ids_only": list(alignment.shared_anchor_ids),
+        "predicted_center_before_alignment": predicted_centers[index].tolist(),
+        "predicted_center_after_alignment": aligned_center.tolist(),
+        "gt_center": gt_center.tolist(),
+        "center_error_meters": float(torch.linalg.norm(aligned_center - gt_center).item()),
+        "orientation_error_degrees": float(angle.item()),
+        "alignment": alignment.to_dict(),
+    }
+
+
+def _distance_summary(values: Tensor) -> dict[str, Any]:
+    values = torch.as_tensor(values, dtype=torch.float32).flatten().cpu()
+    values = values[torch.isfinite(values)]
+    if values.numel() == 0:
+        return {"count": 0, "min": None, "median": None, "p90": None, "max": None}
+    return {
+        "count": int(values.numel()),
+        "min": float(values.min().item()),
+        "median": float(torch.quantile(values, 0.5).item()),
+        "p90": float(torch.quantile(values, 0.9).item()),
+        "max": float(values.max().item()),
+    }
+
+
+def compare_branch_reconstructions(
+    target_points: Tensor,
+    baseline_points: Tensor,
+    candidate_points: Tensor,
+    observed_mask: Tensor,
+    novel_mask: Tensor,
+    thresholds: tuple[float, ...] = (0.05, 0.10, 0.20),
+    outlier_threshold: float = 0.10,
+    max_prediction_points: int | None = 12000,
+    seed: int = 0,
+    chunk_size: int = 2048,
+) -> dict[str, Any]:
+    """Compare baseline/candidate geometry on one shared target and masks."""
+
+    target = torch.as_tensor(target_points, dtype=torch.float32).cpu()
+    observed = torch.as_tensor(observed_mask, dtype=torch.bool).flatten().cpu()
+    novel = torch.as_tensor(novel_mask, dtype=torch.bool).flatten().cpu()
+    if target.ndim != 2 or target.shape[-1] != 3:
+        raise ValueError(f"target_points must have shape [N, 3], got {tuple(target.shape)}")
+    if observed.numel() != target.shape[0] or novel.numel() != target.shape[0]:
+        raise ValueError("visibility masks must match target point count")
+    baseline = sample_points(baseline_points, max_prediction_points, seed=seed + 101, method="hash")
+    candidate = sample_points(candidate_points, max_prediction_points, seed=seed + 101, method="hash")
+
+    target_to_baseline = nearest_neighbor_squared_distances(target, baseline, chunk_size=chunk_size).sqrt()
+    target_to_candidate = nearest_neighbor_squared_distances(target, candidate, chunk_size=chunk_size).sqrt()
+    baseline_to_target = nearest_neighbor_squared_distances(baseline, target, chunk_size=chunk_size).sqrt()
+    candidate_to_target = nearest_neighbor_squared_distances(candidate, target, chunk_size=chunk_size).sqrt()
+
+    def region_payload(mask: Tensor) -> dict[str, Any]:
+        before = target_to_baseline[mask]
+        after = target_to_candidate[mask]
+        covered = {}
+        for threshold in thresholds:
+            key = f"{threshold:g}"
+            before_count = int((before <= threshold).sum().item())
+            after_count = int((after <= threshold).sum().item())
+            total = int(mask.sum().item())
+            covered[key] = {
+                "baseline_count": before_count,
+                "candidate_count": after_count,
+                "covered_count_gain": after_count - before_count,
+                "baseline_ratio": None if total == 0 else before_count / total,
+                "candidate_ratio": None if total == 0 else after_count / total,
+                "ratio_gain": None if total == 0 else (after_count - before_count) / total,
+            }
+        return {
+            "target_count": int(mask.sum().item()),
+            "baseline_distance": _distance_summary(before),
+            "candidate_distance": _distance_summary(after),
+            "covered": covered,
+        }
+
+    return {
+        "baseline_point_count": int(baseline.shape[0]),
+        "candidate_point_count": int(candidate.shape[0]),
+        "novel": region_payload(novel),
+        "observed": region_payload(observed),
+        "accuracy": {
+            "baseline": _distance_summary(baseline_to_target),
+            "candidate": _distance_summary(candidate_to_target),
+            "baseline_outlier_ratio": float((baseline_to_target > outlier_threshold).float().mean().item()),
+            "candidate_outlier_ratio": float((candidate_to_target > outlier_threshold).float().mean().item()),
+            "outlier_ratio_gain": float(
+                (baseline_to_target > outlier_threshold).float().mean().item()
+                - (candidate_to_target > outlier_threshold).float().mean().item()
+            ),
+        },
+        "identical_input": bool(
+            baseline.shape == candidate.shape and torch.equal(baseline, candidate)
+        ),
+    }
 
 
 def tensor_stats(tensor: Tensor) -> dict[str, Any]:

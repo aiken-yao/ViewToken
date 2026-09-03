@@ -15,6 +15,7 @@ max-reconstruction-points: null
 reconstruction-sample-method: none
 min-world-point-confidence: 0.0
 reuse-reconstructions: false
+cache-only: true
 random-seed: 0
 stability-point-limits: [12000, 50000]
 stability-depth-tolerances: [0.02, 0.05, 0.10]

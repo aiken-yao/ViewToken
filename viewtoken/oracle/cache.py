@@ -111,6 +111,7 @@ def build_v4_reconstruction_cache_payload(
     sample_method: str = "none",
     preprocessing_transforms: list[dict[str, Any]] | None = None,
     per_view_shape_offsets: list[dict[str, Any]] | None = None,
+    calibrated_intrinsics: list[list[float]] | None = None,
 ) -> dict[str, Any]:
     payload = build_reconstruction_cache_payload(
         checkpoint_path=checkpoint_path,
@@ -125,6 +126,7 @@ def build_v4_reconstruction_cache_payload(
     )
     payload["preprocessing_transforms"] = preprocessing_transforms or []
     payload["per_view_shape_offsets"] = per_view_shape_offsets or []
+    payload["calibrated_intrinsics"] = calibrated_intrinsics
     payload["required_artifacts"] = list(REQUIRED_RECONSTRUCTION_ARTIFACTS_V4)
     payload["depth_backprojection_schema"] = {
         "depth_units": "VGGT predicted camera Z before any known-pose scale calibration",
@@ -147,6 +149,7 @@ def build_v4_reconstruction_cache_identity(
     sample_method: str = "none",
     preprocessing_transforms: list[dict[str, Any]] | None = None,
     per_view_shape_offsets: list[dict[str, Any]] | None = None,
+    calibrated_intrinsics: list[list[float]] | None = None,
 ) -> dict[str, Any]:
     payload = build_v4_reconstruction_cache_payload(
         checkpoint_path=checkpoint_path,
@@ -159,6 +162,7 @@ def build_v4_reconstruction_cache_identity(
         sample_method=sample_method,
         preprocessing_transforms=preprocessing_transforms,
         per_view_shape_offsets=per_view_shape_offsets,
+        calibrated_intrinsics=calibrated_intrinsics,
     )
     return {
         "schema_version": CACHE_SCHEMA_VERSION_V4,
