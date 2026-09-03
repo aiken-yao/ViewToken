@@ -58,6 +58,13 @@ from .depth_branch import (
     save_v4_depth_artifacts,
     transform_intrinsics,
 )
+from .c6_disturbance import (
+    append_only_coverage_is_monotonic,
+    build_disturbance_states,
+    recover_branch_points_by_view,
+    sample_views,
+    state_metrics,
+)
 from .io import load_point_cloud, load_pose_matrix, view_id_from_path
 from .v4_branches import (
     V4CacheData,
@@ -205,6 +212,11 @@ __all__ = [
     "local_camera_points_to_known_world",
     "predicted_world_to_local_camera_points",
     "reshape_flattened_points_by_view",
+    "append_only_coverage_is_monotonic",
+    "build_disturbance_states",
+    "recover_branch_points_by_view",
+    "sample_views",
+    "state_metrics",
     "V4CacheData",
     "cache_artifact_shape_summary",
     "candidate_view_depth_diagnostics",
