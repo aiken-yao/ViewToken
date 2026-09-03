@@ -636,7 +636,7 @@ candidate overlap fraction 仅 `0.000383`；在所有 splatting variants 中也�
 `0.000382--0.000394`，它实际上仍接近 disconnected view。`00018` 与 `00019` 又都是
 接近重复的高重叠视角。不得直接使用 C4 自动生成的五候选列表启动 GPU。
 
-### 阶段 C5：当前唯一任务——Robust-Connected v4 Depth Smoke
+### 阶段 C5：已完成——Robust-Connected v4 Depth Smoke
 
 用户在收到 C4 汇报后要求继续。本轮允许的新增 GPU 工作严格限于
 `scene0000_00` 的 1 个 baseline cache 加 5 个 candidate cache；不得扩展 audit20、
@@ -797,6 +797,159 @@ git diff --check
 如果出现 `blocked_missing_v4_cache`、cache fingerprint/shape/order 不匹配，或任一
 非 control 候选在连接性 preflight 中退化为零 overlap，立即停止并汇报。无论 C5 结果
 如何，都不得自动扩展 audit20、增加场景或训练 policy；先把轻量报告和完整测试结果提交。
+
+#### C5 实际结果（commit `25490b5`）
+
+远程 H20 已完成 6 个 v4 cache 和 A/B/C/D 审计：
+
+```text
+cache validation = 6/6
+VGGT forward/cache count = 6
+cache-only generation = 31.05 s
+total process runtime = 38.68 s
+peak GPU memory = 6,158,511,104 bytes
+cache size = 112,289,729 bytes
+tests = 69 passed
+compileall = passed
+git diff --check = passed
+official vggt/ modified = false
+```
+
+四个非 control robust-connected candidates 在 C/D 分支的 novel covered-count gain
+@5/10 cm 均为正：
+
+| candidate | C @5/10 cm | D @5/10 cm | D observed retention @5/10 cm |
+|---|---:|---:|---:|
+| `00369` | `+113 / +239` | `+106 / +248` | `+92 / +91` |
+| `00384` | `+130 / +311` | `+112 / +277` | `-80 / -183` |
+| `00065` | `+77 / +244` | `+64 / +223` | `-72 / -136` |
+| `00437` | `+105 / +217` | `+104 / +223` | `-24 / -13` |
+
+`00018` control 的 novel gain 为 0，符合其几乎完全重叠的语义。C/D 结果非常接近；
+predicted/calibrated focal ratio 约为 `0.984--1.047`，所以当前主矛盾不是内参。
+
+VGGT predicted-pose A 分支仍明显受 registration 影响，尤其：
+
+```text
+00437 held-out center error = 4.183 m
+00437 orientation error = 76.58 deg
+A novel gain @5/10 cm = -3 / -2
+D novel gain @5/10 cm = +104 / +223
+```
+
+这进一步支持当前应用假设：机器人/仿真提供 known pose，VGGT camera registration 只作
+后端诊断，不作为 ViewToken 必须学习的论文贡献。
+
+但 C5 的 “observed retention” 还不能直接解释成真实 reconstruction disturbance。
+当前 `compare_branch_reconstructions` 分别从 baseline 与 candidate 全点云 hash 采样 12k；
+candidate 多一个视角且历史三视角也被 VGGT 重新推理，新增点可能挤掉旧点，造成采样组成
+变化。必须先区分：真实历史预测漂移、候选新增点的离群影响，以及固定点数采样伪损伤。
+
+### 阶段 C6：当前唯一任务——Append-only 与 Joint-recompute 扰动分解
+
+本阶段只复用 Stage C5 已有 6 个 v4 cache，不运行任何新 VGGT，不扩 audit20，不读取
+候选 RGB 作为决策输入，也不训练 policy。
+
+#### C6.1 改为 per-view deterministic quota，消除全局采样竞争
+
+利用 v4 `per_view_shape_offsets` 保留的 ownership，对 B/C/D 每个视角分别做 deterministic
+hash sampling。固定每视角相同 quota，例如 `3000` 或 `4000` 点，并运行 seeds `0..4`。
+禁止先把所有视角拼接后再统一截成 12k，因为这样 candidate view 会挤掉 observed points。
+
+必须构造以下四种几何状态：
+
+```text
+H0 baseline:
+   baseline 3-view cache 的 observed geometry
+
+H1 observed-recomputed-only:
+   candidate 4-view cache 中前 3 个 observed views 的 geometry，不加入 candidate view
+
+H2 append-only:
+   H0 的历史 geometry 保持完全冻结，只追加 candidate 4-view cache 的最后一个视角
+
+H3 joint-recompute:
+   candidate 4-view cache 中全部 4 个视角，即 C5 当前状态
+```
+
+对 target-to-reconstruction coverage counts，严格分解：
+
+```text
+candidate-addition effect = H2 - H0
+history-recompute effect  = H3 - H2
+joint net effect          = H3 - H0
+```
+
+同一个 seed 下 H0 必须被所有候选共享，不能为每个 candidate 重新采样。H2 中 H0 的点与
+顺序必须逐元素保持一致。新增 synthetic test：只追加点且不做全局重新采样时，target
+coverage 不得下降。
+
+#### C6.2 同时检查 scale 与 sampling 稳定性
+
+Stage C5 baseline observed-anchor scale 为 `1.9494`，candidate cache scale 为
+`1.8735--2.0432`，相对变化约 `-3.9%--+4.8%`。对 B/C/D 同时报告两种协议：
+
+```text
+per-cache observed-anchor scale   # C5 当前协议
+fixed baseline scale = 1.9494     # 所有 candidate 共用，仅作敏感性对照
+```
+
+不得根据结果选择更好的一种作为标签；需要报告候选排序、novel gain 和 retention 对尺度协议
+是否稳定。若两种协议导致排序或正负号大幅翻转，先处理尺度校准，不进入数据扩展。
+
+至少运行：
+
+```text
+per-view quota = 3000（若资源允许再加 4000）
+sampling seeds = 0..4
+target samples = 12000 与 50000
+thresholds = 0.05 / 0.10 / 0.20 m
+branches = B / C / D
+```
+
+为避免不必要的计算，可以先完成 12k target × seeds 0..4；若结论稳定，再运行 50k
+target 的 seed 0 验证。不得只挑一个有利 seed 汇报。
+
+#### C6.3 必须报告的结果
+
+每个 candidate/branch/scale protocol 至少报告：
+
+```text
+H0/H1/H2/H3 novel covered count/ratio @5/10/20 cm
+H0/H1/H2/H3 observed covered count/ratio @5/10/20 cm
+candidate-addition / history-recompute / joint-net 三项 effect
+prediction->GT outlier ratio @10/20 cm（按 observed 与 candidate view 分开）
+novel nearest-distance median/p90
+sampling mean/std/range 与符号稳定率
+candidate ranking 的 Spearman correlation
+```
+
+特别核对 C5 中损伤较大的 `00384` 与 `00065`：
+
+- 若 H2 对 observed coverage 不下降，而 H3 下降，所谓 disturbance 主要来自 VGGT
+  joint-context 重新推理历史视角；
+- 若 H2 已引入大量 outlier，但 coverage 仍单调不降，则问题是 candidate geometry
+  precision，而不是 retention；
+- 若改成 per-view quota 后原 retention loss 大幅消失，则 C5 损伤主要是全局 12k sampling
+  artifact，不得把它作为 ViewToken 的训练目标；
+- 若 H1/H3 在多 seed 与尺度协议下仍稳定损伤 observed surface，才能把它正式定义为
+  `reconstruction disturbance`，并作为 ViewToken 预测的独立 consequence target。
+
+#### C6.4 验收和后续方向
+
+- 若 C/D 的 append-only candidate-addition effect 在至少两个非 control candidate 上于
+  5/10 cm 稳定为正，且结果对 seed/target size/scale protocol 基本稳定：批准下一阶段
+  构建极小的多场景 oracle dataset，但仍先训练 diagnostic probes，不直接做完整 policy。
+- 若 joint-recompute disturbance 稳定存在：未来标签必须是 consequence vector，至少包含
+  `novel gain`、`history disturbance`、`outlier cost`，不能拍脑袋立即合成一个评分函数。
+- 若 append-only 成功而 joint-recompute 失败：采用冻结 Scene Token Memory + 追加新视角的
+  增量融合协议，避免每次重新计算全部历史视角。
+- 若 append-only C/D 也不稳定或多数为负：停止 VGGT geometry label 扩展，考虑更换深度/
+  融合后端；VGGT tokens 仍可保留为 NBV 表征。
+
+C6 完成后只提交代码、测试和轻量报告，先汇报。不得自动进入 C7、完整 audit20、五场景
+数据生成或训练。报告必须注明 `did_run_vggt=false`、复用的 cache commit `25490b5`、
+完整测试数、`compileall`、`git diff --check` 以及官方 `vggt/` 未修改。
 
 ### 校准通过条件
 
