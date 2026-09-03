@@ -751,6 +751,53 @@ C5 报告必须明确列出实际 VGGT forward/cache 数、运行时间、峰值
 artifact shapes、所有 candidate/branch 指标、通过/失败的验收条款、完整测试数量，以及
 是否修改官方 `vggt/`（应为否）。
 
+#### C5 当前实现状态（2026-09-03）
+
+已提交 `048188a Implement cache-only C5 branch audit`。当前代码已经具备：
+
+- `generate_oracle_gain.py` 的 `cache-only: true` 模式：只生成 v4 reconstruction cache，
+  不生成旧 free-ICP oracle gain；
+- `audit_stage_c5_v4_branches.py` 的 cache-only A/B/C/D 审计入口；
+- baseline/candidate 共享 GT target、visibility mask 和 deterministic hash sampling；
+- novel coverage、observed retention、outlier、深度/内参、held-out pose diagnostics；
+- calibrated intrinsics 纳入 v4 cache fingerprint；
+- v4 branch synthetic tests（新增 `tests/test_v4_branches.py`）。
+
+本机 `compileall` 和 `git diff --check` 已通过。Windows 默认 Python 因 NumPy namespace
+损坏而无法启动 torch 单测；该结果不能替代远程 H20 测试。当前真实 v4 cache 数和 VGGT
+forward 数仍为 0，不能填写任何 C5 几何结论。
+
+远程服务器必须先执行：
+
+```bash
+cd /mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/ViewToken
+git pull --ff-only origin main
+python -m unittest discover -s tests -v
+python -m compileall -q viewtoken scripts tests
+git diff --check
+```
+
+若测试全部通过，再执行唯一允许的 6-cache GPU smoke：
+
+```bash
+/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/vggt/.venv/vggt-nv-sys/bin/python \
+  scripts/generate_oracle_gain.py \
+  --config configs/oracle_stage_c5_v4_smoke.yaml
+```
+
+该配置必须保持 `cache-only: true`，预期只产生 1 个 baseline 加 5 个 candidate cache。
+生成后先运行：
+
+```bash
+/mnt/volumes/ad-base-vla-vol-ga/mayongjia/ad-base-vla-vol-ga/group/cjy/vggt/.venv/vggt-nv-sys/bin/python \
+  scripts/audit_stage_c5_v4_branches.py \
+  --config configs/oracle_stage_c5_v4_smoke.yaml
+```
+
+如果出现 `blocked_missing_v4_cache`、cache fingerprint/shape/order 不匹配，或任一
+非 control 候选在连接性 preflight 中退化为零 overlap，立即停止并汇报。无论 C5 结果
+如何，都不得自动扩展 audit20、增加场景或训练 policy；先把轻量报告和完整测试结果提交。
+
 ### 校准通过条件
 
 只有同时满足以下条件，才能重新运行完整 audit20 并考虑扩展到 5 个场景：
