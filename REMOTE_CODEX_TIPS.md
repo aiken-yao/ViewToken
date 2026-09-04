@@ -951,7 +951,7 @@ C6 完成后只提交代码、测试和轻量报告，先汇报。不得自动�
 数据生成或训练。报告必须注明 `did_run_vggt=false`、复用的 cache commit `25490b5`、
 完整测试数、`compileall`、`git diff --check` 以及官方 `vggt/` 未修改。
 
-### 阶段 C7：当前唯一任务——Memory-Anchored Depth Scale Calibration
+### 阶段 C7：初步完成但需校正重跑——Memory-Anchored Depth Scale Calibration
 
 Stage C6 已于 2026-09-04 完成，远程提交为 `0983fce`。其结论是：
 
@@ -1061,6 +1061,140 @@ C7 仅在以下条件同时满足时通过：
 C7 完成后先报告，不得自动进入多场景数据生成、完整 policy 或 RL。报告必须注明
 `did_run_vggt=false`、复用 cache commit、尺度协议、每视角 ratio 统计、C6 对照结果、
 完整测试数量以及官方 `vggt/` 是否修改（应为否）。
+
+### 阶段 C7.1：当前唯一任务——修正冻结基线与真实 Target-Seed Sweep
+
+远程已在 commit `aaec6c2` 完成首轮 C7，报告位于：
+
+```text
+docs/audits/scannet_scene0000_00_stage_c7/run_log.md
+docs/audits/scannet_scene0000_00_stage_c7/stage_c7_scale_calibration_summary.json
+```
+
+首轮结果提供了积极但尚不能最终验收的证据：五个 candidate 的 observed-depth ratio
+均成功校准，四个非 control candidate 的 C/D append-only novel gain 在 5/10 cm 下均为
+正，`00384/00065` 的 history disturbance 仍为负；完整测试 `76 passed`，没有运行新 VGGT。
+
+但是代码审查确认存在两个影响结论的实现错误：
+
+1. `scripts/audit_stage_c7_scale_calibration.py` 中 target sampling 写成：
+
+   ```python
+   target = sample_points(source, size, seed=0 if size == 50000 else 0, method="hash")
+   ```
+
+   因此 12k 的五次运行始终使用同一份 seed-0 target。此前验证的是 reconstruction
+   per-view sampling seeds `0..4`，不是完整的 target-seed sweep。
+
+2. memory 协议将 candidate-specific memory scale 同时传给 baseline 和 candidate：
+
+   ```python
+   bv = recover_branch_points_by_view(base, ..., depth_scale=scale)
+   cv = recover_branch_points_by_view(cache, ..., depth_scale=scale)
+   ```
+
+   这导致 H0 baseline scale 随 candidate 从约 `1.876--2.070` 变化，违反 H0 必须冻结且
+   对所有 candidate 逐元素相同的要求。正确协议是：
+
+   ```text
+   baseline H0 scale  = 固定 base_scale 1.9494023
+   candidate H1/H3    = memory-anchored candidate scale
+   H2                 = 固定 H0 + candidate view（candidate memory scale）
+   ```
+
+此外，observed-depth memory scale 只为 VGGT depth head C/D 定义。B 是 point-head local
+geometry，不能把 C/D 的 depth ratio 标成独立的 `B-memory` 协议。B 只保留
+`per_cache` 与 `fixed_baseline` 诊断；C/D 才比较 `memory`、`per_cache`、
+`fixed_baseline`。
+
+#### C7.1.1 修复状态构造
+
+现有 `build_disturbance_states` 接收 baseline views 和 recomputed views，但 C7.1 必须明确
+支持 baseline/candidate 使用不同尺度后的 per-view geometry，并保证：
+
+```text
+H0 = baseline cache 的 3 个 observed views，始终使用 base_scale
+H1 = candidate cache 的前 3 个 observed views，使用 candidate protocol scale
+H2 = H0 原样前缀 + candidate cache 最后一个 view，使用 candidate protocol scale
+H3 = candidate cache 全部 4 views，使用 candidate protocol scale
+```
+
+H0 必须在同一 target seed、branch 和 quota 下只计算一次并供五个 candidate 共享。增加
+以下强制 assertions/tests：
+
+- 同一 branch/seed/quota 下，不同 candidate 的 H0 shape、数值和顺序逐元素相同；
+- H2 的前缀逐元素等于 H0；
+- 只追加 candidate points 时，target coverage 不得下降；
+- 修改 candidate scale 不得改变 H0；
+- candidate view 不得参与 memory scale calibration；
+- B 分支不得产生伪 `memory` protocol 记录。
+
+#### C7.1.2 修复采样 sweep
+
+12k target 必须真实使用 seeds `0..4`：
+
+```python
+target = sample_points(source, 12000, seed=seed, method="hash")
+```
+
+50k 若原始 target 恰好只有 50k 或少于上限，也要在报告中明确 target 是否发生实际采样；
+保留 seed 0 作为密集验证。重建点的 per-view quota sampling seed 与 target seed 应分别
+记录，避免把两类随机性混为一谈。推荐输出字段：
+
+```text
+target_sample_seed
+reconstruction_sample_seed
+target_source_count
+target_sample_count
+target_was_subsampled
+per_view_quota
+```
+
+#### C7.1.3 重新生成报告并覆盖结论，而非历史文件
+
+不要删除或修改 Stage C7 的历史报告。新结果写入：
+
+```text
+docs/audits/scannet_scene0000_00_stage_c7_1/run_log.md
+docs/audits/scannet_scene0000_00_stage_c7_1/stage_c7_1_corrected_scale_summary.json
+```
+
+报告必须对比首轮 C7 与 C7.1，明确哪些数值因 H0/seed bug 失效。至少重新报告：
+
+```text
+C/D memory protocol 的 append-only novel gain @5/10/20 cm
+C/D memory protocol 的 history-recompute effect @5/10/20 cm
+五个 target seeds 的 mean/std/min/max/positive fraction
+12k 与 50k candidate ranking
+跨 target size 的 Spearman
+C vs D ranking Spearman
+memory candidate scale 与固定 base scale
+candidate-view outlier ratio @10/20 cm
+```
+
+不要再把 memory/per-cache/fixed-baseline 三种协议之间的 Spearman 当作 memory label 的
+必要验收项；它们本来就是不同尺度定义。真正需要稳定的是：**选定 memory protocol 后**，
+它对 target seeds、12k/50k target 和 C/D branch 的排序是否稳定。其他两个协议只作为
+消融对照。
+
+#### C7.1.4 验收与下一步
+
+C7.1 通过需要同时满足：
+
+- 所有 candidate 的 H0 在同一 branch/seed 下逐元素相同；
+- 五个真实 target seeds 已运行并记录；
+- C/D memory append-only novel gain 在至少两个非 control candidate 上，于 5/10 cm
+  对所有 seed 和 12k/50k target 保持正号；
+- memory protocol 的候选排序在 12k seeds 间稳定，12k 聚合排序与 50k 排序具有可接受的
+  Spearman；若收益区间重叠，应报告 tie/uncertainty，而不是强制全排序；
+- `00384/00065` 的 history disturbance 若仍稳定为负，确认其为独立 consequence target；
+- 完整 tests、`compileall`、`git diff --check` 通过，`did_run_vggt=false`。
+
+如果候选的收益均稳定为正但相邻候选排序不稳定，不要继续追求精确连续回归标签。下一阶段
+应采用 uncertainty-aware supervision：保存每个 consequence 的 mean/std，并将差异小于
+采样置信区间的候选视为 tie；训练 pairwise/listwise ranking 时忽略不确定 pair。
+
+C7.1 完成后先汇报和提交轻量报告，不得自动生成多场景数据、训练 probe/policy 或进入 RL。
 
 ### 校准通过条件
 
