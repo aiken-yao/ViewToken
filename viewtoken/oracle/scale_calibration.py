@@ -26,3 +26,17 @@ def calibrate_candidate_depth_scale(baseline_depth: Tensor, candidate_depth: Ten
     rel_mad=float(global_stats["mad"]/abs(global_stats["median"])) if global_stats["median"] else float("inf")
     blocked=spread>max_view_median_relative_spread or rel_mad>max_relative_mad
     return {"status":"blocked_inconsistent_observed_depth_scale" if blocked else "calibrated","baseline_scale":float(baseline_scale),"ratio_stats":global_stats,"per_view":per_view,"median_spread_relative":spread,"relative_mad":rel_mad,"candidate_scale":None if blocked else float(baseline_scale*global_stats["median"]),"observed_count":observed_count}
+
+
+def scale_protocols_for_branch(branch: str) -> tuple[str, ...]:
+    branch = branch.upper()
+    if branch == "B":
+        return ("per_cache", "fixed_baseline")
+    if branch in {"C", "D"}:
+        return ("memory", "per_cache", "fixed_baseline")
+    raise ValueError(f"unsupported branch: {branch}")
+
+
+def uncertainty_intervals_overlap(first_mean: float, first_std: float, second_mean: float, second_std: float) -> bool:
+    """Return true when one-standard-deviation gain intervals overlap."""
+    return first_mean - first_std <= second_mean + second_std and second_mean - second_std <= first_mean + first_std

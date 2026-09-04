@@ -58,10 +58,11 @@ from .depth_branch import (
     save_v4_depth_artifacts,
     transform_intrinsics,
 )
-from .scale_calibration import calibrate_candidate_depth_scale
+from .scale_calibration import calibrate_candidate_depth_scale, scale_protocols_for_branch, uncertainty_intervals_overlap
 from .c6_disturbance import (
     append_only_coverage_is_monotonic,
     build_disturbance_states,
+    build_disturbance_states_from_sampled_h0,
     recover_branch_points_by_view,
     sample_views,
     state_metrics,
@@ -214,8 +215,11 @@ __all__ = [
     "predicted_world_to_local_camera_points",
     "reshape_flattened_points_by_view",
     "calibrate_candidate_depth_scale",
+    "scale_protocols_for_branch",
+    "uncertainty_intervals_overlap",
     "append_only_coverage_is_monotonic",
     "build_disturbance_states",
+    "build_disturbance_states_from_sampled_h0",
     "recover_branch_points_by_view",
     "sample_views",
     "state_metrics",

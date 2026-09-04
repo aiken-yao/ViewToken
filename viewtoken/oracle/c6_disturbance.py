@@ -43,6 +43,24 @@ def build_disturbance_states(baseline_views: list[Tensor], recomputed_views: lis
     return {"H0": h0, "H1": h1, "H2": h2, "H3": h3}
 
 
+
+def build_disturbance_states_from_sampled_h0(
+    sampled_h0: Tensor,
+    recomputed_views: list[Tensor],
+    quota: int,
+    reconstruction_sample_seed: int,
+) -> dict[str, Tensor]:
+    """Build C7.1 states while preserving one shared, pre-sampled H0."""
+
+    h0 = torch.as_tensor(sampled_h0, dtype=torch.float32).cpu()
+    recomputed = sample_views(recomputed_views, quota, reconstruction_sample_seed)
+    h1 = torch.cat(recomputed[:-1], dim=0)
+    h2 = torch.cat([h0, recomputed[-1]], dim=0)
+    h3 = torch.cat(recomputed, dim=0)
+    if not torch.equal(h2[: h0.shape[0]], h0):
+        raise AssertionError("H2 must preserve the shared H0 points and order exactly")
+    return {"H0": h0, "H1": h1, "H2": h2, "H3": h3}
+
 def state_metrics(target: Tensor, states: dict[str, Tensor], observed_mask: Tensor, novel_mask: Tensor, thresholds=(0.05, 0.10, 0.20), chunk_size=2048) -> dict[str, Any]:
     target = torch.as_tensor(target, dtype=torch.float32).cpu()
     masks = {"observed": observed_mask.bool().cpu(), "novel": novel_mask.bool().cpu()}
