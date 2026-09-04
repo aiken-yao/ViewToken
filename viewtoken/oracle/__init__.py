@@ -58,6 +58,7 @@ from .depth_branch import (
     save_v4_depth_artifacts,
     transform_intrinsics,
 )
+from .scale_calibration import calibrate_candidate_depth_scale
 from .c6_disturbance import (
     append_only_coverage_is_monotonic,
     build_disturbance_states,
@@ -212,6 +213,7 @@ __all__ = [
     "local_camera_points_to_known_world",
     "predicted_world_to_local_camera_points",
     "reshape_flattened_points_by_view",
+    "calibrate_candidate_depth_scale",
     "append_only_coverage_is_monotonic",
     "build_disturbance_states",
     "recover_branch_points_by_view",
